@@ -5,46 +5,56 @@
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
-🎉 Your development environment is ready to use!
+🎉 Your Codespace is ready! Container built successfully.
 
-📦 Background Setup Status:
-   Dependencies are installing in the background.
-   
-   Check progress: tail -f /tmp/setup.log
-   
-   Estimated time: 5-10 minutes for full setup
+⚡ QUICK SETUP (Choose One Option):
 
-⚡ Quick Start (2 minutes):
-   bash .devcontainer/quick-start.sh
-   
-   This installs only essential packages so you can start coding now!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎯 Start Developing:
+Option 1: MINIMAL SETUP (Fastest - 2-3 minutes)
+────────────────────────────────────────────────────────────────────────
+bash .devcontainer/quick-start.sh
 
-   1. Start Docker services:
-      cd deployment && docker-compose up -d
+This installs only essential backend packages.
+Then start Docker and backend services.
 
-   2. Start Backend:
-      cd src/backend && uvicorn main:app --reload --host 0.0.0.0
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-   3. Start Frontend:
-      cd src/frontend && npm run dev
+Option 2: FULL SETUP (Complete - 10-15 minutes)
+────────────────────────────────────────────────────────────────────────
+bash .devcontainer/setup.sh
 
-📚 Access URLs:
-   • Backend API:  http://localhost:8000
-   • API Docs:     http://localhost:8000/docs  
-   • Frontend:     http://localhost:3000
+This installs ALL dependencies including frontend and AI packages.
 
-💡 Tips:
-   • Background setup completes automatically
-   • Use quick-start.sh if you can't wait
-   • See CODESPACE_FIX.md for troubleshooting
-   • All documentation: ls *CODESPACE*.md
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📖 Documentation:
-   • CODESPACE_FIX.md           - Quick reference
-   • CODESPACES_GUIDE.md        - Full guide
-   • .devcontainer/README.md    - Technical details
+📝 After Setup, Start Services:
+────────────────────────────────────────────────────────────────────────
+
+1. Start Docker services:
+   cd deployment && docker-compose up -d
+
+2. Start Backend API:
+   cd src/backend && uvicorn main:app --reload --host 0.0.0.0
+
+3. Start Frontend (optional):
+   cd src/frontend && npm run dev
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 Access URLs (after starting services):
+────────────────────────────────────────────────────────────────────────
+• Backend API:  http://localhost:8000
+• API Docs:     http://localhost:8000/docs  
+• Frontend:     http://localhost:3000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 Need Help?
+────────────────────────────────────────────────────────────────────────
+• Quick Start:   cat .devcontainer/WELCOME.txt
+• Documentation: ls *CODESPACE*.md
+• Setup Issues:  See CODESPACE_FIX.md
 
 ═══════════════════════════════════════════════════════════════════════════
 
