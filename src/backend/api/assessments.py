@@ -86,9 +86,6 @@ async def get_dashboard():
             }
         ]
     }
-Assessments API Module
-Manages compliance assessments and evaluations
-"""
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession

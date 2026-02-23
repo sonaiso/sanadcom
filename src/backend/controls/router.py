@@ -21,9 +21,6 @@ from controls.schemas import (
 # Import authentication dependencies (disabled for demo)
 # from auth.security import get_current_user, require_permission
 # from auth.models import User
-Controls Router
-API endpoints for compliance controls management
-"""
 
 from fastapi import APIRouter
 
@@ -166,21 +163,4 @@ async def delete_control(
     
     await db.delete(control)
     await db.commit()
-@router.get("/")
-async def list_controls():
-    """List all controls"""
-    return {"controls": []}
 
-
-@router.get("/{control_id}")
-async def get_control(control_id: str):
-    """Get control by ID"""
-    return {"control_id": control_id}
-    await delete_by_id(
-        db=db,
-        model=Control,
-        id_field_name="control_id",
-        id_value=control_id,
-        error_message_en=f"Control {control_id} not found",
-        error_message_ar=f"لم يتم العثور على الضابط {control_id}",
-    )

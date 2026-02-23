@@ -37,12 +37,9 @@ class Control(Base):
     __table_args__ = {'extend_existing': True}  # Allow redefinition for compatibility
     
     id = Column(Integer, primary_key=True, index=True)
-    control_id = Column(String(50), unique=True, index=True, nullable=False)
-    framework = Column(String(10), nullable=False, index=True)  # Changed from Enum to String to match DB
-    domain = Column(String(100), nullable=False)
     control_id = Column(String(50), unique=True, index=True, nullable=False)  # e.g., ECC-GV-1
     framework = Column(Enum(FrameworkType), nullable=False, index=True)
-    domain = Column(String(100), nullable=False, index=True)  # Added index for filtering
+    domain = Column(String(100), nullable=False, index=True)
     
     # Bilingual content
     title_en = Column(String(500), nullable=False)
@@ -57,11 +54,8 @@ class Control(Base):
     procedure_guidance_ar = Column(Text)
     
     # Control metadata
-    priority = Column(String(20), default="medium")
-    status = Column(String(20), default="not_started")  # Changed from Enum to String to match DB
-    maturity_level = Column(Integer, default=1)
     priority = Column(String(20), default="medium")  # low, medium, high, critical
-    status = Column(Enum(ControlStatus), default=ControlStatus.NOT_STARTED, index=True)  # Added index
+    status = Column(Enum(ControlStatus), default=ControlStatus.NOT_STARTED, index=True)
     maturity_level = Column(Integer, default=1)  # 1-5 scale
     
     # JSON fields

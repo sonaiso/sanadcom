@@ -59,15 +59,6 @@ except ImportError:
 except Exception as e:
     logger.error(f"Error loading GeoIP2 database: {e}")
 
-    Check if IP address is from Saudi Arabia.
-    Uses GeoIP2 MaxMind database if available, falls back to known IP ranges.
-        True if Saudi IP, False otherwise
-        
-    Note:
-        For production use, download GeoLite2-Country database from:
-        https://dev.maxmind.com/geoip/geoip2/geolite2/
-        Set GEOIP_DB_PATH environment variable to database path.
-    # Production: Use GeoIP2 MaxMind database
     if GEOIP_AVAILABLE and geoip2_reader:
         try:
             response = geoip2_reader.country(ip)
@@ -313,7 +304,6 @@ def is_saudi_ip(ip: str) -> bool:
         "195.229.",
         # Additional major ISPs
         "46.242.", "31.9.", "31.13.",
-    return any(ip.startswith(prefix) for prefix in saudi_ip_ranges)
     ]
     
     return any(ip.startswith(prefix) for prefix in saudi_ip_ranges)

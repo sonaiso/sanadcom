@@ -24,7 +24,10 @@ class BackupService:
     
     def __init__(self, backup_base_path: str = "/var/backups/sico"):
         self.backup_base_path = backup_base_path
-        os.makedirs(backup_base_path, exist_ok=True)
+        try:
+            os.makedirs(backup_base_path, exist_ok=True)
+        except (PermissionError, OSError):
+            pass  # Backup directory may not be accessible in all environments
     
     async def create_postgresql_backup(
         self,
