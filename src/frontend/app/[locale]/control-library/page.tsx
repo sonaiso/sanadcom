@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
@@ -39,13 +39,13 @@ export default function ControlLibraryPage() {
 
   useEffect(() => {
     fetchControls();
-  }, []);
+  }, [fetchControls]);
 
   useEffect(() => {
     filterControls();
-  }, [controls, selectedFramework, selectedDomain, searchQuery]);
+  }, [filterControls]);
 
-  const fetchControls = async () => {
+  const fetchControls = useCallback(async () => {
     try {
       const response = await fetch('/api/v1/controls/?limit=1000');
       const data = await response.json();
@@ -56,7 +56,7 @@ export default function ControlLibraryPage() {
       console.error('Error fetching controls:', error);
       setLoading(false);
     }
-  };
+  }, []);
 
   const calculateStats = (controlsData: Control[]) => {
     const stats: Record<string, FrameworkStats> = {};
@@ -74,7 +74,7 @@ export default function ControlLibraryPage() {
     setFrameworkStats(stats);
   };
 
-  const filterControls = () => {
+  const filterControls = useCallback(() => {
     let filtered = [...controls];
     
     if (selectedFramework !== 'ALL') {
@@ -97,7 +97,7 @@ export default function ControlLibraryPage() {
     }
     
     setFilteredControls(filtered);
-  };
+  }, [controls, selectedFramework, selectedDomain, searchQuery]);
 
   const getUniqueDomains = () => {
     const domains = new Set(controls.map(c => c.domain));

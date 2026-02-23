@@ -97,7 +97,7 @@ export default function EvidenceListPage() {
     fetcher
   );
 
-  const items = evidence?.items || [];
+  const items = useMemo(() => evidence?.items || [], [evidence]);
   const filteredItems = useMemo(() => {
     if (!search) return items;
     const term = search.toLowerCase();
