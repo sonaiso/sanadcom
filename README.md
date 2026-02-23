@@ -300,8 +300,8 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Key Resources for Contributors
 
 - **Getting Started**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Project Analysis**: [docs/PROJECT_ANALYSIS.md](docs/PROJECT_ANALYSIS.md) 🆕
-- **Analysis Dashboard**: [docs/ANALYSIS_SUMMARY.md](docs/ANALYSIS_SUMMARY.md) 🆕
+- **Project Analysis**: [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md) 🆕
+- **Analysis Dashboard**: [ANALYSIS_SUMMARY.md](ANALYSIS_SUMMARY.md) 🆕
 - **Compliance Status**: [docs/compliance/EXECUTIVE_SUMMARY.md](docs/compliance/EXECUTIVE_SUMMARY.md)
 - **Security Remediation**: [docs/compliance/PHASE_2.1_REMEDIATION_PLAN.md](docs/compliance/PHASE_2.1_REMEDIATION_PLAN.md)
 - **Conflict Resolution**: [docs/CONFLICT_RESOLUTION_GUIDE.md](docs/CONFLICT_RESOLUTION_GUIDE.md)
