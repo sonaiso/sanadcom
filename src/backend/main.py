@@ -26,41 +26,17 @@ from risk import router as risk_router
 from ai_governance import router as ai_governance_router
 from monitoring import router as monitoring_router
 from backup import router as backup_router
-from backup import router as backup_router
-from monitoring import router as monitoring_router
 import enterprise_router
 from isms import router as isms_router
 from audit import router as audit_router
-from monitoring import router as monitoring_router
 
 
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL),
-"""
-
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-import logging
-
-from api.controls import router as controls_router
-from api.assessments import router as assessments_router
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-from src.backend.core.config import settings
-from src.backend.core.database import init_db
-from src.backend.controls import router as controls_router
-from src.backend.evidence import router as evidence_router
-from src.backend.reporting import router as reporting_router
-from src.backend import ai_router
-from src.backend.api import assessments, controls as api_controls
 
 
 @asynccontextmanager
@@ -164,72 +140,6 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, replace with specific origins
-    """Lifespan event handler for startup and shutdown"""
-    # Startup
-    logger.info("Starting SICO GRC Platform API...")
-    yield
-    # Shutdown
-    logger.info("Shutting down SICO GRC Platform API...")
-
-
-# Initialize FastAPI app
-app = FastAPI(
-    title="SICO GRC Platform API",
-    description="Saudi Regulatory Compliance Engine (ECC/CCC/PDPL)",
-    version="0.1.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    lifespan=lifespan
-)
-
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8000"],
-FastAPI Application - Production Configuration
-Security-first architecture with JWT + TLS + Secrets Management
-"""
-
-import sys
-import os
-from pathlib import Path
-
-# Add parent directories to Python path
-backend_dir = Path(__file__).parent
-src_dir = backend_dir.parent
-project_root = src_dir.parent
-sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(src_dir))
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-
-# Set environment variables for development
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./sanadcom.db")
-os.environ.setdefault("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
-
-# Load secrets (with fallback for development)
-secrets = None
-
-# Create FastAPI app
-app = FastAPI(
-    title="Sanadcom GRC Platform",
-    description="Saudi-compliant GRC platform with AI/RAG capabilities",
-    version="2.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
-)
-
-# ============================================================================
-# Security Middleware (Order Matters!)
-# ============================================================================
-
-# Simple CORS for development
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -271,12 +181,6 @@ async def root():
             ],
             "message_en": "Saudi Regulatory Compliance Engine - 92% Compliant",
             "message_ar": "محرك الامتثال التنظيمي السعودي - 92٪ متوافق"
-            "name": "SICO GRC Platform API",
-            "version": "0.1.0",
-            "status": "operational",
-            "frameworks": ["ECC", "CCC", "PDPL"],
-            "message_en": "Saudi Regulatory Compliance Engine",
-            "message_ar": "محرك الامتثال التنظيمي السعودي"
         }
     )
 
@@ -351,12 +255,9 @@ app.include_router(risk_router, prefix="/api/v1", tags=["Risk Management"])
 app.include_router(ai_governance_router, prefix="/api/v1", tags=["AI Governance"])
 app.include_router(monitoring_router, prefix="/api/v1", tags=["Monitoring & Observability"])
 app.include_router(backup_router, prefix="/api/v1", tags=["Backup & Disaster Recovery"])
-app.include_router(backup_router, tags=["Backup & Disaster Recovery"])
-app.include_router(monitoring_router, tags=["Security Monitoring"])
 app.include_router(enterprise_router.router, prefix="/api/v1", tags=["Enterprise GRC"])
 app.include_router(isms_router, prefix="/api/v1", tags=["ISMS & ISO 27001"])
 app.include_router(audit_router, prefix="/api/v1", tags=["Audit Management"])
-app.include_router(monitoring_router, prefix="/api/v1", tags=["Monitoring & Observability"])
 
 
 @app.get("/api/v1/security-status", tags=["Security"])
@@ -393,88 +294,10 @@ async def security_status():
                 "pdpl": "Personal Data Protection Law",
                 "iso_27001": "Information Security Management"
             }
-
-
-# Include routers
-app.include_router(controls_router)
-app.include_router(assessments_router)
-
-
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "name": "SICO GRC Platform API",
-        "version": "0.1.0",
-        "status": "operational",
-        "frameworks": ["ECC", "CCC", "PDPL"]
-    }
-
-
-# ============================================================================
-# Routers
-# ============================================================================
-
-# Routers will be added as modules are completed
-# app.include_router(ai_router, prefix="/api/ai", tags=["AI/RAG"])
-# app.include_router(controls_router, prefix="/api/controls", tags=["Controls"])
-# app.include_router(evidence_router, prefix="/api/evidence", tags=["Evidence"])
-# app.include_router(reporting_router, prefix="/api/reporting", tags=["Reporting"])
-
-# ============================================================================
-# Health Check
-# ============================================================================
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "service": "sico-grc-api"
-    }
-
-
-@app.get("/api/v1/frameworks")
-async def list_frameworks():
-    """List supported regulatory frameworks"""
-    return {
-        "frameworks": [
-            {
-                "id": "ecc",
-                "name": "Essential Cybersecurity Controls",
-                "authority": "NCA - National Cybersecurity Authority",
-                "version": "2.0",
-                "controls_count": 114
-            },
-            {
-                "id": "ccc",
-                "name": "Cloud Cybersecurity Controls",
-                "authority": "NCA - National Cybersecurity Authority",
-                "version": "1.0",
-                "controls_count": 180
-            },
-            {
-                "id": "pdpl",
-                "name": "Personal Data Protection Law",
-                "authority": "SDAIA - Saudi Data & AI Authority",
-                "version": "2021",
-                "controls_count": 42
-            }
-        ]
-    }
-
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    """Global exception handler"""
-    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": "Internal server error",
-            "detail": str(exc) if app.debug else "An error occurred"
         }
     )
+
+
 @app.get("/api/v1/frameworks", tags=["Frameworks"])
 async def list_frameworks():
     """List all supported compliance frameworks"""
@@ -507,15 +330,6 @@ async def list_frameworks():
     )
 
 
-# Register routers with versioned prefix
-app.include_router(controls_router.router, prefix="/api/v1", tags=["Controls"])
-app.include_router(evidence_router.router, prefix="/api/v1", tags=["Evidence"])
-app.include_router(reporting_router.router, prefix="/api/v1", tags=["Reporting"])
-app.include_router(ai_router.router, prefix="/api/v1", tags=["AI/RAG"])
-# Register additional API routers from api/ directory
-app.include_router(assessments.router, tags=["Assessments"])
-app.include_router(api_controls.router, tags=["API Controls"])
-
 
 if __name__ == "__main__":
     import uvicorn
@@ -540,60 +354,4 @@ if __name__ == "__main__":
     else:
         logger.warning("⚠️  Running in HTTP mode (development only)")
         logger.warning("   Configure TLS certificates for production deployment")
-        "version": "2.0.0",
-        "environment": "production",
-    }
 
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {
-        "message_en": "Sanadcom GRC Platform API",
-        "message_ar": "منصة سند كوم للحوكمة والمخاطر والامتثال",
-        "docs": "/api/docs",
-    }
-
-# ============================================================================
-# Run Application
-# ============================================================================
-
-if __name__ == "__main__":
-    import os
-    
-    # SSL/TLS configuration
-    ssl_keyfile = os.getenv("SSL_KEY_FILE", "./certs/key.pem")
-    ssl_certfile = os.getenv("SSL_CERT_FILE", "./certs/cert.pem")
-    
-    # Check if SSL certificates exist
-    use_ssl = os.path.exists(ssl_keyfile) and os.path.exists(ssl_certfile)
-    
-    if use_ssl:
-        print("🔒 Starting with SSL/TLS enabled")
-        uvicorn.run(
-            "main:app",
-            host="0.0.0.0",
-            port=443,
-            ssl_keyfile=ssl_keyfile,
-            ssl_certfile=ssl_certfile,
-            reload=False,  # Disable reload in production
-        )
-    else:
-        print("⚠️  SSL certificates not found. Running without TLS.")
-        print("⚠️  Generate certificates with: make generate-certs")
-        uvicorn.run(
-            "main:app",
-            host="0.0.0.0",
-            port=8000,
-            reload=True,
-            log_level="info"
-        )
-
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
-            reload=True,  # Enable reload for development
-        )

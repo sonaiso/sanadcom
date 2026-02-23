@@ -21,11 +21,6 @@ from reporting.schemas import (
     ControlPosture,
     DashboardData,
 )
-Reporting Router
-API endpoints for compliance reporting
-"""
-
-from fastapi import APIRouter
 
 router = APIRouter()
 
@@ -65,14 +60,6 @@ async def get_executive_dashboard(
     for status, count in status_result:
         status_counts[status.value] = count
     
-    for control in all_controls:
-        status = _str_value(control.status)
-        status_counts[status] = status_counts.get(status, 0) + 1
-        
-        # By framework
-        framework = _str_value(control.framework)
-        if framework not in by_framework:
-            by_framework[framework] = {
     # Get framework breakdown with single query
     framework_query = select(
         Control.framework,
@@ -281,14 +268,3 @@ async def list_reports(
     reports = result.scalars().all()
     
     return reports
-
-@router.get("/")
-async def list_reports():
-    """List all reports"""
-    return {"reports": []}
-
-
-@router.post("/generate")
-async def generate_report():
-    """Generate new report"""
-    return {"status": "generating"}
