@@ -4,9 +4,9 @@ Comprehensive Monitoring Dashboard Module
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
+from sqlalchemy import text, select, func, and_
 from typing import Optional
-from datetime import datetime, timedelta
+from typing import Optional, Dict, List, Any
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
 
@@ -14,6 +14,21 @@ from core.database import get_db
 from auth.security import get_current_active_user
 from auth.models import User
 
+from auth.security import require_permission
+from controls.models import Control
+from evidence.models import Evidence
+from incident.models import SecurityIncident as Incident
+from risk.models import Risk
+from backup.models import BackupJob, BackupStatus
+try:
+    from audit.models import AuditLog
+except ImportError:
+    AuditLog = None  # type: ignore
+try:
+    from privacy.models import ConsentRecord, DataSubjectAccessRequest
+except ImportError:
+    ConsentRecord = None  # type: ignore
+    DataSubjectAccessRequest = None  # type: ignore
 router = APIRouter(prefix="/monitoring", tags=["Monitoring & Observability"])
 
 
@@ -47,7 +62,6 @@ async def get_system_health(
     return {
         "status": "healthy" if db_status == "healthy" else "degraded",
         "database_status": db_status,
-        "last_health_check": datetime.utcnow().isoformat()
         "last_health_check": datetime.now(timezone.utc).isoformat()
     }
 
@@ -76,8 +90,6 @@ async def get_compliance_metrics(
         "pdpl_compliance": 100.0,
         "sdaia_ai_compliance": 100.0,
         "iso_27001_compliance": 85.0,
-        "last_assessment_date": (datetime.utcnow() - timedelta(days=7)).isoformat(),
-        "next_assessment_due": (datetime.utcnow() + timedelta(days=83)).isoformat()
         "last_assessment_date": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(),
         "next_assessment_due": (datetime.now(timezone.utc) + timedelta(days=83)).isoformat()
     }
@@ -98,28 +110,8 @@ async def get_comprehensive_dashboard(
         "system_health": health,
         "compliance": compliance,
         "message_en": "SICO GRC Platform - 92% Compliance Ready",
-        "message_ar": "منصة سيكو للحوكمة والمخاطر والامتثال - 92٪ جاهز للامتثال"
-Security Monitoring API Router
-Real-time compliance posture and security metrics dashboard
-"""
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
-from typing import Dict, List, Any
-from datetime import datetime, timedelta
-
-from core.database import get_db
-from auth.dependencies import require_permission
-from controls.models import Control
-from evidence.models import Evidence
-from incident.models import Incident
-from risk.models import Risk, RiskLevel
-from backup.models import BackupJob, BackupStatus
-from audit.models import AuditLog
-from privacy.models import ConsentRecord, DataSubjectAccessRequest
-
-router = APIRouter(prefix="/api/v1/monitoring", tags=["Security Monitoring"])
-
+        "message_ar": "منصة سيكو للحوكمة والمخاطر والامتثال - 92٪ جاهز للامتثال",
+    }
 
 @router.get("/dashboard/overview")
 async def get_dashboard_overview(
