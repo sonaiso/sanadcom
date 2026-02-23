@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
 interface WorkflowCase {
@@ -18,7 +18,7 @@ export default function WorkflowsPage() {
   const params = useParams();
   const locale = params?.locale as string;
   const isArabic = locale === 'ar';
-  const [cases, setCases] = useState<WorkflowCase[]>([
+  const [cases] = useState<WorkflowCase[]>([
     { id: 1, case_id: 'CASE-001', case_type: 'audit_finding', title_en: 'Remediate Password Policy Finding', title_ar: 'معالجة اكتشاف سياسة كلمات المرور', status: 'in_progress', priority: 'high', is_overdue: false },
     { id: 2, case_id: 'CASE-002', case_type: 'evidence_request', title_en: 'Request Encryption Evidence', title_ar: 'طلب دليل التشفير', status: 'pending', priority: 'medium', is_overdue: false }
   ]);

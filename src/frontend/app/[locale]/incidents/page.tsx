@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 
@@ -64,6 +64,11 @@ interface IncidentStats {
 }
 
 // ==================== MAIN COMPONENT ====================
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('access_token');
+  return { Authorization: `Bearer ${token}` };
+};
 
 export default function IncidentResponsePage() {
   const params = useParams();
@@ -131,11 +136,6 @@ export default function IncidentResponsePage() {
   const [selectedControlId, setSelectedControlId] = useState<string>('');
 
   // ==================== HELPER FUNCTIONS ====================
-
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('access_token');
-    return { Authorization: `Bearer ${token}` };
-  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
@@ -206,7 +206,7 @@ export default function IncidentResponsePage() {
 
   // ==================== DATA FETCHING ====================
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -256,11 +256,11 @@ export default function IncidentResponsePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   // ==================== HANDLERS ====================
 

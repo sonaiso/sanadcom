@@ -76,7 +76,7 @@ export default function FindingsListPage() {
     fetcher
   );
 
-  const items: FindingItem[] = data?.items || [];
+  const items = useMemo<FindingItem[]>(() => data?.items || [], [data]);
 
   useEffect(() => {
     setPage(1);

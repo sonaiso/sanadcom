@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 interface ComplianceGaugeProps {
   score: number; // 0-100
@@ -69,7 +69,7 @@ export const ComplianceGauge: React.FC<ComplianceGaugeProps> = ({
               dataKey="value"
               stroke="none"
             >
-              {data.map((entry, index) => (
+              {data.map((_entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index]} />
               ))}
             </Pie>

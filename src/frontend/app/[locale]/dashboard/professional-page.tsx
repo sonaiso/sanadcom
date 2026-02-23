@@ -6,7 +6,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import {
   StatsCard,
@@ -20,7 +19,6 @@ import {
 } from '@/components/ui';
 
 export default function ProfessionalDashboard() {
-  const t = useTranslations();
   const locale = 'ar'; // Arabic primary
 
   const [loading, setLoading] = useState(true);

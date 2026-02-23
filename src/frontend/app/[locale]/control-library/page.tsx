@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 // Types
@@ -28,7 +27,6 @@ interface FrameworkStats {
 }
 
 export default function ControlLibraryPage() {
-  const t = useTranslations();
   const [controls, setControls] = useState<Control[]>([]);
   const [filteredControls, setFilteredControls] = useState<Control[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,28 +35,7 @@ export default function ControlLibraryPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [frameworkStats, setFrameworkStats] = useState<Record<string, FrameworkStats>>({});
 
-  useEffect(() => {
-    fetchControls();
-  }, []);
-
-  useEffect(() => {
-    filterControls();
-  }, [controls, selectedFramework, selectedDomain, searchQuery]);
-
-  const fetchControls = async () => {
-    try {
-      const response = await fetch('/api/v1/controls/?limit=1000');
-      const data = await response.json();
-      setControls(data);
-      calculateStats(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching controls:', error);
-      setLoading(false);
-    }
-  };
-
-  const calculateStats = (controlsData: Control[]) => {
+  const calculateStats = useCallback((controlsData: Control[]) => {
     const stats: Record<string, FrameworkStats> = {};
     
     ['ECC', 'CCC', 'PDPL'].forEach(framework => {
@@ -72,9 +49,22 @@ export default function ControlLibraryPage() {
     });
     
     setFrameworkStats(stats);
-  };
+  }, []);
 
-  const filterControls = () => {
+  const fetchControls = useCallback(async () => {
+    try {
+      const response = await fetch('/api/v1/controls/?limit=1000');
+      const data = await response.json();
+      setControls(data);
+      calculateStats(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching controls:', error);
+      setLoading(false);
+    }
+  }, [calculateStats]);
+
+  const filterControls = useCallback(() => {
     let filtered = [...controls];
     
     if (selectedFramework !== 'ALL') {
@@ -97,7 +87,15 @@ export default function ControlLibraryPage() {
     }
     
     setFilteredControls(filtered);
-  };
+  }, [controls, selectedFramework, selectedDomain, searchQuery]);
+
+  useEffect(() => {
+    fetchControls();
+  }, [fetchControls]);
+
+  useEffect(() => {
+    filterControls();
+  }, [filterControls]);
 
   const getUniqueDomains = () => {
     const domains = new Set(controls.map(c => c.domain));

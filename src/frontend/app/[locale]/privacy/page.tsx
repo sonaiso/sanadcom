@@ -1,9 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+
+const API_BASE = 'http://localhost:8000/api/v1';
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('access_token');
+  return { Authorization: `Bearer ${token}` };
+};
 
 // ===== INTERFACES =====
 
@@ -74,7 +81,7 @@ export default function PrivacyDashboardPage() {
   // ===== STATE =====
   const [selectedTab, setSelectedTab] = useState<'consent' | 'dsar' | 'breach' | 'retention'>('consent');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Data states
   const [consents, setConsents] = useState<Consent[]>([]);
@@ -149,15 +156,8 @@ export default function PrivacyDashboardPage() {
 
   // ===== API FUNCTIONS =====
 
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('access_token');
-    return { Authorization: `Bearer ${token}` };
-  };
-
-  const API_BASE = 'http://localhost:8000/api/v1';
-
   // Fetch all data
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -206,11 +206,11 @@ export default function PrivacyDashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   // ===== CONSENT HANDLERS =====
 

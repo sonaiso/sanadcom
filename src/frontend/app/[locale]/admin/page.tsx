@@ -58,7 +58,7 @@ export default function AdminPage() {
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();

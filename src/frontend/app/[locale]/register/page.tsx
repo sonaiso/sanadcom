@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 
 export default function RegisterPage() {
   const params = useParams();
-  const router = useRouter();
   const locale = params.locale as string;
   const isArabic = locale === 'ar';
 

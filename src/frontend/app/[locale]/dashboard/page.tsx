@@ -31,7 +31,7 @@ import {
 export default function ProfessionalDashboard() {
   const params = useParams();
   const locale = (params?.locale as 'ar' | 'en') || 'en';
-  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [lastUpdated] = useState(new Date());
 
   // Demo Data - Professional level
   const kpiData = {

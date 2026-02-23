@@ -17,7 +17,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import { RiskHeatMap } from '@/components/dashboard/RiskHeatMap';
 import { ComplianceGauge } from '@/components/dashboard/ComplianceGauge';
 import { ComplianceTrendChart, ControlsByDomain } from '@/components/dashboard/ComplianceTrendChart';
@@ -31,13 +30,12 @@ export default function EnterpriseDashboard({
 }: { 
   params: { locale: 'ar' | 'en' } 
 }) {
-  const t = useTranslations('dashboard');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Demo data - In production, this would come from API
-  const [dashboardData, setDashboardData] = useState({
+  const [dashboardData] = useState({
     kpis: {
       overall_compliance: 89,
       total_controls: 287,

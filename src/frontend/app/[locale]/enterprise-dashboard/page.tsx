@@ -1,13 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export default function EnterpriseGRCDashboard() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
   // Real enterprise metrics
   const metrics = [
     { 
