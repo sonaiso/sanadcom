@@ -1,0 +1,108 @@
+{
+  "_schema_version": "1.0",
+  "_description": "Change Impact Workflow - Process for handling regulatory updates",
+  "_last_updated": "2026-02-23",
+  "workflow": {
+    "trigger_events": [
+      "regulatory_amendment",
+      "new_guidance_issued",
+      "interpretive_notice",
+      "enforcement_action",
+      "version_superseded"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "name": "impact_identification",
+        "name_ar": "تحديد الأثر",
+        "description_en": "Identify all controls referencing the changed regulation section",
+        "description_ar": "تحديد جميع الضوابط المرتبطة بالبند التنظيمي المُعدَّل",
+        "responsible_role": "Compliance Manager",
+        "sla_hours": 24,
+        "outputs": ["affected_controls_list", "affected_packs_list", "affected_tenants_list"]
+      },
+      {
+        "step": 2,
+        "name": "impact_assessment",
+        "name_ar": "تقييم الأثر",
+        "description_en": "Assess severity of change and required remediation for each affected control",
+        "description_ar": "تقييم حجم التغيير والإجراءات التصحيحية المطلوبة لكل ضابط متأثر",
+        "responsible_role": "Compliance Officer",
+        "sla_hours": 72,
+        "outputs": ["impact_assessment_report", "remediation_plan"]
+      },
+      {
+        "step": 3,
+        "name": "control_update",
+        "name_ar": "تحديث الضوابط",
+        "description_en": "Update affected control definitions, evidence requirements, and mappings",
+        "description_ar": "تحديث تعريفات الضوابط المتأثرة ومتطلبات الأدلة والربط التقاطعي",
+        "responsible_role": "Compliance Officer",
+        "sla_hours": 120,
+        "outputs": ["updated_controls", "updated_mappings"]
+      },
+      {
+        "step": 4,
+        "name": "review_and_approval",
+        "name_ar": "المراجعة والاعتماد",
+        "description_en": "Legal and technical review of updated controls before publication",
+        "description_ar": "مراجعة قانونية وتقنية للضوابط المحدَّثة قبل النشر",
+        "responsible_role": "Compliance Manager",
+        "approver_role": "Chief Compliance Officer",
+        "sla_hours": 48,
+        "outputs": ["approval_record"]
+      },
+      {
+        "step": 5,
+        "name": "tenant_notification",
+        "name_ar": "إشعار العملاء",
+        "description_en": "Notify affected tenants of regulatory change and required actions",
+        "description_ar": "إشعار العملاء المتأثرين بالتغيير التنظيمي والإجراءات المطلوبة",
+        "responsible_role": "Account Manager",
+        "sla_hours": 24,
+        "notification_channels": ["email", "platform_notification", "executive_report"],
+        "outputs": ["notification_log"]
+      },
+      {
+        "step": 6,
+        "name": "evidence_refresh",
+        "name_ar": "تحديث الأدلة",
+        "description_en": "Trigger evidence refresh requests for all affected controls in all tenants",
+        "description_ar": "تفعيل طلبات تحديث الأدلة لجميع الضوابط المتأثرة لدى جميع العملاء",
+        "responsible_role": "Evidence Owner",
+        "sla_days": 30,
+        "outputs": ["evidence_refresh_tickets"]
+      },
+      {
+        "step": 7,
+        "name": "rag_index_rebuild",
+        "name_ar": "إعادة بناء مؤشر الذكاء الاصطناعي",
+        "description_en": "Rebuild RAG knowledge base indexes with updated regulatory content",
+        "description_ar": "إعادة بناء مؤشرات قاعدة معرفة الذكاء الاصطناعي بالمحتوى التنظيمي المحدَّث",
+        "responsible_role": "AI Engineer",
+        "sla_hours": 48,
+        "outputs": ["index_version", "evaluation_report"]
+      }
+    ],
+    "escalation_matrix": {
+      "minor_change": {
+        "definition_en": "Clarification or non-material amendment",
+        "approver": "Compliance Manager",
+        "notification_required": false
+      },
+      "moderate_change": {
+        "definition_en": "Updated evidence requirements or control scope",
+        "approver": "Chief Compliance Officer",
+        "notification_required": true,
+        "notification_lead_days": 14
+      },
+      "major_change": {
+        "definition_en": "New obligations, significant penalties, or framework revision",
+        "approver": "Board-level sign-off",
+        "notification_required": true,
+        "notification_lead_days": 30,
+        "board_notification": true
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "_schema_version": "1.0",
+  "pack_id": "PDPL-PRIVACY-1.0",
+  "name_en": "PDPL Privacy Compliance Pack",
+  "name_ar": "حزمة الامتثال لنظام حماية البيانات الشخصية",
+  "framework": "PDPL",
+  "framework_version": "2.0",
+  "tier": "premium",
+  "description_en": "Complete PDPL compliance solution covering Record of Processing Activities (RoPA), Data Subject Access Requests (DSAR), breach notification workflows, consent management, and privacy impact assessments.",
+  "description_ar": "حل امتثال PDPL شامل يتضمن سجل أنشطة المعالجة وطلبات الوصول لأصحاب البيانات وسير عمل إشعار الاختراق وإدارة الموافقة وتقييمات أثر الخصوصية.",
+  "deliverables": [
+    {
+      "id": "D1",
+      "name_en": "Record of Processing Activities (RoPA)",
+      "name_ar": "سجل أنشطة المعالجة",
+      "description_en": "Structured RoPA template and management system aligned with PDPL Article 31 requirements",
+      "description_ar": "نموذج سجل أنشطة المعالجة ونظام إدارته متوافق مع متطلبات المادة 31 من نظام PDPL"
+    },
+    {
+      "id": "D2",
+      "name_en": "DSAR Workflow",
+      "name_ar": "سير عمل طلبات الوصول",
+      "description_en": "End-to-end Data Subject Request management with 15-day SLA tracking and Arabic/English forms",
+      "description_ar": "إدارة شاملة لطلبات أصحاب البيانات مع تتبع مهلة 15 يوماً ونماذج عربية/إنجليزية"
+    },
+    {
+      "id": "D3",
+      "name_en": "Breach Notification Workflow",
+      "name_ar": "سير عمل إشعار الاختراق",
+      "description_en": "72-hour breach notification workflow to SDAIA with severity classification and evidence packaging",
+      "description_ar": "سير عمل إشعار الاختراق لهيئة SDAIA خلال 72 ساعة مع تصنيف الخطورة وحزم الأدلة"
+    },
+    {
+      "id": "D4",
+      "name_en": "Consent Management",
+      "name_ar": "إدارة الموافقة",
+      "description_en": "Consent collection, withdrawal, and audit trail system per PDPL Article 6 & 8",
+      "description_ar": "نظام جمع الموافقة وسحبها وسجل التدقيق وفقاً للمادتين 6 و8 من نظام PDPL"
+    },
+    {
+      "id": "D5",
+      "name_en": "Privacy Impact Assessment (PIA)",
+      "name_ar": "تقييم أثر الخصوصية",
+      "description_en": "PIA template and workflow for new data processing initiatives",
+      "description_ar": "نموذج وسير عمل تقييم أثر الخصوصية لمبادرات معالجة البيانات الجديدة"
+    },
+    {
+      "id": "D6",
+      "name_en": "Privacy Compliance Reports",
+      "name_ar": "تقارير الامتثال للخصوصية",
+      "description_en": "Bilingual privacy posture reports including DSAR statistics and breach metrics",
+      "description_ar": "تقارير وضع الخصوصية ثنائية اللغة تشمل إحصاءات طلبات الوصول ومقاييس الاختراق"
+    }
+  ],
+  "implementation": {
+    "estimated_weeks": 5,
+    "phases": [
+      {"week": 1, "activity_en": "Data discovery and RoPA population", "activity_ar": "اكتشاف البيانات وتعبئة سجل أنشطة المعالجة"},
+      {"week": 2, "activity_en": "Consent audit and DSAR process setup", "activity_ar": "تدقيق الموافقة وإعداد عملية طلبات الوصول"},
+      {"week": 3, "activity_en": "Breach notification workflow configuration", "activity_ar": "تهيئة سير عمل إشعار الاختراق"},
+      {"week": "4-5", "activity_en": "PIA templates and management reporting", "activity_ar": "قوالب تقييم أثر الخصوصية وتقارير الإدارة"}
+    ]
+  },
+  "add_ons": ["AI_ASSISTANT", "MANAGED_EVIDENCE_COLLECTION", "EXECUTIVE_REPORTING_PACKAGE"],
+  "pricing_tier": "premium",
+  "sla": {
+    "onboarding_days": 7,
+    "support_response_hours": 2,
+    "uptime_sla_percent": 99.9,
+    "dsar_sla_days": 15,
+    "breach_notification_hours": 72
+  }
+}

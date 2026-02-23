@@ -27,6 +27,7 @@ try:
     from training.models import TrainingModule, TrainingCompletion
     from audit.models import AuditFinding, AuditWorkflow
     import enterprise_models  # Import all enterprise models
+    from regulatory.models import RegulatoryVersion, TenantConfig  # Regulatory version register
 except ImportError as e:
     print(f"Warning: Could not import some models: {e}")
     print("Database metadata may be incomplete")

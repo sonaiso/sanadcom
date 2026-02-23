@@ -1,0 +1,128 @@
+{
+  "_schema_version": "1.0",
+  "_description": "Regulatory Version Register - Source of Truth for all supported frameworks",
+  "_last_updated": "2026-02-23",
+  "_maintained_by": "SICO Compliance Team",
+  "frameworks": {
+    "ECC": {
+      "full_name_en": "Essential Cybersecurity Controls",
+      "full_name_ar": "الضوابط الأساسية للأمن السيبراني",
+      "issuing_authority_en": "National Cybersecurity Authority (NCA)",
+      "issuing_authority_ar": "الهيئة الوطنية للأمن السيبراني",
+      "versions": [
+        {
+          "version": "1.0",
+          "release_date": "2018-01-01",
+          "status": "superseded",
+          "official_url": "https://nca.gov.sa/ar/pages/ecc",
+          "source_document": "ECC-1-2018.pdf",
+          "effective_date": "2018-01-01",
+          "superseded_date": "2020-05-01",
+          "change_summary_en": "Initial release of ECC framework",
+          "change_summary_ar": "الإصدار الأولي لإطار الضوابط الأساسية"
+        },
+        {
+          "version": "1.0-2020",
+          "release_date": "2020-05-01",
+          "status": "active",
+          "official_url": "https://nca.gov.sa/ar/pages/ecc",
+          "source_document": "ECC-1-2020.pdf",
+          "effective_date": "2020-05-01",
+          "superseded_date": null,
+          "change_summary_en": "Updated controls for cloud and third-party risk",
+          "change_summary_ar": "تحديث الضوابط للحوسبة السحابية ومخاطر الطرف الثالث"
+        }
+      ],
+      "current_version": "1.0-2020",
+      "next_review_date": "2026-06-01",
+      "domains": [
+        "Cybersecurity Governance (GV)",
+        "Risk Management (RM)",
+        "Compliance (CO)",
+        "Asset Management (AM)",
+        "Identity and Access Management (IS-1)",
+        "Operations Security (IS-2)",
+        "Third-Party & Cloud (TS)",
+        "Incident & Threat Management (IS-5)",
+        "Physical Security (PS)",
+        "Resilience (IS-4)"
+      ]
+    },
+    "CCC": {
+      "full_name_en": "Cloud Computing Controls",
+      "full_name_ar": "ضوابط الحوسبة السحابية",
+      "issuing_authority_en": "National Cybersecurity Authority (NCA)",
+      "issuing_authority_ar": "الهيئة الوطنية للأمن السيبراني",
+      "versions": [
+        {
+          "version": "1.0",
+          "release_date": "2020-01-01",
+          "status": "active",
+          "official_url": "https://nca.gov.sa/ar/pages/ccc",
+          "source_document": "CCC-1-2020.pdf",
+          "effective_date": "2020-01-01",
+          "superseded_date": null,
+          "change_summary_en": "Initial release of Cloud Computing Controls",
+          "change_summary_ar": "الإصدار الأولي لضوابط الحوسبة السحابية"
+        }
+      ],
+      "current_version": "1.0",
+      "next_review_date": "2026-06-01",
+      "domains": [
+        "Cloud Governance (CG)",
+        "Cloud Risk (CR)",
+        "Cloud Compliance (CC)",
+        "Cloud Data Security (SEC-01)",
+        "Cloud Identity Management (IM)",
+        "Cloud Incident Management (IM-02)"
+      ]
+    },
+    "PDPL": {
+      "full_name_en": "Personal Data Protection Law",
+      "full_name_ar": "نظام حماية البيانات الشخصية",
+      "issuing_authority_en": "Saudi Data & AI Authority (SDAIA)",
+      "issuing_authority_ar": "هيئة البيانات والذكاء الاصطناعي",
+      "versions": [
+        {
+          "version": "1.0",
+          "release_date": "2021-09-16",
+          "status": "superseded",
+          "official_url": "https://sdaia.gov.sa/ar/SDAIA/about/Pages/PDPL.aspx",
+          "source_document": "PDPL-2021.pdf",
+          "effective_date": "2021-09-16",
+          "superseded_date": "2023-09-14",
+          "change_summary_en": "Royal Decree No. M/19 - Initial PDPL enactment",
+          "change_summary_ar": "المرسوم الملكي رقم م/19 - صدور النظام"
+        },
+        {
+          "version": "2.0",
+          "release_date": "2023-09-14",
+          "status": "active",
+          "official_url": "https://sdaia.gov.sa/ar/SDAIA/about/Pages/PDPL.aspx",
+          "source_document": "PDPL-Executive-Regulations-2023.pdf",
+          "effective_date": "2023-09-14",
+          "superseded_date": null,
+          "change_summary_en": "Executive Regulations issued, including data transfer, breach notification, and DPO requirements",
+          "change_summary_ar": "صدور اللائحة التنفيذية متضمنةً أحكام نقل البيانات وإشعار الاختراق ومتطلبات مسؤول حماية البيانات"
+        }
+      ],
+      "current_version": "2.0",
+      "next_review_date": "2026-09-01",
+      "key_articles": {
+        "Art6": "Lawful basis for processing",
+        "Art7": "Sensitive data processing",
+        "Art8": "Data subject rights",
+        "Art17": "Cross-border data transfer",
+        "Art20": "Data breach notification",
+        "Art24": "DPO appointment",
+        "Art29": "Technical & organisational measures"
+      }
+    }
+  },
+  "review_schedule": {
+    "frequency": "semi-annual",
+    "next_review": "2026-08-01",
+    "responsible_team": "Compliance Team",
+    "escalation_contact": "Chief Compliance Officer"
+  }
+}
