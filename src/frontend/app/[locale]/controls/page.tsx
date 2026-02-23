@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -50,7 +50,7 @@ export default function ControlsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedControl, setSelectedControl] = useState<any>(null);
 
-  const fetchControls = async () => {
+  const fetchControls = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -68,11 +68,11 @@ export default function ControlsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [framework, status, page, limit]);
 
   useEffect(() => {
     fetchControls();
-  }, [framework, status, page]);
+  }, [fetchControls]);
 
   useEffect(() => {
     const fetchStats = async () => {
