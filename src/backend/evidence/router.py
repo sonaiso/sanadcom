@@ -19,13 +19,6 @@ from evidence.schemas import (
     EvidenceListResponse,
     EvidenceValidationRequest,
 )
-Evidence Router
-API endpoints for evidence management
-"""
-
-from fastapi import APIRouter
-
-router = APIRouter()
 
 
 @router.get("/evidence", response_model=EvidenceListResponse)
@@ -227,13 +220,3 @@ async def get_control_evidence_summary(
         "compliance_rate": (by_status.get("validated", 0) / total * 100) if total > 0 else 0,
     }
 
-@router.get("/")
-async def list_evidence():
-    """List all evidence"""
-    return {"evidence": []}
-
-
-@router.post("/")
-async def create_evidence():
-    """Create new evidence"""
-    return {"status": "created"}
