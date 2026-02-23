@@ -1,0 +1,63 @@
+{
+  "_schema_version": "1.0",
+  "pack_id": "ECC-BASELINE-1.0",
+  "name_en": "ECC Baseline Compliance Pack",
+  "name_ar": "حزمة الامتثال الأساسية لضوابط الأمن السيبراني",
+  "framework": "ECC",
+  "framework_version": "1.0-2020",
+  "tier": "standard",
+  "description_en": "Pre-packaged ECC compliance solution covering all 114 essential cybersecurity controls with evidence templates, gap assessment workflow, and executive dashboard.",
+  "description_ar": "حل امتثال ECC جاهز يغطي جميع ضوابط الأمن السيبراني الأساسية (114 ضابطاً) مع قوالب الأدلة وسير عمل تقييم الفجوات ولوحة القيادة التنفيذية.",
+  "deliverables": [
+    {
+      "id": "D1",
+      "name_en": "Control Baseline Library",
+      "name_ar": "مكتبة الضوابط الأساسية",
+      "description_en": "All 114 ECC controls with bilingual descriptions, implementation guidance, and maturity indicators",
+      "description_ar": "جميع ضوابط ECC الـ114 مع أوصاف ثنائية اللغة وإرشادات التطبيق ومؤشرات النضج"
+    },
+    {
+      "id": "D2",
+      "name_en": "Evidence Catalog",
+      "name_ar": "كتالوج الأدلة",
+      "description_en": "Accepted evidence types, collection templates, and quality criteria per control",
+      "description_ar": "أنواع الأدلة المقبولة وقوالب الجمع ومعايير الجودة لكل ضابط"
+    },
+    {
+      "id": "D3",
+      "name_en": "Gap Assessment Workflow",
+      "name_ar": "سير عمل تقييم الفجوات",
+      "description_en": "Structured assessment process with scoring, priority ranking, and remediation roadmap",
+      "description_ar": "عملية تقييم منهجية مع التسجيل والترتيب حسب الأولوية وخارطة طريق العلاج"
+    },
+    {
+      "id": "D4",
+      "name_en": "Executive Dashboard",
+      "name_ar": "لوحة القيادة التنفيذية",
+      "description_en": "Real-time compliance posture dashboard with bilingual reporting",
+      "description_ar": "لوحة متابعة الامتثال الآني مع التقارير ثنائية اللغة"
+    },
+    {
+      "id": "D5",
+      "name_en": "Audit-Ready Export",
+      "name_ar": "تصدير جاهز للتدقيق",
+      "description_en": "PDF and Excel compliance reports suitable for NCA submission",
+      "description_ar": "تقارير امتثال بصيغة PDF وExcel مناسبة لتقديمها للهيئة الوطنية للأمن السيبراني"
+    }
+  ],
+  "implementation": {
+    "estimated_weeks": 4,
+    "phases": [
+      {"week": 1, "activity_en": "Control baseline assessment and gap identification", "activity_ar": "تقييم الضوابط الأساسية وتحديد الفجوات"},
+      {"week": 2, "activity_en": "Evidence collection kickoff and owner assignment", "activity_ar": "إطلاق جمع الأدلة وتحديد المالكين"},
+      {"week": "3-4", "activity_en": "Remediation planning and dashboard setup", "activity_ar": "خطة العلاج وإعداد اللوحة التنفيذية"}
+    ]
+  },
+  "add_ons": ["AI_ASSISTANT", "CLIENT_DICTIONARY", "SOC_GRC_BRIDGE", "EXECUTIVE_REPORTING"],
+  "pricing_tier": "standard",
+  "sla": {
+    "onboarding_days": 5,
+    "support_response_hours": 4,
+    "uptime_sla_percent": 99.5
+  }
+}

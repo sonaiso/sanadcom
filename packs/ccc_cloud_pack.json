@@ -1,0 +1,57 @@
+{
+  "_schema_version": "1.0",
+  "pack_id": "CCC-CLOUD-1.0",
+  "name_en": "CCC Cloud Security Pack",
+  "name_ar": "حزمة أمن الحوسبة السحابية",
+  "framework": "CCC",
+  "framework_version": "1.0",
+  "tier": "standard",
+  "description_en": "Cloud Computing Controls compliance pack covering shared responsibility mapping, cloud evidence templates, and cloud-specific compliance reports.",
+  "description_ar": "حزمة امتثال ضوابط الحوسبة السحابية تشمل تعيين المسؤولية المشتركة وقوالب أدلة السحابة والتقارير الخاصة بالبيئة السحابية.",
+  "deliverables": [
+    {
+      "id": "D1",
+      "name_en": "Cloud Shared Responsibility Matrix",
+      "name_ar": "مصفوفة المسؤولية المشتركة السحابية",
+      "description_en": "Detailed CSP vs. tenant responsibility mapping for each CCC control",
+      "description_ar": "تعيين تفصيلي لمسؤوليات مزود الخدمة السحابية مقابل المستأجر لكل ضابط CCC"
+    },
+    {
+      "id": "D2",
+      "name_en": "Cloud Provider Evidence Templates",
+      "name_ar": "قوالب أدلة مزود الخدمة السحابية",
+      "description_en": "Pre-built evidence templates for AWS, Azure, and Google Cloud configurations",
+      "description_ar": "قوالب أدلة جاهزة لتهيئات AWS وAzure وGoogle Cloud"
+    },
+    {
+      "id": "D3",
+      "name_en": "Cloud Risk Assessment",
+      "name_ar": "تقييم مخاطر السحابة",
+      "description_en": "Cloud-specific risk assessment framework with NCA CCC alignment",
+      "description_ar": "إطار تقييم المخاطر الخاص بالسحابة متوافق مع ضوابط NCA CCC"
+    },
+    {
+      "id": "D4",
+      "name_en": "Cloud Compliance Reports",
+      "name_ar": "تقارير الامتثال السحابي",
+      "description_en": "Bilingual cloud compliance posture reports for management and auditors",
+      "description_ar": "تقارير وضع الامتثال السحابي ثنائية اللغة للإدارة والمدققين"
+    }
+  ],
+  "prerequisites": ["ECC-BASELINE-1.0"],
+  "implementation": {
+    "estimated_weeks": 3,
+    "phases": [
+      {"week": 1, "activity_en": "Cloud inventory and CSP responsibility mapping", "activity_ar": "جرد الأصول السحابية وتعيين مسؤوليات المزود"},
+      {"week": 2, "activity_en": "Cloud evidence collection and gap analysis", "activity_ar": "جمع الأدلة السحابية وتحليل الفجوات"},
+      {"week": 3, "activity_en": "Report generation and management review", "activity_ar": "إنشاء التقارير ومراجعة الإدارة"}
+    ]
+  },
+  "add_ons": ["AI_ASSISTANT", "MANAGED_EVIDENCE_COLLECTION"],
+  "pricing_tier": "standard",
+  "sla": {
+    "onboarding_days": 3,
+    "support_response_hours": 4,
+    "uptime_sla_percent": 99.5
+  }
+}
