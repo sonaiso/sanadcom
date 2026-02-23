@@ -25,40 +25,6 @@ interface Organization {
   is_active: boolean;
 }
 
-interface Risk {
-  id: number;
-  risk_id: string;
-  risk_type: string;
-  title_en: string;
-  title_ar?: string;
-  likelihood_inherent: number;
-  impact_inherent: number;
-  risk_score_inherent?: number;
-  risk_level_inherent?: string;
-  status: string;
-}
-
-interface AuditFinding {
-  id: number;
-  finding_id: string;
-  title_en: string;
-  title_ar?: string;
-  severity: string;
-  risk_rating?: string;
-  status: string;
-  is_overdue: boolean;
-}
-
-interface DSARRequest {
-  id: number;
-  dsar_id: string;
-  data_subject_name: string;
-  request_date: string;
-  request_type: string;
-  response_deadline: string;
-  status?: string;
-}
-
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -73,9 +39,6 @@ export default function EnterpriseDashboard() {
   // State
   const [stats, setStats] = useState<DashboardStats>({ organizations: 0, risks: 0, audit_findings: 0, dsar_requests: 0 });
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [risks, setRisks] = useState<Risk[]>([]);
-  const [findings, setFindings] = useState<AuditFinding[]>([]);
-  const [dsarRequests, setDsarRequests] = useState<DSARRequest[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch data on mount

@@ -89,7 +89,7 @@ export default function RiskManagementPage() {
     fetcher
   );
 
-  const risks: RiskItem[] = Array.isArray(data) ? data : [];
+  const risks = useMemo<RiskItem[]>(() => Array.isArray(data) ? data : [], [data]);
 
   useEffect(() => {
     setPage(1);

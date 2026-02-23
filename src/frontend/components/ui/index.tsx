@@ -132,7 +132,7 @@ PriorityBadge.displayName = 'PriorityBadge';
 
 export const FrameworkBadge = React.memo<{ framework: Framework['id']; locale?: string }>(({
   framework,
-  locale = 'ar'
+  locale: _locale = 'ar'
 }) => {
   const frameworkConfig = {
     ECC: {
@@ -173,7 +173,7 @@ export const StatsCard = React.memo<{
   color: string;
   trend?: { value: number; isPositive: boolean };
   locale?: string;
-}>(({ title, value, icon, color, trend, locale = 'ar' }) => {
+}>(({ title, value, icon, color, trend, locale: _locale = 'ar' }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-center justify-between mb-4">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
 interface Vendor {
@@ -18,7 +18,7 @@ export default function VendorsPage() {
   const params = useParams();
   const locale = params?.locale as string;
   const isArabic = locale === 'ar';
-  const [vendors, setVendors] = useState<Vendor[]>([
+  const [vendors] = useState<Vendor[]>([
     { id: 1, vendor_id: 'VEND-001', name_en: 'Azure Cloud Services', name_ar: 'خدمات أزور السحابية', vendor_type: 'cloud_provider', criticality: 'high', risk_level: 'medium', status: 'active' },
     { id: 2, vendor_id: 'VEND-002', name_en: 'External Auditor Co', name_ar: 'شركة المدقق الخارجي', vendor_type: 'professional_services', criticality: 'medium', risk_level: 'low', status: 'active' }
   ]);

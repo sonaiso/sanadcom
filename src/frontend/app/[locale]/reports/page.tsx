@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import useSWR from 'swr';
 import apiClient from '@/lib/api-client';
@@ -8,7 +7,6 @@ import apiClient from '@/lib/api-client';
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data);
 
 export default function ReportsPage() {
-  const t = useTranslations('reports');
   const [selectedReport, setSelectedReport] = useState<string>('compliance');
   const [framework, setFramework] = useState<string>('');
   const [dateRange, setDateRange] = useState({
