@@ -17,7 +17,7 @@ from auth.models import User
 from auth.security import require_permission
 from controls.models import Control
 from evidence.models import Evidence
-from incident.models import SecurityIncident as Incident
+from incident.models import SecurityIncident
 from risk.models import Risk
 from backup.models import BackupJob, BackupStatus
 try:
@@ -132,10 +132,10 @@ async def get_dashboard_overview(
     total_controls = total_controls_result.scalar() or 0
     
     # Active incidents (last 30 days)
-    active_incidents_query = select(func.count(Incident.id)).where(
+    active_incidents_query = select(func.count(SecurityIncident.id)).where(
         and_(
-            Incident.status.in_(["open", "in_progress"]),
-            Incident.detected_at >= last_30_days
+            SecurityIncident.status.in_(["open", "in_progress"]),
+            SecurityIncident.detected_at >= last_30_days
         )
     )
     active_incidents_result = await db.execute(active_incidents_query)
@@ -285,15 +285,15 @@ async def get_incident_trends(
     
     # Query incidents grouped by date
     incidents_query = select(
-        func.date(Incident.detected_at).label('date'),
-        func.count(Incident.id).label('count'),
+        func.date(SecurityIncident.detected_at).label('date'),
+        func.count(SecurityIncident.id).label('count'),
         Incident.severity
     ).where(
-        Incident.detected_at >= start_date
+        SecurityIncident.detected_at >= start_date
     ).group_by(
-        func.date(Incident.detected_at),
+        func.date(SecurityIncident.detected_at),
         Incident.severity
-    ).order_by(func.date(Incident.detected_at))
+    ).order_by(func.date(SecurityIncident.detected_at))
     
     result = await db.execute(incidents_query)
     incidents_data = result.all()
