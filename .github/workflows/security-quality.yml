@@ -2,23 +2,8 @@
 # Runs on: Push, PR, Scheduled (weekly)
 
 name: Security & Quality Checks
-name: Security & Quality Checks (DISABLED)
-
-disabled: true
 
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - '**.py'
-      - 'pyproject.toml'
-      - 'requirements.txt'
-      - '.github/workflows/**'
-  pull_request:
-    branches: [main, develop]
-  schedule:
-    # Weekly security scan (every Monday at 00:00 UTC)
-    - cron: '0 0 * * 1'
   workflow_dispatch:
 
 env:
@@ -60,9 +45,8 @@ jobs:
         continue-on-error: true
 
       - name: Upload Bandit SARIF
-        if: ${{ exists('bandit-report.sarif') }}
-        if: ${{ exists('bandit-report.sarif') }}
-        if: ${{ exists('bandit-report.sarif') }}
+        if: always()
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: bandit-report.sarif
@@ -71,7 +55,7 @@ jobs:
       # Safety - Known vulnerabilities in dependencies
       - name: Check dependencies (Safety)
         run: |
-          safety check --json --output safety-report.json
+          safety scan --output json --save-as safety-report.json
         continue-on-error: true
 
       - name: Upload Safety report
@@ -94,7 +78,7 @@ jobs:
 
       # Trivy - Container & filesystem scanning
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -103,9 +87,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy SARIF
-        if: ${{ exists('trivy-results.sarif') }}
-        if: ${{ exists('trivy-results.sarif') }}
-        if: ${{ exists('trivy-results.sarif') }}
+        if: always()
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif

@@ -57,21 +57,8 @@ jobs:
       - name: Install dependencies
         run: |
           cd src/backend
-          python -m pip install --upgrade pip
-          # Install only essential packages for API testing (skip ML/AI packages to save disk space)
-          pip install fastapi==0.109.0 uvicorn==0.27.0 python-multipart==0.0.6
-          pip install sqlalchemy==2.0.25 asyncpg==0.29.0 psycopg2-binary==2.9.9 alembic==1.13.1 aiosqlite==0.19.0
-          pip install redis==5.0.1 aioredis==2.0.1
-          pip install pydantic==2.5.3 pydantic-settings==2.1.0 email-validator==2.1.0
-          pip install python-jose[cryptography]==3.3.0 passlib[bcrypt]==1.7.4 python-dotenv==1.0.0
-          pip install cryptography==41.0.7 PyJWT==2.8.0 pyotp==2.9.0 qrcode==7.4.2 pillow==10.2.0
-          pip install azure-identity==1.15.0 azure-keyvault-secrets==4.7.0
-          pip install httpx==0.27.2 aiohttp==3.9.1
-          pip install pandas==2.1.4 openpyxl==3.1.2
-          pip install apscheduler==3.10.4
-          pip install pytest==7.4.4 pytest-asyncio==0.23.3 pytest-cov==4.1.0
-          pip install black==23.12.1 flake8==7.0.0
-          echo "✅ Installed essential packages for API testing (skipped ML/AI packages)"
+          pip install -r requirements.txt
+          pip install pytest==7.4.4 pytest-asyncio==0.23.3 pytest-cov==4.1.0 black==23.12.1 flake8==7.0.0
 
       - name: Run migrations
         env:
@@ -106,6 +93,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.11.1"
+          cache: "npm"
+          cache-dependency-path: src/frontend/package-lock.json
 
       - name: Install dependencies
         run: |
