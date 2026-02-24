@@ -2,9 +2,6 @@
 # Runs on: Push, PR, Scheduled (weekly)
 
 name: Security & Quality Checks
-name: Security & Quality Checks (DISABLED)
-
-disabled: true
 
 on:
   push:
@@ -60,10 +57,8 @@ jobs:
         continue-on-error: true
 
       - name: Upload Bandit SARIF
-        if: ${{ exists('bandit-report.sarif') }}
-        if: ${{ exists('bandit-report.sarif') }}
-        if: ${{ exists('bandit-report.sarif') }}
-        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: bandit-report.sarif
           category: bandit
@@ -103,10 +98,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy SARIF
-        if: ${{ exists('trivy-results.sarif') }}
-        if: ${{ exists('trivy-results.sarif') }}
-        if: ${{ exists('trivy-results.sarif') }}
-        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
           category: trivy
