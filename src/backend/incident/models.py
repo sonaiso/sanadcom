@@ -2,7 +2,7 @@
 Incident Response models for NCA ECC-IS-5 compliance.
 """
 from sqlalchemy import Column, String, Boolean, DateTime, Integer, ForeignKey, Text, Enum as SQLEnum, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
@@ -46,7 +46,7 @@ class SecurityIncident(Base):
     """Security incidents (NCA ECC-IS-5)"""
     __tablename__ = "security_incidents"
     
-    incident_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    incident_id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     incident_number = Column(String(50), unique=True, nullable=False)  # INC-2026-001
     
     # Classification
@@ -97,9 +97,9 @@ class SecurityIncident(Base):
     sdaia_reported_at = Column(DateTime)
     
     # Team
-    reported_by = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
-    assigned_to = Column(UUID(as_uuid=True), ForeignKey('users.user_id'))
-    incident_commander = Column(UUID(as_uuid=True), ForeignKey('users.user_id'))
+    reported_by = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
+    assigned_to = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'))
+    incident_commander = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'))
     
     # Relationships
     reporter = relationship("User", foreign_keys=[reported_by])
@@ -111,7 +111,7 @@ class IncidentPlaybook(Base):
     """Incident response playbooks (NCA ECC-IS-5)"""
     __tablename__ = "incident_playbooks"
     
-    playbook_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    playbook_id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name_en = Column(String(255), nullable=False)
     name_ar = Column(String(255), nullable=False)
     category = Column(SQLEnum(IncidentCategory), nullable=False)
@@ -130,7 +130,7 @@ class IncidentPlaybook(Base):
     escalation_contacts = Column(JSON)  # [{role, contact}]
     
     # Metadata
-    created_by = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
+    created_by = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
