@@ -25,7 +25,7 @@ Launch a complete development environment in your browser:
 
 **No installation required!** All dependencies and services are pre-configured.
 
-📖 **New to Codespaces?** See [CODESPACES_GUIDE.md](CODESPACES_GUIDE.md) for detailed instructions.
+📖 **New to Codespaces?** See [CODESPACES_GUIDE.md](docs/setup/CODESPACES_GUIDE.md) for detailed instructions.
 
 ### Option 2: Local Development
 
@@ -75,79 +75,108 @@ This will check:
 sanadcom/
 │
 ├── README.md                          # Project overview
+├── CHANGELOG.md                       # Version history
+├── CONTRIBUTING.md                    # Contribution guide
+├── SECURITY.md                        # Security policy
+├── QUICK_START.md                     # Getting started
+├── QUICK_REFERENCE.md                 # Developer quick reference
+├── SYSTEM_OVERVIEW.md                 # Comprehensive system docs
+├── ARCHITECTURE_DIAGRAMS.md           # Visual architecture guide
+├── DIRECTORY_GUIDE.md                 # File-by-file directory guide
+├── DOCUMENTATION_INDEX.md             # Documentation index
 ├── LICENSE
-├── .gitignore
+├── Makefile                           # Build & dev automation
+├── docker-compose.yml                 # Development stack
 │
-├── docs/                              # Documentation
+├── docs/                              # All documentation
+│   ├── setup/                         # Setup & deployment guides
+│   │   ├── CODESPACES_GUIDE.md
+│   │   ├── DEPLOYMENT_GUIDE.md
+│   │   └── ...
+│   ├── features/                      # Feature implementation docs
+│   │   ├── AI_GOVERNANCE_MODULE_COMPLETE.md
+│   │   ├── EVIDENCE_APPROVAL_IMPLEMENTATION.md
+│   │   └── ...
+│   ├── releases/                      # Release notes & fix summaries
+│   │   ├── PRODUCTION_COMPLETION_SUMMARY.md
+│   │   └── ...
+│   ├── project/                       # Project status & progress
+│   │   ├── PROJECT_STATUS.md
+│   │   └── ...
+│   ├── security/                      # Security attestation & audit docs
+│   │   ├── SECURITY-ATTESTATION.md
+│   │   └── ...
+│   ├── guides/                        # User & professional guides
+│   │   ├── PROFESSIONAL_PLATFORM_GUIDE.md
+│   │   └── ...
+│   ├── demos/                         # HTML demo files
+│   │   ├── demo.html
+│   │   └── ...
 │   ├── architecture/                  # System architecture
+│   ├── compliance/                    # Compliance documentation
+│   ├── certification/                 # Certification matrices
+│   ├── policies/                      # Security policies
+│   ├── training/                      # Training modules
 │   ├── deliverables/                  # 12 Key deliverables
 │   ├── user-guides/                   # User manuals
-│   └── api/                           # API documentation
+│   ├── api/                           # API documentation
+│   ├── engineering/                   # Engineering guides
+│   ├── executive/                     # Executive documents
+│   └── ai/                            # AI/RAG documentation
 │
 ├── data/                              # Regulatory Core (Deliverables 1-5)
 │   ├── controls/                      
 │   │   ├── ecc/                       # ECC Controls
 │   │   ├── ccc/                       # CCC Controls
-│   │   ├── pdpl/                      # PDPL Controls
-│   │   └── unified/                   # Unified Control Library
-│   ├── mappings/
-│   │   ├── ecc-ccc-baseline.yaml     # ECC↔CCC Baseline
-│   │   ├── ccc-delta.yaml            # CCC Delta Pack
-│   │   └── cross-framework-map.yaml
-│   ├── evidence/
-│   │   ├── catalog.yaml              # Evidence Master Catalog
-│   │   └── templates/
-│   ├── audit/
-│   │   └── test-procedures.yaml      # Audit Test Procedures
-│   └── pdpl/
-│       └── registers/                # PDPL Registers (RoPA, DSAR, etc.)
-│
-├── packs/                             # SICO Packs (Deliverable 6)
-│   ├── ecc-baseline/
-│   ├── ccc-cloud/
-│   └── pdpl-privacy/
-│
-├── reporting/                         # Executive Reporting (Deliverable 7)
-│   ├── templates/
-│   └── generators/
-│
-├── soc-grc-bridge/                    # SOC ↔ GRC Bridge (Deliverable 8)
-│   ├── incident-control-matrix.yaml
-│   ├── playbooks/
-│   └── integrations/
-│
-├── ai/                                # AI Engine (Deliverables 9-11)
-│   ├── knowledge-base/               # RAG Knowledge Base
-│   ├── rag/                          # RAG implementation
-│   ├── dictionary/                   # Client Dictionary Engine
-│   └── models/                       # BERT Adapters
-│
-├── playbooks/                         # Delivery Factory (Deliverable 12)
-│   ├── onboarding/
-│   ├── evidence-collection/
-│   ├── workshops/
-│   └── qa-checklists/
+│   │   └── pdpl/                      # PDPL Controls
+│   ├── mappings/                      # Cross-framework mappings
+│   └── evidence/                      # Evidence catalog & templates
 │
 ├── src/                               # Source Code
-│   ├── backend/                      # FastAPI Backend
-│   │   ├── api/
-│   │   ├── models/
-│   │   ├── services/
-│   │   └── main.py
-│   ├── frontend/                     # Next.js Frontend
-│   └── shared/
+│   ├── backend/                       # FastAPI Backend
+│   │   ├── core/                      # Config, DB, auth, middleware
+│   │   ├── controls/                  # Controls module
+│   │   ├── evidence/                  # Evidence module
+│   │   ├── reporting/                 # Reporting module
+│   │   ├── auth/                      # Authentication & RBAC
+│   │   ├── risk/                      # Risk management
+│   │   ├── incident/                  # Incident response
+│   │   ├── privacy/                   # PDPL privacy module
+│   │   ├── ai_governance/             # AI governance
+│   │   ├── audit/                     # Audit logging
+│   │   ├── backup/                    # Backup & DR
+│   │   ├── isms/                      # ISMS module
+│   │   ├── siem/                      # SIEM integration
+│   │   ├── migrations/                # Database migrations
+│   │   └── main.py                    # Application entry point
+│   └── frontend/                      # Next.js Frontend
+│       ├── app/                       # App Router pages
+│       ├── components/                # Reusable components
+│       ├── lib/                       # API client & utilities
+│       └── messages/                  # i18n translations (en/ar)
 │
-├── scripts/                           # Utility Scripts
+├── ai/                                # AI Engine (Deliverables 9-11)
+│   ├── rag/                           # RAG implementation
+│   └── model_registry/                # Model registry
+│
 ├── tests/                             # Tests
+│   ├── backend/                       # Backend API tests
+│   ├── ai/                            # AI/RAG tests
+│   └── security/                      # Security tests
+│
+├── scripts/                           # Utility & data loading scripts
+│   ├── debug/                         # Debugging & diagnostic scripts
+│   ├── load_sample_data.py
+│   ├── build_rag_index.py
+│   └── ...
+│
 ├── deployment/                        # Docker, K8s, CI/CD
 │   ├── docker-compose.yml
 │   ├── Dockerfile.backend
 │   ├── Dockerfile.frontend
-│   └── k8s/
+│   └── kubernetes/
 │
-└── config/                            # Configuration
-    ├── settings.yaml
-    └── env.example
+└── config/                            # Configuration files
 ```
 
 ---
