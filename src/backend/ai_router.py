@@ -19,7 +19,7 @@ else:
     try:
         from ai.rag.bilingual_retriever import BilingualRetriever
         AI_AVAILABLE = True
-    except ImportError:
+    except (ImportError, SyntaxError, AttributeError):
         AI_AVAILABLE = False
         BilingualRetriever = None
 

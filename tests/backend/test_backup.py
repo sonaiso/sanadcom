@@ -122,7 +122,7 @@ def test_recovery_status_enum():
 
 
 @pytest.mark.asyncio
-async def test_backup_job_creation_api(test_client):
+async def test_backup_job_creation_api():
     """Test backup job creation via API (requires auth)"""
     # This would require actual API testing with authentication
     # Placeholder for integration test
