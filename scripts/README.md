@@ -1,225 +1,128 @@
-# Automation Scripts
+# Utility Scripts
 
 ## SICO GRC Platform Utility Scripts
 
 This directory contains automation scripts for various platform operations.
 
-## Available Scripts
+## Directory Structure
 
-### Database Management
-
-#### `db-setup.sh`
-Initialize database and run migrations.
-```bash
-./scripts/db-setup.sh
+```
+scripts/
+├── debug/                          # Debugging & diagnostic scripts (dev only)
+│   ├── test_api.py                 # Quick API connectivity test
+│   ├── test_serialization.py       # Control serialization debug
+│   ├── test_async_db.py            # Async database connectivity test
+│   ├── test_control_6.py           # Control serialization debug
+│   ├── check_missing.py            # Check for missing controls
+│   ├── check_schema.py             # Check schema fields
+│   ├── fix_async_execute.py        # Async execute migration helper
+│   └── crud_endpoints_fix.py       # CRUD endpoint code snippets
+├── load_sample_data.py             # Load sample data (baseline)
+├── load_nca_controls.py            # Load NCA ECC/CCC/PDPL controls
+├── load_official_nca_controls.py   # Load official NCA control sets
+├── load_complete_controls.py       # Load complete control libraries
+├── load_comprehensive_data.py      # Load comprehensive demo data
+├── load_enterprise_demo.py         # Load enterprise demo data
+├── load_more_data.py               # Load additional data
+├── load_sample_evidence.py         # Load sample evidence
+├── load_data_direct.py             # Direct database data loader
+├── load_enterprise_sample_data.py  # Load enterprise sample data
+├── load_evidence_data.py           # Load evidence data
+├── load_missing_controls.py        # Load missing controls
+├── load_saudi_frameworks.py        # Load Saudi framework controls
+├── add_arabic_translations.py      # Add Arabic translations
+├── build_rag_index.py              # Build AI/RAG knowledge base index
+├── export_portable.py              # Export portable data package
+├── generate-attestation.py         # Generate security attestation
+├── generate_security_keys.ps1      # Generate security keys (Windows)
+├── production_readiness_validation.py  # Validate production readiness
+├── production_setup.py             # Production environment setup
+├── setup_security.py               # Security configuration setup
+├── validate_deployment.py          # Validate deployment
+├── validate_system.sh              # System validation (Linux/macOS)
+├── validate_system.ps1             # System validation (Windows)
+├── demo_platform.py                # Platform demonstration script
+├── start-demo.sh                   # Start demo environment
+├── start-dev.ps1                   # Start dev environment (Windows)
+├── deploy-launch.sh                # Deploy and launch script
+├── load_demo_data.ps1              # Load demo data (Windows)
+├── verify-complete-platform.sh     # Verify complete platform
+├── verify-launch.sh                # Verify launch readiness
+├── dev_setup.sh                    # Development setup
+├── setup.sh                        # General setup
+├── setup_git_config.sh             # Git configuration setup
+├── setup_git_config_auto.sh        # Automatic Git configuration
+├── check_conflicts.sh              # Check for Git conflicts
+├── quick-start.sh                  # Quick start script
+├── test-evidence-approval-setup.js # Evidence approval test setup
+└── test_phase_2.1.sh               # Phase 2.1 test script
 ```
 
-#### `db-backup.sh`
-Create database backup.
+## Common Operations
+
+### Load Initial Data
 ```bash
-./scripts/db-backup.sh [output_directory]
+# Load NCA controls (ECC, CCC, PDPL)
+python scripts/load_nca_controls.py
+
+# Load sample data for development
+python scripts/load_sample_data.py
+
+# Load enterprise demo data
+python scripts/load_enterprise_demo.py
 ```
 
-#### `db-restore.sh`
-Restore database from backup.
+### Build AI Index
 ```bash
-./scripts/db-restore.sh [backup_file]
+python scripts/build_rag_index.py
 ```
 
----
-
-### Data Management
-
-#### `import-controls.py`
-Import control libraries from YAML/JSON files.
+### System Validation
 ```bash
-python scripts/import-controls.py --framework ecc --file data/controls/ecc-controls.yaml
+# Linux/macOS
+make validate
+# or
+./scripts/validate_system.sh
+
+# Windows
+.\scripts\validate_system.ps1
 ```
 
-#### `import-evidence.py`
-Import evidence templates into the system.
+### Demo Environment
 ```bash
-python scripts/import-evidence.py --file data/evidence/evidence-catalog.yaml
+./scripts/start-demo.sh
 ```
-
-#### `export-compliance-data.py`
-Export compliance data for reporting or backup.
-```bash
-python scripts/export-compliance-data.py --format excel --output reports/compliance-export.xlsx
-```
-
----
-
-### AI/ML Operations
-
-#### `build-knowledge-base.py`
-Build and index the AI knowledge base.
-```bash
-python scripts/build-knowledge-base.py --source ai/knowledge-base/documents/ --output ai/knowledge-base/embeddings/
-```
-
-#### `train-adapter.py`
-Train client-specific BERT adapter.
-```bash
-python scripts/train-adapter.py --client-id CLIENT_123 --data-path /path/to/training/data
-```
-
-#### `update-embeddings.py`
-Update vector embeddings for new documents.
-```bash
-python scripts/update-embeddings.py --documents-path ai/knowledge-base/documents/
-```
-
----
-
-### Deployment & DevOps
-
-#### `deploy.sh`
-Deploy application to specified environment.
-```bash
-./scripts/deploy.sh [development|staging|production]
-```
-
-#### `health-check.sh`
-Check health of all services.
-```bash
-./scripts/health-check.sh
-```
-
-#### `setup-dev-env.sh`
-Setup complete development environment.
-```bash
-./scripts/setup-dev-env.sh
-```
-
----
-
-### Testing & Quality Assurance
-
-#### `run-tests.sh`
-Run complete test suite.
-```bash
-./scripts/run-tests.sh [backend|frontend|all]
-```
-
-#### `lint-code.sh`
-Run linters on codebase.
-```bash
-./scripts/lint-code.sh
-```
-
-#### `generate-test-data.py`
-Generate mock data for testing.
-```bash
-python scripts/generate-test-data.py --users 100 --controls 50 --evidence 200
-```
-
----
-
-### Reporting
-
-#### `generate-compliance-report.py`
-Generate compliance status report.
-```bash
-python scripts/generate-compliance-report.py --client-id CLIENT_123 --format pdf
-```
-
-#### `generate-executive-dashboard.py`
-Generate executive dashboard data.
-```bash
-python scripts/generate-executive-dashboard.py --period monthly
-```
-
----
-
-### Maintenance
-
-#### `cleanup-old-data.py`
-Clean up old logs and temporary files.
-```bash
-python scripts/cleanup-old-data.py --days 90
-```
-
-#### `rotate-logs.sh`
-Rotate application logs.
-```bash
-./scripts/rotate-logs.sh
-```
-
-#### `system-maintenance.sh`
-Run system maintenance tasks.
-```bash
-./scripts/system-maintenance.sh
-```
-
----
 
 ## Script Categories
 
-### Production Scripts
-Scripts safe to run in production environments.
-- `db-backup.sh`
-- `health-check.sh`
-- `generate-compliance-report.py`
+### Data Loading Scripts
+Scripts for populating the database with control and compliance data.
+- `load_sample_data.py` - Baseline sample data
+- `load_nca_controls.py` - NCA ECC/CCC/PDPL controls
+- `load_enterprise_demo.py` - Full enterprise demo dataset
 
-### Development Scripts
-Scripts for development and testing only.
-- `setup-dev-env.sh`
-- `generate-test-data.py`
-- `run-tests.sh`
+### Setup Scripts
+Scripts for configuring the development and production environment.
+- `dev_setup.sh` - Development environment setup
+- `production_setup.py` - Production environment configuration
+- `setup_security.py` - Security configuration
 
-### Administrative Scripts
-Scripts requiring elevated privileges.
-- `db-setup.sh`
-- `deploy.sh`
-- `system-maintenance.sh`
+### Validation Scripts
+Scripts for verifying system health and readiness.
+- `validate_system.sh` / `validate_system.ps1` - System prerequisites check
+- `validate_deployment.py` - Deployment validation
+- `production_readiness_validation.py` - Production readiness check
 
----
+### Debug Scripts (`debug/`)
+Diagnostic scripts for development troubleshooting. **Not for production use.**
+See [debug/README.md](debug/README.md) for details.
 
 ## Usage Guidelines
 
-### Before Running Scripts
-
-1. **Check Environment**: Ensure you're in the correct environment
-2. **Backup Data**: Create backups before running destructive operations
-3. **Review Parameters**: Verify all required parameters are provided
-4. **Test First**: Test in development before running in production
-
-### Security Considerations
-
-- Store credentials in environment variables, not in scripts
-- Use `.env` files for configuration
-- Never commit credentials to version control
-- Limit script execution to authorized users
-
-### Error Handling
-
-All scripts include:
-- Input validation
-- Error checking
-- Logging
-- Rollback capabilities (where applicable)
-
----
-
-## Development
-
-### Creating New Scripts
-
-1. Follow naming convention: `action-subject.sh` or `action_subject.py`
-2. Include header comment with purpose and usage
-3. Add error handling
-4. Document in this README
-5. Make shell scripts executable: `chmod +x script.sh`
-
-### Testing Scripts
-
-```bash
-# Test in isolated environment
-docker run --rm -it -v $(pwd):/app python:3.11 bash
-cd /app
-./scripts/your-script.sh
-```
+1. **Check Environment**: Ensure you're in the correct environment before running
+2. **Backup First**: Create backups before running data-modifying scripts
+3. **Development Only**: Scripts in `debug/` are for development use only
+4. **Windows Scripts**: Use `.ps1` variants on Windows, `.sh` on Linux/macOS
 
 ---
 

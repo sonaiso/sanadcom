@@ -9,6 +9,11 @@ import sys
 
 DB_PATH = Path(__file__).parent / "sico_grc.db"
 
+# Add scripts directory to path for data loading utilities
+_scripts_path = str(Path(__file__).parent.parent.parent / "scripts")
+if _scripts_path not in sys.path:
+    sys.path.insert(0, _scripts_path)
+
 def check_and_initialize_data():
     """Check if database has data, populate with complete control libraries if needed"""
     
