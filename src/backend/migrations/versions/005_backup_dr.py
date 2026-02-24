@@ -8,7 +8,6 @@ Implements NCA ECC-BC-1, ECC-BC-2 requirements
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = '005_backup_dr'
@@ -36,9 +35,9 @@ def upgrade():
         sa.Column('duration_seconds', sa.Integer(), nullable=True),
         sa.Column('retention_days', sa.Integer(), nullable=False, server_default='90'),
         sa.Column('expiry_date', sa.DateTime(timezone=True), nullable=True),
-        sa.Column('backup_metadata', postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column('backup_metadata', sa.JSON(), nullable=True),
         sa.Column('error_message', sa.Text(), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
         sa.Column('created_by', sa.String(), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
@@ -68,7 +67,7 @@ def upgrade():
         sa.Column('test_findings_ar', sa.Text(), nullable=True),
         sa.Column('corrective_actions', sa.Text(), nullable=True),
         sa.Column('corrective_actions_ar', sa.Text(), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
         sa.Column('conducted_by', sa.String(), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
@@ -87,9 +86,9 @@ def upgrade():
         sa.Column('scope_ar', sa.Text(), nullable=False),
         sa.Column('overall_rto_hours', sa.Integer(), nullable=False),
         sa.Column('overall_rpo_hours', sa.Integer(), nullable=False),
-        sa.Column('critical_systems', postgresql.JSON(astext_type=sa.Text()), nullable=False),
-        sa.Column('recovery_procedures', postgresql.JSON(astext_type=sa.Text()), nullable=False),
-        sa.Column('emergency_contacts', postgresql.JSON(astext_type=sa.Text()), nullable=False),
+        sa.Column('critical_systems', sa.JSON(), nullable=False),
+        sa.Column('recovery_procedures', sa.JSON(), nullable=False),
+        sa.Column('emergency_contacts', sa.JSON(), nullable=False),
         sa.Column('test_frequency_days', sa.Integer(), nullable=False, server_default='90'),
         sa.Column('last_tested', sa.DateTime(timezone=True), nullable=True),
         sa.Column('next_test_due', sa.DateTime(timezone=True), nullable=True),
@@ -97,7 +96,7 @@ def upgrade():
         sa.Column('approved_by', sa.String(), nullable=True),
         sa.Column('approved_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('active', sa.Boolean(), nullable=False, server_default='true'),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('created_by', sa.String(), nullable=True),
         sa.PrimaryKeyConstraint('id')
@@ -123,8 +122,3 @@ def downgrade():
     op.drop_index('ix_backup_jobs_status', 'backup_jobs')
     op.drop_index('ix_backup_jobs_job_name', 'backup_jobs')
     op.drop_table('backup_jobs')
-    
-    # Drop enums
-    op.execute('DROP TYPE IF EXISTS backuptype')
-    op.execute('DROP TYPE IF EXISTS backupstatus')
-    op.execute('DROP TYPE IF EXISTS recoverystatus')

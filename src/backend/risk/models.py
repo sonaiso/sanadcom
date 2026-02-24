@@ -2,7 +2,7 @@
 Risk Management models for NCA ECC-RM compliance.
 """
 from sqlalchemy import Column, String, Boolean, DateTime, Integer, ForeignKey, Text, Enum as SQLEnum, Float, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
@@ -45,7 +45,7 @@ class Risk(Base):
     """Risk register (NCA ECC-RM-1)"""
     __tablename__ = "risks"
     
-    risk_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    risk_id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     risk_number = Column(String(50), unique=True, nullable=False)  # RISK-2026-001
     
     # Classification
@@ -88,8 +88,8 @@ class Risk(Base):
     treatment_cost = Column(Integer)  # In SAR
     
     # Assignment
-    risk_owner = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
-    identified_by = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
+    risk_owner = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
+    identified_by = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
     
     # Timeline
     identified_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -110,11 +110,11 @@ class RiskAssessment(Base):
     """Risk assessment history (NCA ECC-RM-1)"""
     __tablename__ = "risk_assessments"
     
-    assessment_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    risk_id = Column(UUID(as_uuid=True), ForeignKey('risks.risk_id', ondelete='CASCADE'), nullable=False)
+    assessment_id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    risk_id = Column(Uuid(as_uuid=True), ForeignKey('risks.risk_id', ondelete='CASCADE'), nullable=False)
     
     # Assessment
-    assessed_by = Column(UUID(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
+    assessed_by = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'), nullable=False)
     assessed_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Scores at time of assessment
@@ -142,7 +142,7 @@ class ThirdPartyRisk(Base):
     """Third-party vendor risk (NCA ECC-RM-3)"""
     __tablename__ = "third_party_risks"
     
-    vendor_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    vendor_id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     vendor_name = Column(String(255), nullable=False)
     vendor_type = Column(String(100), nullable=False)  # cloud_provider, software_vendor, consultant
     
@@ -175,7 +175,7 @@ class ThirdPartyRisk(Base):
     review_frequency_days = Column(Integer, default=365)
     
     # Assignment
-    vendor_manager = Column(UUID(as_uuid=True), ForeignKey('users.user_id'))
+    vendor_manager = Column(Uuid(as_uuid=True), ForeignKey('users.user_id'))
     
     # Status
     is_active = Column(Boolean, default=True)
