@@ -1,6 +1,6 @@
 # AI/RAG Python Dependencies
 langchain==0.1.0
-langchain-community==0.0.13
+langchain-community==0.3.27
 sentence-transformers==2.3.1
 chromadb==0.4.22
 openai==1.10.0
