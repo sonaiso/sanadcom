@@ -7,6 +7,8 @@ import { useParams } from 'next/navigation';
 
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data);
 
+const MAX_CONTROLS_LIMIT = 500;
+
 interface FrameworkPageProps {
   frameworkCode: 'ECC' | 'CCC' | 'PDPL';
   frameworkName: {
@@ -40,7 +42,7 @@ export default function FrameworkPage({
   const isArabic = locale === 'ar';
 
   const { data: controls, isLoading } = useSWR(
-    `/api/v1/controls?framework=${frameworkCode}`,
+    `/api/v1/controls?framework=${frameworkCode}&limit=${MAX_CONTROLS_LIMIT}`,
     fetcher
   );
 
