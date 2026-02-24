@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
@@ -97,6 +100,28 @@ jobs:
           cd src/backend
           pytest ../../tests/backend --cov=. --cov-report=xml
 
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.11.1"
+
+      - name: Install dependencies
+        run: |
+          cd src/frontend
+          npm ci
+
+      - name: Run frontend tests
+        run: |
+          cd src/frontend
+          npm test -- --watchAll=false
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+
   frontend-build:
     runs-on: ubuntu-latest
     steps:
@@ -126,7 +151,7 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:8000
 
   docker-build:
-    needs: [backend-tests, frontend-build]
+    needs: [backend-tests, frontend-tests, frontend-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
