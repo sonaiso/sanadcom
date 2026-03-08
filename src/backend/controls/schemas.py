@@ -24,9 +24,9 @@ class ControlBase(BaseModel):
     procedure_guidance_en: Optional[str] = None
     procedure_guidance_ar: Optional[str] = None
     
-    priority: str = "medium"
-    status: str = "not_started"
-    maturity_level: int = 1
+    priority: Optional[str] = None
+    status: Optional[str] = None
+    maturity_level: Optional[int] = None
     
     evidence_types: Optional[List[str]] = None
     related_controls: Optional[Dict[str, List[str]]] = None
@@ -38,21 +38,25 @@ class ControlCreate(ControlBase):
 
 
 class ControlUpdate(BaseModel):
-    """Schema for updating a control (all fields optional)"""
+    """Schema for updating a control (all fields optional).
+    When 'status' is provided, the lifecycle transition rules are enforced.
+    """
     title_en: Optional[str] = None
     title_ar: Optional[str] = None
     description_en: Optional[str] = None
     description_ar: Optional[str] = None
     status: Optional[str] = None
     maturity_level: Optional[int] = None
+    priority: Optional[str] = None
 
 
 class ControlResponse(ControlBase):
     """Schema for control responses"""
     id: int
+    lifecycle_updated_at: Optional[datetime] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    
+
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
 

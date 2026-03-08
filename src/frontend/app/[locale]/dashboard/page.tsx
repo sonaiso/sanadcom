@@ -13,6 +13,8 @@ import { ComplianceGauge } from '@/components/dashboard/ComplianceGauge';
 import { ComplianceTrendChart } from '@/components/dashboard/ComplianceTrendChart';
 import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
 import { TaskWidget } from '@/components/dashboard/TaskWidget';
+import WidgetRenderer from '@/components/dynamic/WidgetRenderer';
+import { useDashboardLayout } from '@/lib/dynamic-config';
 import Link from 'next/link';
 import {
   LineChart,
@@ -32,6 +34,8 @@ export default function ProfessionalDashboard() {
   const params = useParams();
   const locale = (params?.locale as 'ar' | 'en') || 'en';
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const { data: dashboardLayout } = useDashboardLayout();
+  const hasDynamicLayout = (dashboardLayout?.length || 0) > 0;
 
   // Demo Data - Professional level
   const kpiData = {
@@ -199,6 +203,37 @@ export default function ProfessionalDashboard() {
         </div>
       </div>
 
+      {hasDynamicLayout ? (
+        <div className="grid grid-cols-12 gap-6">
+          {dashboardLayout?.map((layout) => {
+            const colSpan = Math.min(Math.max(layout.size?.w || 6, 1), 12);
+            return (
+              <div
+                key={layout.id}
+                className="col-span-12"
+                style={{ gridColumn: `span ${colSpan} / span ${colSpan}` }}
+              >
+                {layout.widget && (
+                  <WidgetRenderer
+                    widget={layout.widget}
+                    locale={locale}
+                    data={{
+                      kpiData,
+                      complianceFrameworks,
+                      risks,
+                      activities,
+                      tasks,
+                      complianceTrendData,
+                      incidents: [],
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <>
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         <StatCard
@@ -226,14 +261,16 @@ export default function ProfessionalDashboard() {
           icon="R"
           color="orange"
         />
-        <StatCard
-          title={locale === 'ar' ? 'الحوادث المفتوحة' : 'Open Incidents'}
-          value={kpiData.openIncidents.value}
-          change={kpiData.openIncidents.change}
-          trend={kpiData.openIncidents.trend}
-          icon="I"
-          color="red"
-        />
+        <Link href={`/${locale}/incidents`}>
+          <StatCard
+            title={locale === 'ar' ? 'الحوادث المفتوحة' : 'Open Incidents'}
+            value={kpiData.openIncidents.value}
+            change={kpiData.openIncidents.change}
+            trend={kpiData.openIncidents.trend}
+            icon="I"
+            color="red"
+          />
+        </Link>
         <StatCard
           title={locale === 'ar' ? 'عمليات التدقيق' : 'Pending Audits'}
           value={kpiData.pendingAudits.value}
@@ -365,7 +402,7 @@ export default function ProfessionalDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-5 gap-6">
         <Link href={`/${locale}/controls`}>
           <Card hover className="p-6 cursor-pointer group">
             <div className="flex items-center gap-4">
@@ -378,6 +415,42 @@ export default function ProfessionalDashboard() {
                 </h3>
                 <p className="text-sm text-gray-600">
                   {locale === 'ar' ? 'مراجعة وتحديث الضوابط' : 'Review and update controls'}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </Link>
+
+        <Link href={`/${locale}/incidents`}>
+          <Card hover className="p-6 cursor-pointer group border-2 border-red-100 bg-red-50/30">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-xs font-semibold text-red-700">
+                🚨
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg text-gray-900">
+                  {locale === 'ar' ? 'إدارة الحوادث' : 'Incident Response'}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {locale === 'ar' ? 'تتبع وإدارة الحوادث الأمنية' : 'Track and manage security incidents'}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </Link>
+
+        <Link href={`/${locale}/ai-governance`}>
+          <Card hover className="p-6 cursor-pointer group border-2 border-purple-100 bg-purple-50/30">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-xs font-semibold text-purple-700">
+                🤖
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg text-gray-900">
+                  {locale === 'ar' ? 'حوكمة الذكاء الاصطناعي' : 'AI Governance'}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {locale === 'ar' ? 'إدارة نماذج الذكاء الاصطناعي' : 'Manage AI models and compliance'}
                 </p>
               </div>
             </div>
@@ -420,6 +493,8 @@ export default function ProfessionalDashboard() {
           </Card>
         </Link>
       </div>
+        </>
+      )}
     </div>
   );
 }

@@ -8,7 +8,7 @@ from pathlib import Path
 # Add src/backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.database import Base
+from core.database import Base, resolve_sync_url
 from core.config import settings
 import os
 
@@ -26,7 +26,12 @@ try:
     from isms.models import ISMSPolicy, AssetInventory
     from training.models import TrainingCourse, TrainingEnrollment
     from audit.models import AuditFinding, AuditEngagement
+    from dynamic_config import models as _dynamic_config_models  # noqa: F401
     import enterprise_models  # Import all enterprise models
+    try:
+        from regulatory_versions import FrameworkVersion  # noqa: F401
+    except ImportError:
+        pass
 except ImportError as e:
     print(f"Warning: Could not import some models: {e}")
     print("Database metadata may be incomplete")
@@ -42,12 +47,11 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Override sqlalchemy.url from environment
-# Convert async URLs to sync for Alembic
-database_url = os.getenv("DATABASE_URL", settings.DATABASE_URL)
-if "postgresql+asyncpg://" in database_url:
-    database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
-elif "sqlite+aiosqlite://" in database_url:
-    database_url = database_url.replace("sqlite+aiosqlite://", "sqlite://")
+# Prefer DATABASE_URL_SYNC (already a sync URL), then fall back to
+# DATABASE_URL after stripping the asyncpg driver prefix.
+database_url = os.getenv("DATABASE_URL_SYNC") or resolve_sync_url(
+    os.getenv("DATABASE_URL", settings.DATABASE_URL)
+)
 config.set_main_option("sqlalchemy.url", database_url)
 
 
@@ -68,14 +72,14 @@ def run_migrations_offline() -> None:
 import asyncio
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode."""
-    # Handle async drivers (like aiosqlite) by using a synchronous engine for migrations
-    # or by wrapping the connection in an async-to-sync bridge.
-    # For simplicity in migrations, we'll convert the URL to a sync one if it's aiosqlite.
-    url = settings.DATABASE_URL
-    if "sqlite+aiosqlite" in url:
-        url = url.replace("sqlite+aiosqlite", "sqlite")
-    
+    """Run migrations in 'online' mode.
+
+    asyncpg is an async-only driver that Alembic cannot use directly.
+    We therefore derive the equivalent synchronous URL and build a
+    regular (sync) engine for migration execution.
+    """
+    url = config.get_main_option("sqlalchemy.url")
+
     from sqlalchemy import create_engine
     connectable = create_engine(url, poolclass=pool.NullPool)
 

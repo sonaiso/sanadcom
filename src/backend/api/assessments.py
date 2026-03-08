@@ -86,3 +86,4 @@ async def get_dashboard():
             }
         ]
     }
+__all__ = ["router"]
