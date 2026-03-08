@@ -146,25 +146,8 @@ async def update_evidence(
         error_message_ar=f"لم يتم العثور على الدليل {evidence_id}",
     )
 
-    evidence = await update_model(item=evidence, update_data=evidence_data, db=db)
-    """Update evidence (partial update)"""
-    query = select(Evidence).where(Evidence.evidence_id == evidence_id)
-    result = await db.execute(query)
-    evidence = result.scalar_one_or_none()
-    
-    if not evidence:
-        raise HTTPException(
-            status_code=404,
-            detail={
-                "message_en": f"Evidence {evidence_id} not found",
-                "message_ar": f"لم يتم العثور على الدليل {evidence_id}",
-            },
-        )
-    
-    # Update only provided fields
+    # Enforce strict lifecycle transitions for status/state before applying update
     update_data = evidence_data.model_dump(exclude_unset=True)
-
-    # Enforce strict lifecycle transitions for status/state
     if "status" in update_data:
         from core.lifecycle_transitions import EVIDENCE_TRANSITIONS
         current_status = getattr(evidence, "status")
@@ -184,12 +167,7 @@ async def update_evidence(
                 },
             )
 
-    for field, value in update_data.items():
-        setattr(evidence, field, value)
-
-    await db.commit()
-    await db.refresh(evidence)
-
+    evidence = await update_model(item=evidence, update_data=evidence_data, db=db)
     return evidence
 
 

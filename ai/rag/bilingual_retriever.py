@@ -177,30 +177,22 @@ class BilingualRetriever:
         key_str = json.dumps(key_data, sort_keys=True)
         return hashlib.md5(key_str.encode()).hexdigest()
     
-    def add_documents(self, documents: List[Document], batch_size: int = 50):
-        """Add new documents to vector store with batching"""
-        # Process documents in batches for efficiency
+    def add_documents(
+        self,
+        documents: "List[Document]",
+        batch_size: int = 50,
+    ) -> None:
+        """
+        Add documents to the vector store with batching for efficiency.
+
+        Args:
+            documents: List of Document objects to add
+            batch_size: Number of documents to process per batch
+        """
         for i in range(0, len(documents), batch_size):
             batch = documents[i:i + batch_size]
             self.vectorstore.add_documents(batch)
-        
-        # Persist once after all batches
+
+        # Persist once after all batches and invalidate the query cache
         self.vectorstore.persist()
-    
-    def add_documents(
-        self,
-        documents: List[str],
-        metadata: List[Dict[str, Any]],
-    ) -> None:
-        """
-        Add documents to the collection
-        
-        Args:
-            documents: List of document texts
-            metadata: List of document metadata
-        """
-        # TODO: Implement document ingestion
-        pass
-        
-        # Clear query cache after adding new documents
         self._query_cache.clear()
