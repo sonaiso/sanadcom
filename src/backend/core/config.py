@@ -6,7 +6,7 @@ Supports environment variables and .env file
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Union
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 
 
 class Settings(BaseSettings):
@@ -27,10 +27,41 @@ class Settings(BaseSettings):
             return [origin.strip() for origin in v.split(',')]
         return v
     
-      # Database
-    DATABASE_URL: str = "sqlite+aiosqlite:///./sico_grc.db"  # Async for application
-    DATABASE_URL_SYNC: str = "sqlite:///./sico_grc.db"  # Synchronous for direct SQL scripts
+    # Database – PostgreSQL is the only supported backend.
+    # Override via DATABASE_URL / DATABASE_URL_SYNC env vars or a .env file.
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/sico_grc"
+    DATABASE_URL_SYNC: str = "postgresql://postgres:postgres@localhost:5432/sico_grc"
     DATABASE_ECHO: bool = False
+
+    @model_validator(mode="after")
+    def derive_sync_url(self) -> "Settings":
+        """
+        Auto-derive DATABASE_URL_SYNC from DATABASE_URL whenever DATABASE_URL_SYNC
+        still matches its default value.
+
+        This means setting DATABASE_URL alone (e.g. in a .env file) is sufficient;
+        DATABASE_URL_SYNC is kept in sync automatically.
+        """
+        pg_async_default = "postgresql+asyncpg://postgres:postgres@localhost:5432/sico_grc"
+        if self.DATABASE_URL_SYNC == "postgresql://postgres:postgres@localhost:5432/sico_grc" \
+                and self.DATABASE_URL != pg_async_default:
+            sync = self.DATABASE_URL
+            sync = sync.replace("postgresql+asyncpg://", "postgresql://")
+            sync = sync.replace("postgres+asyncpg://", "postgresql://")
+            sync = sync.replace("postgres://", "postgresql://")
+            self.DATABASE_URL_SYNC = sync
+        return self
+
+    @property
+    def db_backend(self) -> str:
+        """
+        Return the active database backend as a lower-case string.
+        Always "postgresql" – SQLite is not supported.
+        """
+        url = self.DATABASE_URL.lower()
+        if "postgresql" in url or "postgres" in url:
+            return "postgresql"
+        return "unknown"
     
     # Vector Database
     VECTOR_DB_TYPE: str = "chroma"  # chroma or weaviate
@@ -66,8 +97,21 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         """Check if running in production mode."""
+        import os
+        if os.getenv("PYTEST_RUNNING") == "1" or os.getenv("PYTEST_CURRENT_TEST"):
+            return False
         return not self.DEBUG and "localhost" not in self.DATABASE_URL
     
+    # ── Email / SMTP (for approval notifications) ─────────────────────────────
+    # Set these in your .env or environment to enable outbound email.
+    # If not set the system logs a warning but does NOT crash.
+    EMAIL_HOST: str = ""           # e.g. smtp.gmail.com
+    EMAIL_PORT: int = 587
+    EMAIL_USER: str = ""           # SMTP username / sender address
+    EMAIL_PASS: str = ""           # SMTP password or app-password
+    EMAIL_USE_TLS: bool = True
+    EMAIL_FROM_NAME: str = "SICO GRC Platform"
+
     # Azure Key Vault (for production)
     AZURE_KEY_VAULT_URL: str = ""
     AZURE_CLIENT_ID: str = ""

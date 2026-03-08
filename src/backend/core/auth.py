@@ -6,9 +6,11 @@ Compliant with: NCA ECC-IS-3, PDPL Article 23, ISO 27001
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import os
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -16,7 +18,21 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 
-from ai.security.ai_security import AIRole, AIPermission, QueryContext
+# Try to import AI security - may not be available in all environments
+AI_SECURITY_AVAILABLE = False
+
+if TYPE_CHECKING:
+    from ai.security.ai_security import AIRole, AIPermission, QueryContext
+else:
+    try:
+        from ai.security.ai_security import AIRole, AIPermission, QueryContext
+        AI_SECURITY_AVAILABLE = True
+    except ImportError:
+        # Define placeholder classes when AI module is not available
+        AIRole = None
+        AIPermission = None
+        QueryContext = None
+        AI_SECURITY_AVAILABLE = False
 
 # JWT Configuration
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
@@ -24,8 +40,20 @@ JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 JWT_REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
-# Password hashing
+# Password hashing — plain bcrypt scheme with manual SHA-256 pre-hash.
+# passlib 1.7.4's built-in bcrypt_sha256 handler is incompatible with
+# bcrypt ≥ 5.0 (its internal wrap-bug probe sends >72-byte payloads that
+# bcrypt 5.0 rejects).  We replicate the same security property manually:
+# SHA-256 compresses any-length password to a fixed 32-byte digest which,
+# base64-encoded, is always 44 chars — well under bcrypt's 72-byte limit.
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _prehash_password(password: str) -> str:
+    """SHA-256 pre-hash a password so bcrypt never sees >72 bytes."""
+    return base64.b64encode(
+        hashlib.sha256(password.encode("utf-8")).digest()
+    ).decode("ascii")
 
 # HTTP Bearer token scheme
 security = HTTPBearer()
@@ -68,12 +96,12 @@ class TokenData(BaseModel):
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash"""
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(_prehash_password(plain_password), hashed_password)
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
+    """Hash a password using SHA-256 pre-hash + bcrypt (safe for any length)."""
+    return pwd_context.hash(_prehash_password(password))
 
 
 # ============================================================================
