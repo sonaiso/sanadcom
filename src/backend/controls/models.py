@@ -75,11 +75,7 @@ class Control(Base):
 
     # Control metadata
     priority = Column(String(20), default="medium")  # low, medium, high, critical
-    status = Column(
-        String(50),
-        default=ControlStatus.NOT_STARTED.value,
-        index=True,
-    )
+    status = Column(Enum(ControlStatus, native_enum=False), default=ControlStatus.NOT_STARTED, index=True)
     maturity_level = Column(Integer, default=1)  # 1-5 scale
 
     # JSON fields
