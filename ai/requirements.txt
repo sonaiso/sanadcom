@@ -2,8 +2,8 @@
 langchain==0.3.0.dev1
 langchain-community==0.3.27
 langchain==0.3.14
-langchain-community==0.3.14
-langchain-core==0.3.29
+langchain-community==0.3.27
+langchain-core==1.2.11
 sentence-transformers==2.3.1
 chromadb==0.4.22
 openai==1.10.0
