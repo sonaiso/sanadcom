@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 # Gracefully import Document - fall back to dataclass if langchain unavailable
 try:
-    from langchain.schema import Document  # type: ignore[import-not-found]
+    from langchain_core.documents import Document  # type: ignore[import-not-found]
     _LANGCHAIN_AVAILABLE = True
 except ImportError:
     @dataclass
