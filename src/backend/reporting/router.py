@@ -143,14 +143,16 @@ async def get_executive_dashboard(
             status_breakdown=data["statuses"],
         ))
 
-    # Get evidence statistics
-    evidence_query = select(func.count()).select_from(Evidence)
-    total_evidence = await db.scalar(evidence_query) or 0
-
-    pending_validations_query = select(func.count()).select_from(Evidence).where(
-        Evidence.status == EvidenceStatus.COLLECTED
+    # Get evidence statistics (total and pending validations) in one query
+    evidence_stats = await db.execute(
+        select(
+            func.count().label("total"),
+            func.count().filter(Evidence.status == EvidenceStatus.COLLECTED).label("pending"),
+        ).select_from(Evidence)
     )
-    pending_validations = await db.scalar(pending_validations_query) or 0
+    ev_row = evidence_stats.one()
+    total_evidence = ev_row.total or 0
+    pending_validations = ev_row.pending or 0
 
     # Get high priority gaps (non-compliant critical controls)
     gaps_query = select(Control).where(

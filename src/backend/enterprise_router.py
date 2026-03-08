@@ -419,15 +419,21 @@ class DataBreachUpdate(BaseModel):
 async def get_organizations(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
-    org_type: Optional[str] = None
+    org_type: Optional[str] = None,
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
 ):
     """Get all organizations with optional filtering (requires authentication)"""
     query = "SELECT * FROM organizations WHERE 1=1"
-    params = {}
+    params: dict = {}
 
     if org_type:
         query += " AND org_type = :org_type"
         params['org_type'] = org_type
+
+    query += " LIMIT :limit OFFSET :offset"
+    params['limit'] = limit
+    params['offset'] = offset
 
     result = await db.execute(text(query), params)
     return [dict(row._mapping) for row in result]
@@ -566,11 +572,13 @@ async def get_users(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
     role: Optional[str] = None,
-    organization_id: Optional[int] = None
+    organization_id: Optional[int] = None,
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
 ):
     """Get all users with optional filtering (requires authentication)"""
     query = "SELECT * FROM users WHERE 1=1"
-    params = {}
+    params: dict = {}
 
     if role:
         query += " AND role = :role"
@@ -579,6 +587,10 @@ async def get_users(
     if organization_id:
         query += " AND organization_id = :org_id"
         params['org_id'] = organization_id
+
+    query += " LIMIT :limit OFFSET :offset"
+    params['limit'] = limit
+    params['offset'] = offset
 
     result = await db.execute(text(query), params)
     return [dict(row._mapping) for row in result]
@@ -593,11 +605,13 @@ async def get_assets(
     db: AsyncSession = Depends(get_db),
     asset_type: Optional[str] = None,
     criticality: Optional[str] = None,
-    organization_id: Optional[int] = None
+    organization_id: Optional[int] = None,
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
 ):
     """Get assets with filtering"""
     query = "SELECT * FROM assets WHERE is_active = 1"
-    params = {}
+    params: dict = {}
 
     if asset_type:
         query += " AND asset_type = :asset_type"
@@ -610,6 +624,10 @@ async def get_assets(
     if organization_id:
         query += " AND organization_id = :org_id"
         params['org_id'] = organization_id
+
+    query += " LIMIT :limit OFFSET :offset"
+    params['limit'] = limit
+    params['offset'] = offset
 
     result = await db.execute(text(query), params)
     return [dict(row._mapping) for row in result]
@@ -746,11 +764,13 @@ async def get_risks(
     risk_type: Optional[str] = None,
     risk_level: Optional[str] = None,
     status: Optional[str] = None,
-    organization_id: Optional[int] = None
+    organization_id: Optional[int] = None,
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
 ):
     """Get enterprise risks with filtering"""
     query = "SELECT * FROM risks WHERE 1=1"
-    params = {}
+    params: dict = {}
 
     if risk_type:
         query += " AND risk_type = :risk_type"
@@ -768,6 +788,10 @@ async def get_risks(
         query += " AND organization_id = :org_id"
         params['org_id'] = organization_id
 
+    query += " LIMIT :limit OFFSET :offset"
+    params['limit'] = limit
+    params['offset'] = offset
+
     result = await db.execute(text(query), params)
     return [dict(row._mapping) for row in result]
 
@@ -775,10 +799,18 @@ async def get_risks(
 @router.get("/risks/dashboard")
 async def get_risk_dashboard(db: AsyncSession = Depends(get_db)):
     """Get risk dashboard metrics"""
-    total = ((await db.execute(text("SELECT COUNT(*) FROM risks"))).fetchone() or (0,))[0]
-    critical = ((await db.execute(text("SELECT COUNT(*) FROM risks WHERE risk_level_inherent = 'critical'"))).fetchone() or (0,))[0]
-    high = ((await db.execute(text("SELECT COUNT(*) FROM risks WHERE risk_level_inherent = 'high'"))).fetchone() or (0,))[0]
-    within_appetite = ((await db.execute(text("SELECT COUNT(*) FROM risks WHERE is_within_appetite = 1"))).fetchone() or (0,))[0]
+    row = (await db.execute(text("""
+        SELECT
+            COUNT(*) AS total,
+            COUNT(CASE WHEN risk_level_inherent = 'critical' THEN 1 END) AS critical,
+            COUNT(CASE WHEN risk_level_inherent = 'high'     THEN 1 END) AS high,
+            COUNT(CASE WHEN is_within_appetite = 1           THEN 1 END) AS within_appetite
+        FROM risks
+    """))).fetchone()
+    total          = row[0] if row else 0
+    critical       = row[1] if row else 0
+    high           = row[2] if row else 0
+    within_appetite = row[3] if row else 0
 
     return {
         "total_risks": total,
@@ -1188,11 +1220,20 @@ async def delete_audit_finding(
 @router.get("/audit-findings/dashboard")
 async def get_findings_dashboard(db: AsyncSession = Depends(get_db)):
     """Get audit findings dashboard"""
-    total = ((await db.execute(text("SELECT COUNT(*) FROM audit_findings"))).fetchone() or (0,))[0]
-    critical = ((await db.execute(text("SELECT COUNT(*) FROM audit_findings WHERE severity = 'critical'"))).fetchone() or (0,))[0]
-    high = ((await db.execute(text("SELECT COUNT(*) FROM audit_findings WHERE severity = 'high'"))).fetchone() or (0,))[0]
-    overdue = ((await db.execute(text("SELECT COUNT(*) FROM audit_findings WHERE is_overdue = 1"))).fetchone() or (0,))[0]
-    open_findings = ((await db.execute(text("SELECT COUNT(*) FROM audit_findings WHERE status IN ('open', 'in_progress')"))).fetchone() or (0,))[0]
+    row = (await db.execute(text("""
+        SELECT
+            COUNT(*) AS total,
+            COUNT(CASE WHEN severity = 'critical'               THEN 1 END) AS critical,
+            COUNT(CASE WHEN severity = 'high'                   THEN 1 END) AS high,
+            COUNT(CASE WHEN is_overdue = 1                      THEN 1 END) AS overdue,
+            COUNT(CASE WHEN status IN ('open', 'in_progress')   THEN 1 END) AS open_findings
+        FROM audit_findings
+    """))).fetchone()
+    total         = row[0] if row else 0
+    critical      = row[1] if row else 0
+    high          = row[2] if row else 0
+    overdue       = row[3] if row else 0
+    open_findings = row[4] if row else 0
 
     return {
         "total_findings": total,

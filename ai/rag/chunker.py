@@ -5,6 +5,7 @@ Splits controls into logical sections for RAG
 
 from typing import List, Dict, Any, TYPE_CHECKING
 from dataclasses import dataclass
+import re
 
 _LANGCHAIN_AVAILABLE = False
 
@@ -20,6 +21,9 @@ else:
             page_content: str
             metadata: Dict[str, Any]
         _LANGCHAIN_AVAILABLE = False
+
+# Compiled once at module load; used by ControlChunker._split_long_text
+_SENTENCE_SPLIT_RE = re.compile(r'\.\s+|\.\n+|\.(?=$)', re.MULTILINE)
 
 
 class ControlChunker:
@@ -46,9 +50,8 @@ class ControlChunker:
         
         # Split on common sentence delimiters (works for both languages)
         # Arabic uses '.' and English uses '. '
-        import re
         # Split on period followed by space or newline, or just period at end
-        sentences = re.split(r'\.\s+|\.\n+|\.(?=$)', text)
+        sentences = _SENTENCE_SPLIT_RE.split(text)
         chunks = []
         current_chunk = []
         current_size = 0
