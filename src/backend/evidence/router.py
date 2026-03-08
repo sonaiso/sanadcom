@@ -56,8 +56,14 @@ async def list_evidence(
     if evidence_type:
         query = query.where(Evidence.evidence_type == evidence_type)
 
-    # Count total
-    count_query = select(func.count()).select_from(query.subquery())
+    # Count total using a direct filtered count query (avoids subquery overhead)
+    count_query = select(func.count()).select_from(Evidence)
+    if control_id:
+        count_query = count_query.where(Evidence.control_id == control_id)
+    if status:
+        count_query = count_query.where(Evidence.status == status)
+    if evidence_type:
+        count_query = count_query.where(Evidence.evidence_type == evidence_type)
     total = await db.scalar(count_query)
 
     # Apply pagination

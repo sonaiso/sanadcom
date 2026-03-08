@@ -62,9 +62,9 @@ def test_model_indexes():
         # Check controls model
         with open("src/backend/controls/models.py") as f:
             content = f.read()
-            if 'domain = Column(String(100), nullable=False, index=True)' in content:
+            if 'domain = Column(String(200), nullable=False, index=True)' in content:
                 print("  ✅ Controls.domain index added")
-            if 'status = Column(Enum(ControlStatus), default=ControlStatus.NOT_STARTED, index=True)' in content:
+            if 'status = Column(Enum(ControlStatus, native_enum=False), default=ControlStatus.NOT_STARTED, index=True)' in content:
                 print("  ✅ Controls.status index added")
     except FileNotFoundError:
         print("  ❌ Controls model file not found")
@@ -75,7 +75,7 @@ def test_model_indexes():
             content = f.read()
             if 'control_id = Column(String(50), ForeignKey("controls.control_id"), nullable=False, index=True)' in content:
                 print("  ✅ Evidence.control_id index added")
-            if 'status = Column(Enum(EvidenceStatus), default=EvidenceStatus.PENDING, index=True)' in content:
+            if 'status = Column(Enum(EvidenceStatus, native_enum=False), default=EvidenceStatus.PENDING, index=True)' in content:
                 print("  ✅ Evidence.status index added")
     except FileNotFoundError:
         print("  ❌ Evidence model file not found")
