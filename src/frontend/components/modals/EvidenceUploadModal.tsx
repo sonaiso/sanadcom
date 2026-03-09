@@ -47,7 +47,7 @@ export default function EvidenceUploadModal({
     setLoadingControls(true);
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/v1/controls",
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/controls`,
         {
           params: { limit: 1000 }, // Get all controls for dropdown
         },
@@ -192,7 +192,7 @@ export default function EvidenceUploadModal({
         formDataObj.append("file", file);
         // Example: upload to /api/v1/evidence/upload (adjust as needed)
         await axios.post(
-          "http://localhost:8000/api/v1/evidence/upload",
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/evidence/upload`,
           formDataObj,
           {
             headers: {
@@ -229,7 +229,7 @@ export default function EvidenceUploadModal({
       };
 
       const response = await axios.post(
-        "http://localhost:8000/api/v1/evidence",
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/evidence`,
         evidenceData,
         {
           headers: {

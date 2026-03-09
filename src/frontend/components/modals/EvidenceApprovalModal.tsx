@@ -55,7 +55,7 @@ export default function EvidenceApprovalModal({
       }
 
       const response = await axios.post(
-        `http://localhost:8000/api/v1/evidence/${evidenceId}/validate`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/evidence/${evidenceId}/validate`,
         {
           approved: isApprove, // Backend expects boolean
           validation_notes: comments,
