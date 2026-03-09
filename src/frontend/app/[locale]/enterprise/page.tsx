@@ -68,7 +68,7 @@ export default function EnterpriseDashboard() {
   const locale = params?.locale as string;
   const isArabic = locale === 'ar';
 
-  const API_BASE = 'http://localhost:8000/api/v1/enterprise';
+  const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/enterprise`;
 
   // State
   const [stats, setStats] = useState<DashboardStats>({ organizations: 0, risks: 0, audit_findings: 0, dsar_requests: 0 });

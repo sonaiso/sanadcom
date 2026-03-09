@@ -96,11 +96,12 @@ export default function ControlsPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
         const [allRes, eccRes, cccRes, pdplRes] = await Promise.all([
-          fetch("http://localhost:8000/api/v1/controls?limit=1"),
-          fetch("http://localhost:8000/api/v1/controls?framework=ECC&limit=1"),
-          fetch("http://localhost:8000/api/v1/controls?framework=CCC&limit=1"),
-          fetch("http://localhost:8000/api/v1/controls?framework=PDPL&limit=1"),
+          fetch(`${apiBase}/api/v1/controls?limit=1`),
+          fetch(`${apiBase}/api/v1/controls?framework=ECC&limit=1`),
+          fetch(`${apiBase}/api/v1/controls?framework=CCC&limit=1`),
+          fetch(`${apiBase}/api/v1/controls?framework=PDPL&limit=1`),
         ]);
         const [all, ecc, ccc, pdpl] = await Promise.all([
           allRes.json(),

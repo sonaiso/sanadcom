@@ -93,7 +93,7 @@ export default function RiskAssessmentModal({
       const token = sessionStorage.getItem('access_token');
 
       const response = await axios.post(
-        `http://localhost:8000/api/v1/risks/${riskId}/assess`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/risks/${riskId}/assess`,
         {
           likelihood: formData.likelihood,
           impact: formData.impact,

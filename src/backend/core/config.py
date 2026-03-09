@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     # API
     API_V1_PREFIX: str = "/api/v1"
-    CORS_ORIGINS: Union[List[str], str] = "http://localhost:3000,http://localhost:8000"
+    CORS_ORIGINS: Union[List[str], str] = "http://localhost:5000,http://localhost:3000,http://localhost:8000"
     
     @field_validator('CORS_ORIGINS', mode='before')
     @classmethod

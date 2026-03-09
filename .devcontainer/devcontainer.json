@@ -56,9 +56,9 @@
       }
     }
   },
-  "forwardPorts": [3000, 8000, 5432, 6379, 8001],
+  "forwardPorts": [5000, 8000, 5432, 6379, 8001],
   "portsAttributes": {
-    "3000": {
+    "5000": {
       "label": "Frontend (Next.js)",
       "onAutoForward": "notify"
     },
@@ -80,6 +80,7 @@
     }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/configure-urls.sh",
   "onCreateCommand": "echo 'Container created successfully' && python3 --version && node --version",
   "containerEnv": {
     "DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/grc_platform",

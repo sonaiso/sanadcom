@@ -179,7 +179,7 @@ export default function ControlEditModal({
       }
 
       const response = await axios.patch(
-        `http://localhost:8000/api/v1/controls/${controlData.control_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/controls/${controlData.control_id}`,
         requestBody,
         {
           headers: {
