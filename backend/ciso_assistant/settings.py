@@ -700,3 +700,32 @@ KAFKA_RISK_EVENTS_TOPIC = os.environ.get(
     "KAFKA_RISK_EVENTS_TOPIC", "sanadcom.risk.events"
 )
 
+# ── Sentry Error Monitoring ──────────────────────────────────────────────────
+# Set SENTRY_DSN to your project DSN to enable Sentry error tracking.
+# Leave blank (default) to disable Sentry entirely.
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "production")
+SENTRY_TRACES_SAMPLE_RATE = float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1"))
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+    import logging as _logging
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        integrations=[
+            DjangoIntegration(),
+            LoggingIntegration(
+                level=_logging.INFO,
+                event_level=_logging.ERROR,
+            ),
+        ],
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        # Do not send PII (user IPs, request bodies) by default.
+        send_default_pii=False,
+    )
+    logger.info("Sentry error monitoring enabled", environment=SENTRY_ENVIRONMENT)
+

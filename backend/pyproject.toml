@@ -50,6 +50,7 @@ regex = "^2025.11.3"
 prometheus-client = "^0.22.1"
 jira = "^3.10.5"
 cryptography = "^46.0.5"
+sentry-sdk = {version = "^2.29.1", extras = ["django"]}
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "4.11.1"
