@@ -19,6 +19,7 @@
 9. [Milestone Timeline Plan](#9-milestone-timeline-plan)
 10. [Product Readiness — Global GRC Platform Comparison](#10-product-readiness--global-grc-platform-comparison)
 11. [Conclusion](#11-conclusion)
+12. [Cybersecurity XAI Expansion Readiness Plan](#12-cybersecurity-xai-expansion-readiness-plan)
 
 ---
 
@@ -690,4 +691,63 @@ Upon completion of all remaining milestones, Sanadcom will reach **90–95% read
 
 The remaining ~30% effort is concentrated in **operational readiness** (CI/CD, monitoring, deployment, backup) and **ecosystem integrations** (SIEM, cloud posture, automated evidence) — areas that are engineering-intensive but architecturally straightforward given the existing foundation.
 
+In practical market terms, the current product should be positioned as a **GRC-native Explainable Cyber Intelligence Platform** on a clear path toward deeper SIEM/XDR/SOAR capability.
 
+
+---
+
+## 12. Cybersecurity XAI Expansion Readiness Plan
+
+This section implements the strategic plan for evolving Sanadcom from a mature GRC and cyber-risk platform into a full Cybersecurity XAI platform.
+
+### 12.1 Current Positioning
+
+Sanadcom is currently closer to an advanced **GRC/Cyber Risk Platform** than a full **SIEM + XDR + SOAR + Knowledge Graph + Explainable Reasoning** platform.
+
+Existing strengths:
+- Mature GRC engine across compliance, risk, evidence, governance, incidents, assets, and reporting.
+- Full Arabic/English support with RTL.
+- API-first architecture with integrations, automation, and event-stream capabilities.
+- Strong base to build **Cybersecurity XAI** capabilities.
+
+### 12.2 Major Capability Gaps for Full Vision
+
+- **SIEM maturity gap:** large-scale ingest, parsing/normalization, real-time correlation, and time-series analytics.
+- **XDR maturity gap:** deep endpoint/email/identity/network integrations with production response loops.
+- **SOAR maturity gap:** production-grade playbooks, approvals, secret handling, rollback, and auditable orchestration.
+- **Knowledge Graph / Risk Ontology gap:** unified relationship model across asset, threat, control, incident, evidence, detection, vulnerability, and business impact.
+- **Explainable Reasoning gap:** traceable recommendation engine linked to evidence, rules, and graph relationships.
+- **Enterprise operations gap:** observability, SLAs, tenant isolation, scale performance, and security hardening.
+
+### 12.3 Readiness Windows
+
+Readiness depends on target scope:
+
+1. **Commercial MVP (XAI Cyber/GRC) — 3 to 6 months**
+   - Explainable risk and compliance guidance
+   - Linked evidence-controls-threat context
+   - Bilingual Arabic/English experience
+   - Explainable recommendations
+
+2. **Advanced Operational Phase — 6 to 12 months**
+   - Graph-based reasoning
+   - Limited SOAR capabilities
+   - Essential telemetry integrations
+   - Real security use-case validation
+
+3. **Full Strategic Vision — 18 to 30 months**
+   - SIEM + XDR + SOAR + Knowledge Graph + Explainable Reasoning + Bilingual + Risk Ontology
+   - Requires multi-disciplinary delivery across product, data, security engineering, and platform operations
+
+### 12.4 Program Structure Required for Readiness
+
+- **Level 1:** GRC + Risk + Explainable AI  
+- **Level 2:** Knowledge Graph + Detection Context + SOAR-lite  
+- **Level 3:** Full cyber operations platform with SIEM/XDR-scale capabilities
+
+### 12.5 Positioning Statement
+
+- The foundation is strong for building a Cybersecurity XAI platform.
+- The platform is not yet ready for the full vision in one step.
+- Current and realistic positioning:
+  **GRC-native Explainable Cyber Intelligence Platform**, expanding progressively toward SIEM/XDR/SOAR depth.
