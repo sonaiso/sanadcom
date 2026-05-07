@@ -1,5 +1,7 @@
 from collections import defaultdict
 from datetime import date, timedelta
+import json
+import uuid as _uuid
 from huey import crontab
 from huey.contrib.djhuey import periodic_task, task, db_periodic_task
 from core.models import (
@@ -1231,3 +1233,177 @@ def send_assignment_reviewed_notification(
                     send_notification_email(
                         rendered["subject"], rendered["body"], email
                     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Qeyas KPI integration tasks
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _get_qeyas_configs():
+    """
+    Return all active Qeyas IntegrationConfiguration instances.
+    Importing inside the function avoids circular-import issues at module load.
+    """
+    from integrations.models import IntegrationConfiguration, IntegrationProvider
+
+    return IntegrationConfiguration.objects.filter(
+        provider__name="qeyas",
+        is_active=True,
+    ).select_related("provider")
+
+
+@task()
+def push_compliance_assessment_to_qeyas(assessment_id: str) -> None:
+    """
+    Huey background task: push one ComplianceAssessment to all active Qeyas
+    configurations and optionally publish an event to Kafka.
+
+    Triggered from ComplianceAssessment.save() signals or explicit API calls.
+    """
+    try:
+        assessment = ComplianceAssessment.objects.select_related(
+            "framework", "folder"
+        ).get(pk=assessment_id)
+    except ComplianceAssessment.DoesNotExist:
+        logger.error(
+            "push_compliance_assessment_to_qeyas: assessment not found",
+            assessment_id=assessment_id,
+        )
+        return
+
+    # ── Push via REST API ────────────────────────────────────────────────────
+    from integrations.kpi.qeyas.integration import QeyasOrchestrator
+
+    for config in _get_qeyas_configs():
+        try:
+            orchestrator = QeyasOrchestrator(config)
+            orchestrator.push_compliance_assessment(assessment)
+        except Exception as exc:
+            logger.error(
+                "Qeyas push_compliance_assessment failed",
+                assessment_id=assessment_id,
+                config_id=str(config.id),
+                error=str(exc),
+            )
+
+    # ── Publish to Kafka (if configured) ─────────────────────────────────────
+    _publish_compliance_event_to_kafka(assessment)
+
+
+@task()
+def push_risk_assessment_to_qeyas(assessment_id: str) -> None:
+    """
+    Huey background task: push one RiskAssessment to all active Qeyas
+    configurations and optionally publish an event to Kafka.
+    """
+    try:
+        assessment = RiskAssessment.objects.select_related("folder").get(
+            pk=assessment_id
+        )
+    except RiskAssessment.DoesNotExist:
+        logger.error(
+            "push_risk_assessment_to_qeyas: assessment not found",
+            assessment_id=assessment_id,
+        )
+        return
+
+    # ── Push via REST API ────────────────────────────────────────────────────
+    from integrations.kpi.qeyas.integration import QeyasOrchestrator
+
+    for config in _get_qeyas_configs():
+        try:
+            orchestrator = QeyasOrchestrator(config)
+            orchestrator.push_risk_assessment(assessment)
+        except Exception as exc:
+            logger.error(
+                "Qeyas push_risk_assessment failed",
+                assessment_id=assessment_id,
+                config_id=str(config.id),
+                error=str(exc),
+            )
+
+    # ── Publish to Kafka (if configured) ─────────────────────────────────────
+    _publish_risk_event_to_kafka(assessment)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Kafka event publishing helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _get_kafka_producer():
+    """
+    Return a KafkaProducer if KAFKA_BOOTSTRAP_SERVERS is configured, else None.
+    The producer is created fresh per call to avoid thread-safety issues with Huey.
+    """
+    bootstrap = settings.KAFKA_BOOTSTRAP_SERVERS
+    if not bootstrap:
+        return None
+    try:
+        from kafka import KafkaProducer
+        from kafka.errors import NoBrokersAvailable
+
+        return KafkaProducer(
+            bootstrap_servers=[s.strip() for s in bootstrap.split(",")],
+            value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+        )
+    except Exception as exc:
+        logger.warning("Could not create Kafka producer", error=str(exc))
+        return None
+
+
+def _publish_compliance_event_to_kafka(assessment) -> None:
+    """Publish a compliance assessment event to the configured Kafka topic."""
+    producer = _get_kafka_producer()
+    if producer is None:
+        return
+
+    from integrations.kpi.qeyas.mapper import QeyasFieldMapper
+
+    payload = QeyasFieldMapper.compliance_assessment_to_kpi_payload(assessment)
+    topic = settings.KAFKA_COMPLIANCE_EVENTS_TOPIC
+    try:
+        producer.send(topic, value=payload)
+        producer.flush(timeout=10)
+        logger.info(
+            "Compliance event published to Kafka",
+            topic=topic,
+            assessment_id=str(assessment.id),
+        )
+    except Exception as exc:
+        logger.error(
+            "Failed to publish compliance event to Kafka",
+            assessment_id=str(assessment.id),
+            error=str(exc),
+        )
+    finally:
+        producer.close()
+
+
+def _publish_risk_event_to_kafka(assessment) -> None:
+    """Publish a risk assessment event to the configured Kafka topic."""
+    producer = _get_kafka_producer()
+    if producer is None:
+        return
+
+    from integrations.kpi.qeyas.mapper import QeyasFieldMapper
+
+    payload = QeyasFieldMapper.risk_assessment_to_kpi_payload(assessment)
+    topic = settings.KAFKA_COMPLIANCE_EVENTS_TOPIC
+    try:
+        producer.send(topic, value=payload)
+        producer.flush(timeout=10)
+        logger.info(
+            "Risk event published to Kafka",
+            topic=topic,
+            assessment_id=str(assessment.id),
+        )
+    except Exception as exc:
+        logger.error(
+            "Failed to publish risk event to Kafka",
+            assessment_id=str(assessment.id),
+            error=str(exc),
+        )
+    finally:
+        producer.close()

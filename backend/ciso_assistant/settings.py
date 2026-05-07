@@ -476,7 +476,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en"
 
-TIME_ZONE = "UTC"
+# Default to Saudi Arabia Standard Time (UTC+3) for on-prem Saudi deployments.
+# Override with the TIME_ZONE environment variable for other regions.
+TIME_ZONE = os.environ.get("TIME_ZONE", "Asia/Riyadh")
 
 USE_I18N = True
 
@@ -671,3 +673,26 @@ AUDITLOG_MAX_RECORDS = int(os.environ.get("AUDITLOG_MAX_RECORDS", 50000))
 WEBHOOK_ALLOW_PRIVATE_IPS = os.environ.get(
     "WEBHOOK_ALLOW_PRIVATE_IPS", "False"
 ).lower() in ("true", "1", "yes")
+
+# ── Qeyas KPI Integration ────────────────────────────────────────────────────
+# Base URL of the Qeyas REST API.  Leave blank to disable the integration.
+QEYAS_API_URL = os.environ.get("QEYAS_API_URL", "").rstrip("/")
+# API key used for M2M authentication with Qeyas (Bearer token).
+QEYAS_API_KEY = os.environ.get("QEYAS_API_KEY", "")
+# Verify TLS certificates when calling Qeyas (disable only in dev/test).
+QEYAS_VERIFY_SSL = os.environ.get("QEYAS_VERIFY_SSL", "True").lower() in (
+    "true",
+    "1",
+    "yes",
+)
+# HTTP timeout (seconds) for Qeyas API calls.
+QEYAS_TIMEOUT = int(os.environ.get("QEYAS_TIMEOUT", 30))
+
+# ── Kafka Event Publishing ───────────────────────────────────────────────────
+# Comma-separated list of Kafka bootstrap servers.  Leave blank to disable.
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "")
+# Topic to which Sanadcom publishes GRC events consumed by Qeyas.
+KAFKA_COMPLIANCE_EVENTS_TOPIC = os.environ.get(
+    "KAFKA_COMPLIANCE_EVENTS_TOPIC", "sanadcom.compliance.events"
+)
+

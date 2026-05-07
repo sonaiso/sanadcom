@@ -11,6 +11,7 @@ class IntegrationProvider(AbstractBaseModel, FolderMixin):
 
     class ProviderType(models.TextChoices):
         ITSM = "itsm"
+        KPI = "kpi"
 
     name = models.CharField(max_length=100)  # 'jira', 'servicenow', etc.
     provider_type = models.CharField(max_length=20, choices=ProviderType.choices)
