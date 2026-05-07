@@ -46,31 +46,19 @@ class QeyasExecutiveSummaryView(APIView):
         ca_qs = ComplianceAssessment.objects.all()
         ca_total = ca_qs.count()
         ca_by_status = dict(
-            ca_qs.values_list("status").annotate(cnt=Count("id")).values_list(
-                "status", "cnt"
-            )
+            ca_qs.values("status").annotate(cnt=Count("id")).values_list("status", "cnt")
         )
-        # Average progress across in-progress assessments
-        in_progress_cas = [
-            ca
-            for ca in ca_qs.filter(status="in_progress").select_related("framework")
-        ]
-        avg_progress = (
-            round(
-                sum(ca.progress for ca in in_progress_cas) / len(in_progress_cas),
-                1,
-            )
-            if in_progress_cas
-            else 0
+        # Average progress across in-progress assessments — computed at DB level
+        avg_result = ca_qs.filter(status="in_progress").aggregate(
+            avg_progress=Avg("progress")
         )
+        avg_progress = round(avg_result["avg_progress"] or 0, 1)
 
         # Risk assessments
         ra_qs = RiskAssessment.objects.all()
         ra_total = ra_qs.count()
         ra_by_status = dict(
-            ra_qs.values_list("status").annotate(cnt=Count("id")).values_list(
-                "status", "cnt"
-            )
+            ra_qs.values("status").annotate(cnt=Count("id")).values_list("status", "cnt")
         )
         # Count open/critical risk scenarios
         critical_scenarios = RiskScenario.objects.filter(
@@ -83,9 +71,7 @@ class QeyasExecutiveSummaryView(APIView):
         # Applied controls summary
         ac_qs = AppliedControl.objects.all()
         ac_by_status = dict(
-            ac_qs.values_list("status").annotate(cnt=Count("id")).values_list(
-                "status", "cnt"
-            )
+            ac_qs.values("status").annotate(cnt=Count("id")).values_list("status", "cnt")
         )
 
         grc_summary = {
@@ -155,9 +141,9 @@ class QeyasWebhookView(APIView):
                     {"detail": "Invalid webhook signature."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
-        except ValueError as exc:
+        except ValueError:
             return Response(
-                {"detail": str(exc)},
+                {"detail": "Malformed webhook signature header."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -209,4 +195,4 @@ def _fetch_qeyas_summary() -> dict:
         return client.get_kpi_summary()
     except Exception as exc:
         logger.warning("Failed to fetch Qeyas KPI summary", error=str(exc))
-        return {"error": str(exc)}
+        return {"error": "Qeyas API is currently unavailable."}

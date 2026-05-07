@@ -691,8 +691,12 @@ QEYAS_TIMEOUT = int(os.environ.get("QEYAS_TIMEOUT", 30))
 # ── Kafka Event Publishing ───────────────────────────────────────────────────
 # Comma-separated list of Kafka bootstrap servers.  Leave blank to disable.
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "")
-# Topic to which Sanadcom publishes GRC events consumed by Qeyas.
+# Topic to which Sanadcom publishes compliance assessment events consumed by Qeyas.
 KAFKA_COMPLIANCE_EVENTS_TOPIC = os.environ.get(
     "KAFKA_COMPLIANCE_EVENTS_TOPIC", "sanadcom.compliance.events"
+)
+# Topic to which Sanadcom publishes risk assessment events consumed by Qeyas.
+KAFKA_RISK_EVENTS_TOPIC = os.environ.get(
+    "KAFKA_RISK_EVENTS_TOPIC", "sanadcom.risk.events"
 )
 
