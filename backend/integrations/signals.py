@@ -72,7 +72,7 @@ def on_compliance_assessment_saved(
                 return
             from core.tasks import push_compliance_assessment_to_qeyas
 
-            push_compliance_assessment_to_qeyas(assessment_id)
+            push_compliance_assessment_to_qeyas.schedule(args=(assessment_id,), delay=1)
             logger.debug(
                 "Enqueued push_compliance_assessment_to_qeyas",
                 assessment_id=assessment_id,
@@ -111,7 +111,7 @@ def on_risk_assessment_saved(
                 return
             from core.tasks import push_risk_assessment_to_qeyas
 
-            push_risk_assessment_to_qeyas(assessment_id)
+            push_risk_assessment_to_qeyas.schedule(args=(assessment_id,), delay=1)
             logger.debug(
                 "Enqueued push_risk_assessment_to_qeyas",
                 assessment_id=assessment_id,
