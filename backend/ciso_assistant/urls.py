@@ -37,6 +37,10 @@ urlpatterns = [
         name="redoc",
     ),
     path("api/integrations/", include("integrations.urls", namespace="integrations")),
+    path(
+        "api/qeyas/",
+        include("integrations.kpi.qeyas.urls", namespace="qeyas"),
+    ),
     path("api/", include("core.urls")),
     path("serdes/", include("serdes.urls")),
     path("i18n/", include("django.conf.urls.i18n")),

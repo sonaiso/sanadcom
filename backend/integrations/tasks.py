@@ -6,6 +6,7 @@ from structlog import get_logger
 
 from integrations.itsm.jira.integration import *
 from integrations.itsm.servicenow.integration import *
+from integrations.kpi.qeyas.integration import *  # noqa: F401,F403 — registers Qeyas provider
 from integrations.models import IntegrationConfiguration
 
 from .registry import IntegrationRegistry
