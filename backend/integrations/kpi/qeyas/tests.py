@@ -254,14 +254,15 @@ def test_qeyas_provider_registered():
 
 
 @patch("integrations.signals._qeyas_enabled", return_value=False)
-def test_signal_skips_when_qeyas_disabled(mock_enabled):
+@patch("django.db.transaction.on_commit", side_effect=lambda fn: fn())
+def test_signal_skips_when_qeyas_disabled(mock_commit, mock_enabled):
     """
     Signal handlers should be a no-op when no active Qeyas config exists.
+    The on_commit callback fires (commit happened) but the task is not enqueued.
     """
     from integrations.signals import on_compliance_assessment_saved
 
     assessment = _make_compliance_assessment()
-    # Should not raise and should not call the task
     on_compliance_assessment_saved(sender=None, instance=assessment, created=False)
     mock_enabled.assert_called_once()
 
