@@ -272,13 +272,13 @@ def test_signal_skips_when_qeyas_disabled(mock_commit, mock_enabled):
 @patch("core.tasks.push_compliance_assessment_to_qeyas")
 def test_compliance_signal_enqueues_task(mock_task, mock_commit, mock_enabled):
     """
-    When Qeyas is enabled, the compliance signal must enqueue the Huey task.
+    When Qeyas is enabled, the compliance signal must schedule the Huey task.
     """
     from integrations.signals import on_compliance_assessment_saved
 
     assessment = _make_compliance_assessment()
     on_compliance_assessment_saved(sender=None, instance=assessment, created=True)
-    mock_task.assert_called_once_with(str(assessment.id))
+    mock_task.schedule.assert_called_once_with(args=(str(assessment.id),), delay=1)
 
 
 @patch("integrations.signals._qeyas_enabled", return_value=True)
@@ -286,11 +286,11 @@ def test_compliance_signal_enqueues_task(mock_task, mock_commit, mock_enabled):
 @patch("core.tasks.push_risk_assessment_to_qeyas")
 def test_risk_signal_enqueues_task(mock_task, mock_commit, mock_enabled):
     """
-    When Qeyas is enabled, the risk signal must enqueue the Huey task.
+    When Qeyas is enabled, the risk signal must schedule the Huey task.
     """
     from integrations.signals import on_risk_assessment_saved
 
     assessment = _make_risk_assessment()
     on_risk_assessment_saved(sender=None, instance=assessment, created=False)
-    mock_task.assert_called_once_with(str(assessment.id))
+    mock_task.schedule.assert_called_once_with(args=(str(assessment.id),), delay=1)
 
