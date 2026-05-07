@@ -59,8 +59,18 @@ def orchestrator(mock_config):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-@patch("integrations.kpi.qeyas.client.requests.get")
-def test_test_connection_success(mock_get, client):
+def test_client_raises_on_empty_base_url(mock_config):
+    """Client must raise ValueError if neither credentials nor settings provide an API URL."""
+    mock_config.credentials = {"api_url": "", "api_key": "key"}
+    import django.conf as dc
+
+    orig = dc.settings.QEYAS_API_URL
+    try:
+        dc.settings.QEYAS_API_URL = ""
+        with pytest.raises(ValueError, match="Qeyas API URL is not configured"):
+            QeyasClient(mock_config)
+    finally:
+        dc.settings.QEYAS_API_URL = orig
     mock_get.return_value.raise_for_status = MagicMock()
     mock_get.return_value.json.return_value = {"status": "ok"}
     assert client.test_connection() is True

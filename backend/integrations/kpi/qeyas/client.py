@@ -34,6 +34,11 @@ class QeyasClient(BaseIntegrationClient):
         self._base_url: str = (
             self.credentials.get("api_url") or settings.QEYAS_API_URL
         ).rstrip("/")
+        if not self._base_url:
+            raise ValueError(
+                "Qeyas API URL is not configured. "
+                "Set QEYAS_API_URL in the environment or in the integration credentials."
+            )
         self._api_key: str = (
             self.credentials.get("api_key") or settings.QEYAS_API_KEY
         )

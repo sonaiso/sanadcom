@@ -1390,7 +1390,7 @@ def _publish_risk_event_to_kafka(assessment) -> None:
     from integrations.kpi.qeyas.mapper import QeyasFieldMapper
 
     payload = QeyasFieldMapper.risk_assessment_to_kpi_payload(assessment)
-    topic = settings.KAFKA_COMPLIANCE_EVENTS_TOPIC
+    topic = settings.KAFKA_RISK_EVENTS_TOPIC
     try:
         producer.send(topic, value=payload)
         producer.flush(timeout=10)
