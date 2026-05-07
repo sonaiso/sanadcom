@@ -705,7 +705,16 @@ KAFKA_RISK_EVENTS_TOPIC = os.environ.get(
 # Leave blank (default) to disable Sentry entirely.
 SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
 SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "production")
-SENTRY_TRACES_SAMPLE_RATE = float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1"))
+_sentry_rate_raw = os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0.1")
+try:
+    SENTRY_TRACES_SAMPLE_RATE = float(_sentry_rate_raw)
+    if not 0.0 <= SENTRY_TRACES_SAMPLE_RATE <= 1.0:
+        raise ValueError("value out of range [0.0, 1.0]")
+except ValueError as _e:
+    raise ImproperlyConfigured(
+        f"SENTRY_TRACES_SAMPLE_RATE must be a float between 0.0 and 1.0 "
+        f"(got {_sentry_rate_raw!r}): {_e}"
+    ) from _e
 
 if SENTRY_DSN:
     import sentry_sdk

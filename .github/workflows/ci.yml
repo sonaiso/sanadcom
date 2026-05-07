@@ -20,6 +20,8 @@ jobs:
   backend-tests:
     name: Backend Tests (pytest)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     services:
       postgres:
@@ -100,6 +102,8 @@ jobs:
   frontend-tests:
     name: Frontend Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     defaults:
       run:

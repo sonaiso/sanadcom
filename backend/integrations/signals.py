@@ -61,15 +61,15 @@ def on_compliance_assessment_saved(
     Enqueue a Qeyas push whenever a ComplianceAssessment is created or updated.
 
     The task is scheduled *after* the current DB transaction commits so the
-    Huey worker always reads a fully persisted row.
+    Huey worker always reads a fully persisted row.  The Qeyas-enabled check
+    also runs post-commit to avoid a wasted DB round-trip on rolled-back saves.
     """
-    try:
-        if not _qeyas_enabled():
-            return
+    assessment_id = str(instance.pk)
 
-        assessment_id = str(instance.pk)
-
-        def _enqueue():
+    def _enqueue():
+        try:
+            if not _qeyas_enabled():
+                return
             from core.tasks import push_compliance_assessment_to_qeyas
 
             push_compliance_assessment_to_qeyas(assessment_id)
@@ -78,13 +78,13 @@ def on_compliance_assessment_saved(
                 assessment_id=assessment_id,
                 created=created,
             )
+        except Exception:
+            logger.exception(
+                "on_compliance_assessment_saved: failed to enqueue Qeyas push",
+                assessment_id=assessment_id,
+            )
 
-        transaction.on_commit(_enqueue)
-    except Exception:
-        logger.exception(
-            "on_compliance_assessment_saved: failed to enqueue Qeyas push",
-            assessment_id=str(instance.pk),
-        )
+    transaction.on_commit(_enqueue)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -103,13 +103,12 @@ def on_risk_assessment_saved(
     """
     Enqueue a Qeyas push whenever a RiskAssessment is created or updated.
     """
-    try:
-        if not _qeyas_enabled():
-            return
+    assessment_id = str(instance.pk)
 
-        assessment_id = str(instance.pk)
-
-        def _enqueue():
+    def _enqueue():
+        try:
+            if not _qeyas_enabled():
+                return
             from core.tasks import push_risk_assessment_to_qeyas
 
             push_risk_assessment_to_qeyas(assessment_id)
@@ -118,10 +117,10 @@ def on_risk_assessment_saved(
                 assessment_id=assessment_id,
                 created=created,
             )
+        except Exception:
+            logger.exception(
+                "on_risk_assessment_saved: failed to enqueue Qeyas push",
+                assessment_id=assessment_id,
+            )
 
-        transaction.on_commit(_enqueue)
-    except Exception:
-        logger.exception(
-            "on_risk_assessment_saved: failed to enqueue Qeyas push",
-            assessment_id=str(instance.pk),
-        )
+    transaction.on_commit(_enqueue)

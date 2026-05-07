@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_DB=${POSTGRES_NAME:-ciso-assistant}
       - POSTGRES_USER=${POSTGRES_USER:-ciso-assistantuser}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -32,8 +32,8 @@ services:
       - AUTH_TOKEN_TTL=${AUTH_TOKEN_TTL:-7200}
       - POSTGRES_NAME=${POSTGRES_NAME:-ciso-assistant}
       - POSTGRES_USER=${POSTGRES_USER:-ciso-assistantuser}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set in .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set}
       - DB_HOST=postgres
       - DB_PORT=5432
       - TIME_ZONE=${TIME_ZONE:-Asia/Riyadh}
@@ -68,8 +68,8 @@ services:
       - AUTH_TOKEN_TTL=${AUTH_TOKEN_TTL:-7200}
       - POSTGRES_NAME=${POSTGRES_NAME:-ciso-assistant}
       - POSTGRES_USER=${POSTGRES_USER:-ciso-assistantuser}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set in .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set}
       - DB_HOST=postgres
       - DB_PORT=5432
       - TIME_ZONE=${TIME_ZONE:-Asia/Riyadh}
