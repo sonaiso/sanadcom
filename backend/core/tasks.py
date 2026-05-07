@@ -1340,12 +1340,14 @@ def _get_kafka_producer():
     bootstrap = settings.KAFKA_BOOTSTRAP_SERVERS
     if not bootstrap:
         return None
+    servers = [s.strip() for s in bootstrap.split(",") if s.strip()]
+    if not servers:
+        return None
     try:
         from kafka import KafkaProducer
-        from kafka.errors import NoBrokersAvailable
 
         return KafkaProducer(
-            bootstrap_servers=[s.strip() for s in bootstrap.split(",")],
+            bootstrap_servers=servers,
             value_serializer=lambda v: json.dumps(v).encode("utf-8"),
         )
     except Exception as exc:
