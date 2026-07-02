@@ -117,7 +117,7 @@ def evaluate_transition(
 
     evidence_requirements = set(license.evidence_requirements)
     mandatory_evidence_fields = {
-        "trace",
+        "source",
         "scope",
         "owner",
         "freshness",

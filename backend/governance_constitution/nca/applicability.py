@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from governance_constitution.contracts import BranchLicense
+from governance_constitution.enums import BranchApplicabilityState
 
 from .branch_registry import NCA_BRANCH_LICENSES
 
@@ -38,7 +39,7 @@ class NCAApplicabilityContext:
 @dataclass(frozen=True)
 class NCAApplicabilityResult:
     branch_id: str
-    state: str
+    state: BranchApplicabilityState
     applicable: bool
     blocked: bool
     missing_conditions: tuple[str, ...]
@@ -78,19 +79,8 @@ def _condition_state(context: NCAApplicabilityContext) -> dict[str, bool]:
 
 
 def _active_mani(branch_id: str, context: NCAApplicabilityContext) -> tuple[str, ...]:
-    if branch_id == "DCC" and not context.has_data_assets:
-        return ("no_data_assets_in_scope",)
-    if branch_id == "CCC" and not context.has_cloud_services:
-        return ("no_cloud_scope",)
-    if branch_id == "CSCC":
-        if not context.has_critical_systems:
-            return ("no_critical_systems_in_scope",)
-        if not context.criticality_designation_approved:
-            return ("criticality_not_designated",)
-    if branch_id == "OTCC" and not context.has_ot_ics_assets:
-        return ("no_ot_ics_assets_in_scope",)
-    if branch_id == "TCC" and not (context.has_remote_work or context.has_remote_access):
-        return ("no_remote_scope",)
+    if not _scope_available(branch_id, context):
+        return ()
     return ()
 
 
@@ -127,7 +117,7 @@ def _evaluate_branch_applicability(
     if not in_scope and not active_mani:
         return NCAApplicabilityResult(
             branch_id=branch_id,
-            state="branch_not_applicable",
+            state=BranchApplicabilityState.NOT_APPLICABLE,
             applicable=False,
             blocked=False,
             missing_conditions=(),
@@ -142,11 +132,11 @@ def _evaluate_branch_applicability(
 
     blocked = bool(active_mani)
     applicable = in_scope and not blocked and not missing_conditions
-    state = "branch_applicable"
+    state = BranchApplicabilityState.APPLICABLE
     if blocked:
-        state = "branch_blocked"
+        state = BranchApplicabilityState.BLOCKED
     elif missing_conditions:
-        state = "branch_candidate"
+        state = BranchApplicabilityState.CANDIDATE
 
     return NCAApplicabilityResult(
         branch_id=branch_id,

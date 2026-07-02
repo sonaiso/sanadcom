@@ -19,7 +19,7 @@ from .contracts import (
     TransitionDecision,
     TransitionRequest,
 )
-from .enums import DecisionStatus, EvidenceRank
+from .enums import BranchApplicabilityState, DecisionStatus, EvidenceRank
 from .guard import evaluate_transition
 from .nca import (
     ECC_ORIGIN,
@@ -35,6 +35,7 @@ __all__ = [
     "ConstitutionalDecision",
     "Decision",
     "DecisionStatus",
+    "BranchApplicabilityState",
     "EffectiveAttribute",
     "EvidenceRank",
     "EvidenceTrace",

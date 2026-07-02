@@ -21,7 +21,7 @@ def _license() -> BranchLicense:
         conditions=["data_inventory", "data_owner"],
         blockers=[],
         qadih_differences=[],
-        evidence_requirements=["trace", "scope", "owner", "freshness", "control_binding"],
+        evidence_requirements=["source", "scope", "owner", "freshness", "control_binding"],
         rank_policy={"delivery": "VERIFIED"},
         residual_policy="record_all_failures",
     )
@@ -37,7 +37,7 @@ def _valid_request() -> TransitionRequest:
         blockers=[],
         qadih_differences=[],
         evidence_trace={
-            "trace": "ev-1",
+            "source": "policy-document",
             "scope": "org",
             "owner": "grc-owner",
             "freshness": "2026-01-01",
@@ -110,7 +110,7 @@ def test_qadih_difference_prevents_verified_rank() -> None:
 
 
 def test_missing_evidence_defers_decision() -> None:
-    request = TransitionRequest(**{**_valid_request().__dict__, "evidence_trace": {"trace": "ev-1"}})
+    request = TransitionRequest(**{**_valid_request().__dict__, "evidence_trace": {"source": "policy-document"}})
     decision = evaluate_transition(request, _license())
     assert decision.decision == Decision.DEFERRED
     assert any(res.stage == FailedStage.EVIDENCE for res in decision.residuals)
