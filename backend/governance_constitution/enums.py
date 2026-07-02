@@ -34,3 +34,10 @@ class FailedStage(str, Enum):
     QADIH = "QADIH_DIFFERENCE"
     EVIDENCE = "EVIDENCE_TRACE"
     ACTION = "HANDOFF"
+
+
+class BranchApplicabilityState(str, Enum):
+    NOT_APPLICABLE = "branch_not_applicable"
+    CANDIDATE = "branch_candidate"
+    BLOCKED = "branch_blocked"
+    APPLICABLE = "branch_applicable"
