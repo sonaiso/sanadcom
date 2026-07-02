@@ -13,7 +13,7 @@ interface Asset {
 
 export default function AssetsPage() {
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     // Mock data

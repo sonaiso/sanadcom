@@ -39,16 +39,6 @@ export function TaskWidget({ tasks, locale, onTaskClick }: TaskWidgetProps) {
     return variants[priority as keyof typeof variants] || 'default';
   };
 
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      critical: 'text-red-600',
-      high: 'text-orange-600',
-      medium: 'text-blue-600',
-      low: 'text-gray-600',
-    };
-    return colors[priority as keyof typeof colors] || 'text-gray-600';
-  };
-
   const getStatusBadge = (status: string) => {
     const variants = {
       open: 'default' as const,

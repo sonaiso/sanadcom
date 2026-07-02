@@ -1,10 +1,15 @@
 {
-  "venvPath": "src/backend",
-  "venv": "venv",
-  "executionEnvironments": [
-    {
-      "root": ".",
-      "extraPaths": ["src/backend"]
-    }
+  "pythonPath": "C:\\Users\\Shahd\\AppData\\Local\\pypoetry\\Cache\\virtualenvs\\ciso-assistant-community-QbiNT0rr-py3.14\\Scripts\\python.exe",
+  "pythonVersion": "3.14",
+  "pythonPlatform": "Windows",
+  "typeCheckingMode": "off",
+  "extraPaths": [
+    "backend"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.git",
+    "db/**"
   ]
 }

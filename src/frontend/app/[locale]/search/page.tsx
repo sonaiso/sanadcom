@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import useSWR from 'swr';
 import apiClient from '@/lib/api-client';
@@ -9,7 +8,6 @@ import Link from 'next/link';
 const fetcher = (url: string) => apiClient.get(url).then((res) => res.data);
 
 export default function SearchPage() {
-  const t = useTranslations('search');
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState({
     framework: '',
