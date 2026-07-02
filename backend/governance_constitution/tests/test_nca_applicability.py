@@ -3,6 +3,7 @@ from pathlib import Path
 
 from governance_constitution.nca.applicability import (
     NCAApplicabilityContext,
+    NCAApplicabilityResult,
     evaluate_nca_applicability,
 )
 
@@ -10,7 +11,7 @@ from governance_constitution.nca.applicability import (
 def _result_for(
     context: NCAApplicabilityContext,
     branch_id: str,
-):
+) -> NCAApplicabilityResult:
     return next(result for result in evaluate_nca_applicability(context) if result.branch_id == branch_id)
 
 

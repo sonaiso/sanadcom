@@ -95,13 +95,12 @@ def _active_mani(branch_id: str, context: NCAApplicabilityContext) -> tuple[str,
 
 
 def _qadih_differences(branch_id: str, context: NCAApplicabilityContext) -> tuple[str, ...]:
-    if branch_id == "DCC" and not context.has_data_assets and (
-        context.has_cloud_services or context.has_ot_ics_assets or context.has_critical_systems
-    ):
+    has_non_data_assets = context.has_cloud_services or context.has_ot_ics_assets or context.has_critical_systems
+    has_non_cloud_assets = context.has_data_assets or context.has_ot_ics_assets
+
+    if branch_id == "DCC" and not context.has_data_assets and has_non_data_assets:
         return ("asset_is_not_data_asset",)
-    if branch_id == "CCC" and not context.has_cloud_services and (
-        context.has_data_assets or context.has_ot_ics_assets
-    ):
+    if branch_id == "CCC" and not context.has_cloud_services and has_non_cloud_assets:
         return ("service_is_not_cloud_service",)
     if branch_id == "CSCC" and context.has_critical_systems and not context.criticality_designation_approved:
         return ("system_not_designated_critical",)
@@ -114,52 +113,64 @@ def _qadih_differences(branch_id: str, context: NCAApplicabilityContext) -> tupl
     return ()
 
 
+def _evaluate_branch_applicability(
+    *,
+    branch_id: str,
+    branch_license: BranchLicense,
+    context: NCAApplicabilityContext,
+    states: dict[str, bool],
+) -> NCAApplicabilityResult:
+    in_scope = _scope_available(branch_id, context)
+    active_mani = _active_mani(branch_id, context)
+    qadih_differences = _qadih_differences(branch_id, context)
+
+    if not in_scope and not active_mani:
+        return NCAApplicabilityResult(
+            branch_id=branch_id,
+            state="branch_not_applicable",
+            applicable=False,
+            blocked=False,
+            missing_conditions=(),
+            active_mani=(),
+            qadih_differences=qadih_differences,
+            branch_license=branch_license,
+        )
+
+    missing_conditions = tuple(
+        condition.condition_id for condition in branch_license.conditions if not states.get(condition.condition_id, False)
+    )
+
+    blocked = bool(active_mani)
+    applicable = in_scope and not blocked and not missing_conditions
+    state = "branch_applicable"
+    if blocked:
+        state = "branch_blocked"
+    elif missing_conditions:
+        state = "branch_candidate"
+
+    return NCAApplicabilityResult(
+        branch_id=branch_id,
+        state=state,
+        applicable=applicable,
+        blocked=blocked,
+        missing_conditions=missing_conditions,
+        active_mani=active_mani,
+        qadih_differences=qadih_differences,
+        branch_license=branch_license,
+    )
+
+
 def evaluate_nca_applicability(context: NCAApplicabilityContext) -> tuple[NCAApplicabilityResult, ...]:
     states = _condition_state(context)
     results: list[NCAApplicabilityResult] = []
 
     for branch_id, branch_license in NCA_BRANCH_LICENSES.items():
-        in_scope = _scope_available(branch_id, context)
-        active_mani = _active_mani(branch_id, context)
-        qadih_differences = _qadih_differences(branch_id, context)
-
-        if not in_scope and not active_mani:
-            results.append(
-                NCAApplicabilityResult(
-                    branch_id=branch_id,
-                    state="branch_not_applicable",
-                    applicable=False,
-                    blocked=False,
-                    missing_conditions=(),
-                    active_mani=(),
-                    qadih_differences=qadih_differences,
-                    branch_license=branch_license,
-                )
-            )
-            continue
-
-        missing_conditions = tuple(
-            condition.condition_id for condition in branch_license.conditions if not states.get(condition.condition_id, False)
-        )
-
-        blocked = bool(active_mani)
-        applicable = in_scope and not blocked and not missing_conditions
-        state = "branch_applicable"
-        if blocked:
-            state = "branch_blocked"
-        elif missing_conditions:
-            state = "branch_candidate"
-
         results.append(
-            NCAApplicabilityResult(
+            _evaluate_branch_applicability(
                 branch_id=branch_id,
-                state=state,
-                applicable=applicable,
-                blocked=blocked,
-                missing_conditions=missing_conditions,
-                active_mani=active_mani,
-                qadih_differences=qadih_differences,
                 branch_license=branch_license,
+                context=context,
+                states=states,
             )
         )
 
