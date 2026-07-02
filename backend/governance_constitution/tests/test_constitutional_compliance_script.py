@@ -168,7 +168,7 @@ def test_future_agent_file_discovered_by_glob_fails_when_noncompliant(tmp_path: 
 
 def test_runtime_action_allowed_true_fails_without_guard(tmp_path: Path) -> None:
     root = _create_minimal_repo(tmp_path)
-    # blocked example
+    # forbidden pattern (should be blocked)
     _write(root / "backend" / "governance" / "shortcut.py", "action_allowed = True\n")
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
@@ -190,7 +190,7 @@ def test_runtime_action_allowed_from_governed_decision_passes(tmp_path: Path) ->
 
 def test_runtime_status_compliant_fails_unless_guarded_serialization(tmp_path: Path) -> None:
     root = _create_minimal_repo(tmp_path)
-    # blocked example
+    # forbidden pattern (should be blocked)
     _write(root / "backend" / "governance" / "status_shortcut.py", 'status = "compliant"\n')
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
@@ -212,7 +212,7 @@ def test_runtime_status_compliant_in_governed_serialization_passes(tmp_path: Pat
 
 def test_metric_shortcut_fails(tmp_path: Path) -> None:
     root = _create_minimal_repo(tmp_path)
-    # blocked example
+    # forbidden pattern (should be blocked)
     _write(root / "backend" / "governance" / "metric_shortcut.py", "score >= threshold -> compliant\n")
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
@@ -221,7 +221,7 @@ def test_metric_shortcut_fails(tmp_path: Path) -> None:
 
 def test_nca_forbidden_wording_fails(tmp_path: Path) -> None:
     root = _create_minimal_repo(tmp_path)
-    # prohibited wording example
+    # forbidden wording pattern (should be blocked)
     _write(root / "backend" / "governance" / "nca_claim.py", 'claim = "certified by NCA"\n')
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
@@ -246,7 +246,7 @@ def test_missing_manifest_fails_closed(tmp_path: Path) -> None:
 
 def test_negative_examples_in_docs_pass_only_when_marked(tmp_path: Path) -> None:
     root = _create_minimal_repo(tmp_path)
-    # blocked example
+    # forbidden pattern without marker (should be blocked)
     _write(root / "docs" / "bad-example.md", "action_allowed = True\n")
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
