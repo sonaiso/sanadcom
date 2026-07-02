@@ -1,5 +1,10 @@
 # SICO GRC Platform - AI Agent Guide
 
+## Sanadcom Constitutional Governance Guard (Mandatory)
+- All coding suggestions must respect `/home/runner/work/sanadcom/sanadcom/AGENTS.md`.
+- Do not generate code that turns metrics, evidence, RAG outputs, or LLM outputs directly into compliance decisions.
+- Suggest and/or add constitutional tests whenever touching GRC, NCA, evidence, metrics, or AI logic.
+
 ## Architecture & Responsibilities
 - Full stack spans FastAPI backend, Next.js 14 frontend, and LangChain-based RAG; backend entrypoint [src/backend/main.py](src/backend/main.py) wires controls, evidence, reporting, and AI routers under /api/v1.
 - Runtime settings live in [src/backend/core/config.py](src/backend/core/config.py); .env co-located with backend sets DATABASE_URL, Redis, vector DB, and CORS, so load settings through pydantic BaseSettings instead of manual env parsing.
