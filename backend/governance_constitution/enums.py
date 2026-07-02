@@ -1,7 +1,7 @@
-from enum import IntEnum, StrEnum
+from enum import Enum, IntEnum
 
 
-class DecisionStatus(StrEnum):
+class DecisionStatus(str, Enum):
     CANDIDATE = "CANDIDATE"
     DEFERRED = "DEFERRED"
     BLOCKED = "BLOCKED"
@@ -17,7 +17,7 @@ class EvidenceRank(IntEnum):
     VERIFIED = 4
 
 
-class FailedStage(StrEnum):
+class FailedStage(str, Enum):
     ORIGIN = "ORIGIN"
     BRANCH_LICENSE = "BRANCH_LICENSE"
     EFFECTIVE_ATTRIBUTE = "EFFECTIVE_ATTRIBUTE"

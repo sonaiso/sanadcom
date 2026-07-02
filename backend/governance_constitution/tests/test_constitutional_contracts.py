@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+import governance_constitution
 from governance_constitution.contracts import (
     BranchLicense,
     Condition,
@@ -66,6 +67,16 @@ def _decision(**kwargs: object) -> ConstitutionalDecision:
     }
     payload.update(kwargs)
     return ConstitutionalDecision(**payload)
+
+
+def test_governance_constitution_public_exports_importable() -> None:
+    assert governance_constitution.ConstitutionalDecision is ConstitutionalDecision
+    assert governance_constitution.BranchLicense is BranchLicense
+
+
+def test_enums_are_python_version_safe() -> None:
+    assert DecisionStatus.ALLOWED == "ALLOWED"
+    assert FailedStage.EVIDENCE_TRACE == "EVIDENCE_TRACE"
 
 
 def test_no_branch_license_without_origin() -> None:
@@ -240,3 +251,34 @@ def test_no_forbidden_nca_wording_in_runtime_or_docs() -> None:
         text = target.read_text(encoding="utf-8")
         for phrase in FORBIDDEN_NCA_WORDING:
             assert phrase not in text
+
+
+def test_constitutional_decision_normalizes_effective_attribute() -> None:
+    decision = _decision(effective_attribute="data lifecycle")
+    assert isinstance(decision.effective_attribute, type(_license().effective_attribute))
+    assert decision.effective_attribute.name == "data lifecycle"
+
+
+def test_constitutional_decision_normalizes_origin_and_sabab() -> None:
+    decision = _decision(origin="ECC", sabab="organizational data assets")
+    assert isinstance(decision.origin, OriginNode)
+    assert decision.origin.origin_id == "ECC"
+    assert isinstance(decision.sabab, Sabab)
+    assert decision.sabab.reason == "organizational data assets"
+
+
+def test_branch_alias_and_branch_id_match() -> None:
+    with pytest.raises(ValueError, match="branch_id and branch alias must match"):
+        BranchLicense(
+            origin=_origin(),
+            branch_id="DCC",
+            branch="CCC",
+            effective_attribute="data lifecycle",
+            sabab=Sabab("organizational data assets"),
+            conditions=(Condition("data_inventory"),),
+            mani=(Mani("none"),),
+            qadih_differences=(),
+            evidence_requirements=("source", "scope", "owner", "freshness", "control_binding"),
+            rank_policy=RankPolicy(minimum_action_rank=EvidenceRank.SUPPORTED),
+            residual_policy="record_all_failures",
+        )
