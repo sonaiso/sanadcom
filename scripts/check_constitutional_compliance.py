@@ -269,7 +269,7 @@ def check_direct_shortcuts(root: Path) -> list[Violation]:
     return violations
 
 
-def check_nca_marketing_claims(root: Path) -> list[Violation]:
+def check_nca_certification_wording(root: Path) -> list[Violation]:
     violations: list[Violation] = []
     patterns = [re.compile(pattern, flags=re.IGNORECASE) for pattern in NCA_CERTIFICATION_PATTERNS]
     for path in _iter_text_files(root):
@@ -306,7 +306,7 @@ def run_checks(root: Path) -> list[Violation]:
     violations.extend(check_instruction_files(root))
     violations.extend(check_bypass_tokens(root))
     violations.extend(check_direct_shortcuts(root))
-    violations.extend(check_nca_marketing_claims(root))
+    violations.extend(check_nca_certification_wording(root))
     unique: dict[tuple[str, int, str, str], Violation] = {}
     for violation in violations:
         unique[(violation.file, violation.line, violation.law, violation.message)] = violation

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 import sys
+import pytest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -76,12 +77,13 @@ def test_missing_agents_md_fails(tmp_path: Path) -> None:
     assert any("Required governance file missing: AGENTS.md" in message for message in messages)
 
 
-def test_forbidden_bypass_token_fails_in_runtime_code(tmp_path: Path) -> None:
+@pytest.mark.parametrize("token", ["force_allow", "skip_constitution", "trust_llm_output"])
+def test_forbidden_bypass_token_fails_in_runtime_code(tmp_path: Path, token: str) -> None:
     root = _create_minimal_repo(tmp_path)
-    _write(root / "backend" / "grc" / "runtime.py", "force_allow = True\n")
+    _write(root / "backend" / "grc" / "runtime.py", f"{token} = True\n")
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
-    assert any("Forbidden bypass token 'force_allow'" in message for message in messages)
+    assert any(f"Forbidden bypass token '{token}'" in message for message in messages)
 
 
 def test_forbidden_token_allowed_in_negative_test_context(tmp_path: Path) -> None:
@@ -92,9 +94,19 @@ def test_forbidden_token_allowed_in_negative_test_context(tmp_path: Path) -> Non
     assert not any("Forbidden bypass token 'force_allow'" in message for message in messages)
 
 
-def test_direct_action_allowed_true_fails_without_guard_reference(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    "line",
+    [
+        "action_allowed = True\n",
+        "is_compliant = True\n",
+        "status = 'compliant'\n",
+        "rank = 'verified'\n",
+        "compliant = True\n",
+    ],
+)
+def test_direct_action_allowed_true_fails_without_guard_reference(tmp_path: Path, line: str) -> None:
     root = _create_minimal_repo(tmp_path)
-    _write(root / "backend" / "ai" / "decision.py", "action_allowed = True\n")
+    _write(root / "backend" / "ai" / "decision.py", line)
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
     assert any("Direct compliance/action shortcut" in message for message in messages)
@@ -102,7 +114,7 @@ def test_direct_action_allowed_true_fails_without_guard_reference(tmp_path: Path
 
 def test_direct_decision_allowed_fails_without_guard_reference(tmp_path: Path) -> None:
     root = _create_minimal_repo(tmp_path)
-    _write(root / "backend" / "metrics" / "decision.py", "decision = Decision.ALLOWED\n")
+    _write(root / "backend" / "metrics" / "decision.py", "decision = Decision.ALLOWED\nrank = Rank.VERIFIED\n")
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
     assert any("Direct compliance/action shortcut" in message for message in messages)
@@ -121,9 +133,18 @@ def test_guarded_usage_passes_when_evaluate_transition_present(tmp_path: Path) -
     assert not any("Direct compliance/action shortcut" in message for message in messages)
 
 
-def test_nca_certification_claim_is_detected(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    "claim",
+    [
+        "Officially certified by NCA",
+        "NCA approved baseline",
+        "NCA certification completed",
+        "approved by NCA authority",
+    ],
+)
+def test_nca_certification_claim_is_detected(tmp_path: Path, claim: str) -> None:
     root = _create_minimal_repo(tmp_path)
-    _write(root / "backend" / "reporting" / "nca_claim.py", 'CLAIM = "Officially certified by NCA"\n')
+    _write(root / "backend" / "reporting" / "nca_claim.py", f'CLAIM = "{claim}"\n')
     violations = CHECKER.run_checks(root)
     messages = _messages(violations)
     assert any("NCA wording must be aligned/mapped/evidence-ready" in message for message in messages)
