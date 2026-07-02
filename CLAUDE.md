@@ -1,7 +1,7 @@
 # Claude Instructions for Sanadcom
 
-1. Read `/home/runner/work/sanadcom/sanadcom/AGENTS.md` first.
-2. Follow `/home/runner/work/sanadcom/sanadcom/AGENTS.md` as a binding repository constitution.
-3. Do not bypass constitutional transition gates.
-4. Do not perform semantic, compliance, or action jumps.
-5. Every PR must preserve the Origin → BranchLicense contract and governed decision flow.
+1. Read `AGENTS.md` first.
+2. `AGENTS.md` is mandatory and non-bypassable.
+3. Do not create direct compliance, approval, certification, or allowed-action shortcuts.
+4. Use governed decision objects and constitutional tests for governance-sensitive changes.
+5. Use safe NCA wording (aligned/mapped/evidence-ready), not certification/approval claims.
