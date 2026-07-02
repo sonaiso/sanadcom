@@ -1,0 +1,97 @@
+required_reference: AGENTS.md
+known_instruction_surfaces:
+  - AGENTS.md
+  - CLAUDE.md
+  - .github/copilot-instructions.md
+  - .github/pull_request_template.md
+  - docs/CONSTITUTIONAL_AGENT_ENFORCEMENT.md
+  - docs/CONSTITUTIONAL_AGENT_CONTRACT.md
+discovery_patterns:
+  - "**/AGENTS.md"
+  - "**/CLAUDE.md"
+  - "**/*copilot*instructions*.md"
+  - "**/*agent*.md"
+  - "**/*agent*.yml"
+  - "**/*agent*.yaml"
+  - "**/*prompt*.md"
+  - "**/*governance*.md"
+forbidden_override_patterns:
+  - "skip\\s+agents\\.md"
+  - "agents\\.md\\s+is\\s+optional"
+  - "constitution\\s+optional"
+  - "skip\\s+constitution"
+  - "bypass\\s+constitution"
+  - "constitution\\s+can\\s+be\\s+skipped"
+  - "emergency\\s+bypass"
+  - "fast\\s*path"
+  - "direct\\s+approval"
+  - "direct\\s+compliance"
+  - "shortcut\\s+action"
+  - "without\\s+constitutional\\s+gate"
+  - "ignore\\s+residual"
+  - "no\\s+residual"
+  - "no\\s+handoff"
+required_constitutional_terms:
+  - origin
+  - BranchLicense
+  - effective_attribute
+  - sabab
+  - conditions
+  - mani
+  - qadih
+  - evidence trace
+  - rank
+  - residuals
+  - handoff
+  - final delivery decision
+governance_sensitive_paths:
+  - "backend/governance_constitution/**/*.py"
+  - "backend/**/*governance*.py"
+  - "backend/**/*compliance*.py"
+  - "backend/**/*evidence*.py"
+  - "backend/**/*metric*.py"
+  - "backend/**/*assessment*.py"
+  - "backend/**/*risk*.py"
+  - "src/backend/**/*governance*.py"
+  - "src/backend/**/*compliance*.py"
+  - "src/backend/**/*evidence*.py"
+  - "src/backend/**/*metric*.py"
+  - "src/backend/**/*assessment*.py"
+  - "src/backend/**/*risk*.py"
+allowed_negative_example_paths:
+  - "docs/**/*.md"
+  - "tests/**/*.py"
+  - "backend/**/tests/**/*.py"
+  - "scripts/check_constitutional_compliance.py"
+forbidden_nca_claims:
+  - "certified by NCA"
+  - "approved by NCA"
+  - "NCA certified"
+  - "NCA approved"
+shortcut_decision_patterns:
+  - "\\baction_allowed\\s*=\\s*True\\b"
+  - "\\bDecision\\.ALLOWED\\b"
+  - "\\bstatus\\s*=\\s*[\"']compliant[\"']"
+  - "\\bcompliance_status\\s*=\\s*[\"']compliant[\"']"
+  - "\\bis_compliant\\s*=\\s*True\\b"
+  - "\\bapproved\\s*=\\s*True\\b"
+  - "\\bcertified\\s*=\\s*True\\b"
+  - "\\breturn\\s+Allowed\\s*\\("
+  - "\\breturn\\s+Compliant\\s*\\("
+  - "\\brank\\s*=\\s*[\"']verified[\"']"
+  - "\\brank\\s*=\\s*[\"']certified[\"']"
+  - "score\\s*>=\\s*threshold\\s*[-=]*>\\s*compliant"
+required_decision_terms:
+  - GovernedAssessmentDecision
+  - ConstitutionalDecision
+  - BranchLicense
+  - EvidenceTrace
+  - RankPolicy
+  - Residual
+  - HandoffRule
+  - blocked_by_mani
+  - qadih_difference
+  - failed_stage
+  - residuals
+  - rank_ceiling
+  - evaluate_transition
