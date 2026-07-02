@@ -21,6 +21,13 @@ from .contracts import (
 )
 from .enums import DecisionStatus, EvidenceRank
 from .guard import evaluate_transition
+from .nca import (
+    ECC_ORIGIN,
+    NCA_BRANCH_LICENSES,
+    NCAApplicabilityContext,
+    NCAApplicabilityResult,
+    evaluate_nca_applicability,
+)
 
 __all__ = [
     "BranchLicense",
@@ -35,6 +42,10 @@ __all__ = [
     "GovernedAssessmentDecision",
     "HandoffRule",
     "Mani",
+    "NCAApplicabilityContext",
+    "NCAApplicabilityResult",
+    "NCA_BRANCH_LICENSES",
+    "ECC_ORIGIN",
     "OriginNode",
     "QadihDifference",
     "Rank",
@@ -45,4 +56,5 @@ __all__ = [
     "TransitionDecision",
     "TransitionRequest",
     "evaluate_transition",
+    "evaluate_nca_applicability",
 ]
