@@ -35,6 +35,19 @@ Violating this rule is a constitutional failure and must be blocked by tests.
 - “cloud control” → “critical system control”
 - “ECC control” → “DCC/CCC/CSCC/OTCC/TCC satisfied”
 - “assessment score” → “delivery decision”
+- no shortcut from candidate inputs to final compliance judgment
+- no bypass around constitutional transition gates
+
+## No Agent Bypass
+No agent may:
+- ignore this file,
+- weaken the constitution,
+- mark its own output as verified,
+- create a shortcut from generated output to compliance decision,
+- add exception flags that skip constitutional evaluation,
+- raise rank above evidence,
+- remove residuals to make a decision appear clean,
+- describe Sanadcom as NCA-certified unless formal certification evidence exists.
 
 ## Required decision object shape
 All constitutional decisions must include at least:
