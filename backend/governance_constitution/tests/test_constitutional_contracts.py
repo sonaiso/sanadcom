@@ -14,6 +14,7 @@ from governance_constitution.contracts import (
     Sabab,
 )
 from governance_constitution.enums import DecisionStatus, EvidenceRank, FailedStage
+from governance_constitution.validators import FORBIDDEN_NCA_WORDING
 
 
 def _origin() -> OriginNode:
@@ -235,8 +236,7 @@ def test_no_forbidden_nca_wording_in_runtime_or_docs() -> None:
         root / "governance_constitution" / "contracts.py",
         root / "governance_constitution" / "README.md",
     ]
-    forbidden = ("certified by NCA", "approved by NCA", "NCA certified", "NCA approved")
     for target in targets:
         text = target.read_text(encoding="utf-8")
-        for phrase in forbidden:
+        for phrase in FORBIDDEN_NCA_WORDING:
             assert phrase not in text
