@@ -94,6 +94,23 @@ def test_cscc_candidate_without_criticality_designation() -> None:
     assert result.state == BranchApplicabilityState.CANDIDATE
 
 
+def test_cscc_blocked_when_constitutional_conflict_exists() -> None:
+    result = _result_for(
+        NCAApplicabilityContext(
+            has_critical_systems=True,
+            critical_system_scope_defined=True,
+            criticality_designation_approved=True,
+            system_boundary_defined=True,
+            criticality_designation_rejected=True,
+        ),
+        "CSCC",
+    )
+    assert result.applicable is False
+    assert result.blocked is True
+    assert "criticality_designation_rejected" in result.active_mani
+    assert result.state == BranchApplicabilityState.BLOCKED
+
+
 def test_otcc_not_applicable_for_pure_it_scope() -> None:
     result = _result_for(
         NCAApplicabilityContext(

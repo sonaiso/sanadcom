@@ -26,6 +26,9 @@ class NCAApplicabilityContext:
     critical_system_scope_defined: bool = False
     criticality_designation_approved: bool = False
     system_boundary_defined: bool = False
+    criticality_designation_rejected: bool = False
+    system_boundary_conflict: bool = False
+    system_classification_conflict: bool = False
 
     ot_scope_defined: bool = False
     ot_asset_inventory_exists: bool = False
@@ -81,6 +84,15 @@ def _condition_state(context: NCAApplicabilityContext) -> dict[str, bool]:
 def _active_mani(branch_id: str, context: NCAApplicabilityContext) -> tuple[str, ...]:
     if not _scope_available(branch_id, context):
         return ()
+    if branch_id == "CSCC":
+        blockers: list[str] = []
+        if context.criticality_designation_rejected:
+            blockers.append("criticality_designation_rejected")
+        if context.system_boundary_conflict:
+            blockers.append("system_boundary_conflict")
+        if context.system_classification_conflict:
+            blockers.append("system_classification_conflict")
+        return tuple(blockers)
     return ()
 
 
