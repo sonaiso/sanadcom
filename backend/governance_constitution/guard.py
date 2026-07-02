@@ -48,7 +48,9 @@ def evaluate_transition(
             Decision.BLOCKED, FailedStage.BRANCH_LICENSE, Rank.ZERO, False, residuals
         )
 
-    if license.origin != request.origin or license.branch != request.branch:
+    license_origin = license.origin.origin_id if hasattr(license.origin, "origin_id") else license.origin
+    license_branch = license.branch or license.branch_id
+    if license_origin != request.origin or license_branch != request.branch:
         residuals.append(
             Residual(
                 FailedStage.BRANCH_LICENSE,
@@ -86,7 +88,11 @@ def evaluate_transition(
         return TransitionDecision(Decision.BLOCKED, FailedStage.SABAB, Rank.ZERO, False, residuals)
 
     provided_conditions = set(request.provided_conditions)
-    missing_conditions = [condition for condition in license.conditions if condition not in provided_conditions]
+    missing_conditions = []
+    for condition in license.conditions:
+        condition_id = condition.condition_id if hasattr(condition, "condition_id") else condition
+        if condition_id not in provided_conditions:
+            missing_conditions.append(str(condition_id))
     if missing_conditions:
         failed_stage = FailedStage.CONDITION
         residuals.append(
