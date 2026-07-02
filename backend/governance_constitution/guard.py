@@ -85,9 +85,8 @@ def evaluate_transition(
         )
         return TransitionDecision(Decision.BLOCKED, FailedStage.SABAB, Rank.ZERO, False, residuals)
 
-    missing_conditions = [
-        condition for condition in license.conditions if condition not in request.provided_conditions
-    ]
+    provided_conditions = set(request.provided_conditions)
+    missing_conditions = [condition for condition in license.conditions if condition not in provided_conditions]
     if missing_conditions:
         failed_stage = FailedStage.CONDITION
         residuals.append(
@@ -119,7 +118,9 @@ def evaluate_transition(
         "control_binding",
     }
     provided_evidence = {
-        key for key, value in (request.evidence_trace or {}).items() if str(value).strip()
+        key
+        for key, value in (request.evidence_trace or {}).items()
+        if value is not None and str(value).strip()
     }
     has_required_evidence = mandatory_evidence_fields.issubset(provided_evidence) and evidence_requirements.issubset(
         provided_evidence
@@ -171,11 +172,30 @@ def evaluate_transition(
             )
         )
 
+    def _select_failed_stage() -> FailedStage | None:
+        if not residuals:
+            return failed_stage
+        stage_priority = {
+            FailedStage.MANI: 100,
+            FailedStage.ACTION: 100,
+            FailedStage.BRANCH_LICENSE: 90,
+            FailedStage.ORIGIN: 90,
+            FailedStage.EFFECTIVE_ATTRIBUTE: 90,
+            FailedStage.SABAB: 90,
+            FailedStage.CONDITION: 70,
+            FailedStage.EVIDENCE: 70,
+            FailedStage.QADIH: 50,
+            FailedStage.RANK: 40,
+        }
+        return max(residuals, key=lambda residual: stage_priority.get(residual.stage, 0)).stage
+
+    selected_failed_stage = _select_failed_stage()
+
     if any(r.stage in {FailedStage.MANI, FailedStage.ACTION} for r in residuals):
-        return TransitionDecision(Decision.BLOCKED, failed_stage, final_rank, False, residuals)
+        return TransitionDecision(Decision.BLOCKED, selected_failed_stage, final_rank, False, residuals)
 
     if any(r.stage in {FailedStage.CONDITION, FailedStage.EVIDENCE} for r in residuals):
-        return TransitionDecision(Decision.DEFERRED, failed_stage, final_rank, False, residuals)
+        return TransitionDecision(Decision.DEFERRED, selected_failed_stage, final_rank, False, residuals)
 
     if any(r.stage == FailedStage.QADIH for r in residuals):
         return TransitionDecision(

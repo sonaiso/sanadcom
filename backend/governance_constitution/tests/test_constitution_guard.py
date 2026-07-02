@@ -98,7 +98,11 @@ def test_mani_blocks_transition() -> None:
 
 def test_qadih_difference_prevents_verified_rank() -> None:
     request = TransitionRequest(
-        **{**_valid_request().__dict__, "qadih_differences": ["asset_type_mismatch"]}
+        **{
+            **_valid_request().__dict__,
+            "qadih_differences": ["asset_type_mismatch"],
+            "action_requested": False,
+        }
     )
     decision = evaluate_transition(request, _license())
     assert decision.decision == Decision.HUMAN_REVIEW_REQUIRED
@@ -149,7 +153,9 @@ def test_valid_transition_allows_delivery() -> None:
 
 
 def test_agents_md_contains_mandatory_constitution_laws() -> None:
-    agents_path = Path(__file__).resolve().parents[3] / "AGENTS.md"
+    current = Path(__file__).resolve()
+    root = next(parent for parent in current.parents if (parent / "AGENTS.md").exists())
+    agents_path = root / "AGENTS.md"
     content = agents_path.read_text(encoding="utf-8")
     required_terms = [
         "Origin",
