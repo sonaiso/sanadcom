@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import fnmatch
 from pathlib import Path
 import re
 import sys
@@ -49,7 +50,6 @@ NEGATIVE_MARKERS = (
 )
 HARD_LITERAL_TOKENS = (
     "action_allowed = true",
-    "decision.allowed",
     "is_compliant = true",
     "approved = true",
     "certified = true",
@@ -187,15 +187,14 @@ def _is_marked_negative_example(content: str, line_no: int) -> bool:
     lines = content.splitlines()
     if not lines:
         return False
-    start = max(0, line_no - 3)
+    start = max(0, line_no - 5)
     end = min(len(lines), line_no + 2)
     window = "\n".join(lines[start:end]).lower()
     return any(marker in window for marker in NEGATIVE_MARKERS)
 
 
 def _matches_any_glob(relative_path: str, patterns: tuple[str, ...]) -> bool:
-    path = Path(relative_path)
-    return any(path.match(pattern) for pattern in patterns)
+    return any(fnmatch.fnmatch(relative_path, pattern) for pattern in patterns)
 
 
 def _compile_patterns(values: tuple[str, ...]) -> list[re.Pattern[str]]:
@@ -268,25 +267,33 @@ def check_instruction_surfaces(root: Path, manifest: ConstitutionManifest) -> li
 
         lowered = content.lower()
         if required_reference not in lowered:
-            violations.append(
-                Violation(
-                    file=relative,
-                    line=1,
-                    law="Law 12",
-                    message=f"Instruction surface must reference {manifest.required_reference}.",
-                )
-            )
-
-        for pattern in forbidden_patterns:
-            for match in pattern.finditer(content):
+            if relative != manifest.required_reference:
                 violations.append(
                     Violation(
                         file=relative,
-                        line=_line_number(content, match.start()),
-                        law="Law 12/15",
-                        message="Instruction surface weakens or bypasses AGENTS.md constitutional governance.",
+                        line=1,
+                        law="Law 12",
+                        message=f"Instruction surface must reference {manifest.required_reference}.",
                     )
                 )
+
+        if relative != manifest.required_reference:
+            for pattern in forbidden_patterns:
+                for match in pattern.finditer(content):
+                    line_no = _line_number(content, match.start())
+                    line = _line_content(content, line_no).lower()
+                    prev_line = _line_content(content, line_no - 1).lower()
+                    context = f"{prev_line}\n{line}"
+                    if any(hint in context for hint in NEGATION_HINTS):
+                        continue
+                    violations.append(
+                        Violation(
+                            file=relative,
+                            line=line_no,
+                            law="Law 12/15",
+                            message="Instruction surface weakens or bypasses AGENTS.md constitutional governance.",
+                        )
+                    )
 
     return violations
 
@@ -360,6 +367,8 @@ def check_runtime_shortcuts(root: Path, manifest: ConstitutionManifest) -> list[
                 line_lower = line.lower()
 
                 if _matches_any_glob(relative, manifest.allowed_negative_example_paths):
+                    if has_guard and not any(token in line_lower for token in HARD_LITERAL_TOKENS):
+                        continue
                     if _is_marked_negative_example(content, line_no):
                         continue
                     violations.append(
@@ -401,6 +410,33 @@ def check_runtime_shortcuts(root: Path, manifest: ConstitutionManifest) -> list[
                             ),
                         )
                     )
+
+    for path in _iter_text_files(root):
+        relative = path.relative_to(root).as_posix()
+        if path.suffix.lower() in RUNTIME_SUFFIXES:
+            continue
+        if not _matches_any_glob(relative, manifest.allowed_negative_example_paths):
+            continue
+        if path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+
+        content = _read(path)
+        for pattern in patterns:
+            for match in pattern.finditer(content):
+                line_no = _line_number(content, match.start())
+                if _is_marked_negative_example(content, line_no):
+                    continue
+                violations.append(
+                    Violation(
+                        file=relative,
+                        line=line_no,
+                        law="Law 10/15",
+                        message=(
+                            "Negative example path used shortcut wording without explicit blocked/prohibited marker. "
+                            "Mark the snippet as a prohibited example."
+                        ),
+                    )
+                )
 
     return violations
 
