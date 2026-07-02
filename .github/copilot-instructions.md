@@ -1,6 +1,8 @@
 # SICO GRC Platform - AI Agent Guide
 
 ## Sanadcom Constitutional Governance Guard (Mandatory)
+- Read `/home/runner/work/sanadcom/sanadcom/AGENTS.md` before making changes.
+- Follow `/home/runner/work/sanadcom/sanadcom/AGENTS.md` as a binding repository constitution.
 - All coding suggestions must respect `/home/runner/work/sanadcom/sanadcom/AGENTS.md`.
 - Do not generate code that turns metrics, evidence, RAG outputs, or LLM outputs directly into compliance decisions.
 - Suggest and/or add constitutional tests whenever touching GRC, NCA, evidence, metrics, or AI logic.
