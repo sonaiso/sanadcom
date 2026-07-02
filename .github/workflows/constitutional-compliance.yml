@@ -20,8 +20,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install test dependency
-        run: python -m pip install pytest
+      - name: Install checker/test dependencies
+        run: python -m pip install pytest pyyaml
 
       - name: Run constitutional compliance checker
         run: python scripts/check_constitutional_compliance.py
