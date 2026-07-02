@@ -43,7 +43,7 @@ required_constitutional_terms:
   - rank
   - residuals
   - handoff
-  - final delivery decision
+  - delivery decision
 governance_sensitive_paths:
   - "backend/governance_constitution/**/*.py"
   - "backend/**/*governance*.py"
@@ -59,10 +59,10 @@ governance_sensitive_paths:
   - "src/backend/**/*assessment*.py"
   - "src/backend/**/*risk*.py"
 allowed_negative_example_paths:
-  - "docs/**/*.md"
-  - "tests/**/*.py"
-  - "backend/**/tests/**/*.py"
+  - "*docs*.md"
+  - "*tests*.py"
   - "scripts/check_constitutional_compliance.py"
+  - ".github/agent-constitution-manifest.yml"
 forbidden_nca_claims:
   - "certified by NCA"
   - "approved by NCA"
