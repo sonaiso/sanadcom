@@ -29,6 +29,7 @@ class FailedStage(StrEnum):
     RANK = "RANK"
     RESIDUALS = "RESIDUALS"
     HANDOFF = "HANDOFF"
+    # Backward-compatible aliases used by existing guard paths.
     CONDITION = "CONDITIONS"
     QADIH = "QADIH_DIFFERENCE"
     EVIDENCE = "EVIDENCE_TRACE"

@@ -170,6 +170,8 @@ class BranchLicense:
     def __post_init__(self) -> None:
         if isinstance(self.origin, str):
             object.__setattr__(self, "origin", OriginNode(self.origin))
+        if not self.branch_id and not self.branch:
+            raise ValueError("branch_id is required")
         if not self.branch_id:
             object.__setattr__(self, "branch_id", self.branch)
         if not self.branch:
