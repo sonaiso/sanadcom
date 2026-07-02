@@ -176,6 +176,8 @@ class BranchLicense:
             object.__setattr__(self, "branch_id", self.branch)
         if not self.branch:
             object.__setattr__(self, "branch", self.branch_id)
+        if self.branch_id and self.branch and self.branch_id != self.branch:
+            raise ValueError("branch_id and branch alias must match")
         if isinstance(self.effective_attribute, str):
             object.__setattr__(self, "effective_attribute", EffectiveAttribute(self.effective_attribute))
         if isinstance(self.sabab, str):
@@ -201,11 +203,11 @@ class BranchLicense:
 
 @dataclass(frozen=True)
 class ConstitutionalDecision:
-    origin: OriginNode
+    origin: OriginNode | str
     branch: str
     branch_license: BranchLicense
-    effective_attribute: EffectiveAttribute
-    sabab: Sabab
+    effective_attribute: EffectiveAttribute | str
+    sabab: Sabab | str
     conditions_evaluated: tuple[Condition, ...] = field(default_factory=tuple)
     mani_evaluated: tuple[Mani, ...] = field(default_factory=tuple)
     qadih_differences: tuple[QadihDifference, ...] = field(default_factory=tuple)
@@ -218,6 +220,12 @@ class ConstitutionalDecision:
     action_allowed: bool = field(init=False)
 
     def __post_init__(self) -> None:
+        if isinstance(self.origin, str):
+            object.__setattr__(self, "origin", OriginNode(self.origin))
+        if isinstance(self.effective_attribute, str):
+            object.__setattr__(self, "effective_attribute", EffectiveAttribute(self.effective_attribute))
+        if isinstance(self.sabab, str):
+            object.__setattr__(self, "sabab", Sabab(self.sabab))
         if self.branch_license.origin.origin_id != self.origin.origin_id:
             raise ValueError("branch_license origin must match decision origin")
         enforce_constitutional_rank_ceiling(

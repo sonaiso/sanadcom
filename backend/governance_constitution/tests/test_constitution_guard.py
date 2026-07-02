@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from governance_constitution.contracts import (
     BranchLicense,
     Decision,
@@ -62,10 +64,8 @@ def test_no_branch_license_is_blocked() -> None:
 
 
 def test_license_origin_branch_mismatch_is_blocked() -> None:
-    bad_license = BranchLicense(**{**_license().__dict__, "branch": "CCC"})
-    decision = evaluate_transition(_valid_request(), bad_license)
-    assert decision.decision == Decision.BLOCKED
-    assert decision.failed_stage == FailedStage.BRANCH_LICENSE
+    with pytest.raises(ValueError, match="branch_id and branch alias must match"):
+        BranchLicense(**{**_license().__dict__, "branch": "CCC"})
 
 
 def test_missing_effective_attribute_is_blocked() -> None:

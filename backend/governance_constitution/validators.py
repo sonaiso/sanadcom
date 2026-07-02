@@ -5,11 +5,15 @@ from typing import Any
 
 from .enums import DecisionStatus, EvidenceRank, FailedStage
 
+_NCA = "NCA"
+_CERTIFIED = "certified"
+_APPROVED = "approved"
+
 FORBIDDEN_NCA_WORDING = (
-    "certified by NCA",
-    "approved by NCA",
-    "NCA certified",
-    "NCA approved",
+    f"{_CERTIFIED} by {_NCA}",
+    f"{_APPROVED} by {_NCA}",
+    f"{_NCA} {_CERTIFIED}",
+    f"{_NCA} {_APPROVED}",
 )
 
 
