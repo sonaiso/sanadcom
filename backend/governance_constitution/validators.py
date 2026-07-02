@@ -100,7 +100,7 @@ def derive_decision_status(
 
     if decision.qadih_differences:
         downgrade = max(item.rank_downgrade_steps for item in decision.qadih_differences)
-        rank = EvidenceRank(max(EvidenceRank.ZERO, int(rank) - downgrade))
+        rank = EvidenceRank(max(int(EvidenceRank.ZERO), int(rank) - downgrade))
         residuals.append(
             residual_factory(
                 stage=FailedStage.QADIH_DIFFERENCE,

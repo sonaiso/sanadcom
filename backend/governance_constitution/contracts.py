@@ -183,7 +183,12 @@ class BranchLicense:
         if isinstance(self.rank_policy, dict):
             minimum = self.rank_policy.get("minimum_action_rank", EvidenceRank.VERIFIED)
             if isinstance(minimum, str):
-                minimum = EvidenceRank[minimum]
+                try:
+                    minimum = EvidenceRank[minimum]
+                except KeyError as error:
+                    raise ValueError(
+                        f"invalid minimum_action_rank '{minimum}' in BranchLicense.rank_policy"
+                    ) from error
             object.__setattr__(
                 self,
                 "rank_policy",
