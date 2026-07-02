@@ -7,8 +7,7 @@ Scope of this layer:
 - governed enums and validation helpers
 - contract-level constraints and tests
 
-Out of scope in this PR:
-- no runtime NCA applicability engine
+Out of scope in this package:
 - no AI decision engine
 - no automatic compliance judgment
 - no metric-to-compliance shortcut behavior
