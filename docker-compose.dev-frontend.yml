@@ -1,0 +1,35 @@
+services:
+  backend:
+    image: sanadcom-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./db:/code/db
+
+  huey:
+    image: sanadcom-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./db:/code/db
+
+  frontend:
+    image: node:24-slim
+    working_dir: /app
+    command: >-
+      sh -c "mkdir -p /app && tar -C /workspace --exclude=node_modules --exclude=.pnpm-store --exclude=.svelte-kit --exclude=build -cf - . | tar -C /app -xf - && npm install -g pnpm && pnpm config set store-dir /pnpm-store && if [ ! -d /app/node_modules/.pnpm ]; then pnpm install --frozen-lockfile; fi && pnpm run dev --host 0.0.0.0 --port 3000"
+    environment:
+      - CI=true
+      - ORIGIN=https://localhost:8443
+    volumes:
+      - ./frontend:/workspace:ro
+      - frontend_app:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_pnpm_store:/pnpm-store
+
+volumes:
+  frontend_app:
+  frontend_node_modules:
+  frontend_pnpm_store:
