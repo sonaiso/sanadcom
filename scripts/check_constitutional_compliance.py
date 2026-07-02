@@ -10,7 +10,7 @@ from typing import Any
 
 try:
     import yaml
-except ModuleNotFoundError:  # pragma: no cover - exercised by fail-closed behavior in runtime.
+except ModuleNotFoundError:  # pragma: no cover - import fallback; fail-closed enforcement happens in _load_manifest.
     yaml = None
 
 
