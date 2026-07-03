@@ -12,6 +12,8 @@ EVIDENCE_CONFLICTING = "evidence_conflicting"
 
 @dataclass(frozen=True)
 class EvidenceMaturityContext:
+    """Operational input context for lightweight evidence maturity evaluation."""
+
     evidence_refs: tuple[str, ...] = ()
     evidence_type: str | None = None
     submitted: bool = False
@@ -29,6 +31,13 @@ class EvidenceMaturityContext:
 
 @dataclass(frozen=True)
 class EvidenceMaturityResult:
+    """
+    Operational evidence maturity output without compliance or approval judgments.
+
+    `required` indicates whether additional operational follow-up is still required.
+    It becomes False only at `evidence_validated`.
+    """
+
     state: str
     required: bool
     missing_fields: tuple[str, ...]
@@ -39,6 +48,8 @@ class EvidenceMaturityResult:
 
 
 def _trace_missing_fields(context: EvidenceMaturityContext) -> tuple[str, ...]:
+    """Return missing evidence trace fields required for operational review readiness."""
+
     missing: list[str] = []
     if not context.owner:
         missing.append("owner")
@@ -52,6 +63,13 @@ def _trace_missing_fields(context: EvidenceMaturityContext) -> tuple[str, ...]:
 
 
 def evaluate_evidence_maturity(context: EvidenceMaturityContext) -> EvidenceMaturityResult:
+    """
+    Evaluate operational evidence maturity state.
+
+    The output classifies evidence readiness for internal workflow only and never emits
+    compliance, certification, approval, or action-allowance decisions.
+    """
+
     missing_fields = _trace_missing_fields(context)
     audit_notes = tuple(f"missing_trace_field:{field}" for field in missing_fields)
 
