@@ -20,6 +20,19 @@ from .contracts import (
     TransitionRequest,
 )
 from .enums import DecisionStatus, EvidenceRank
+from .evidence_maturity import (
+    EVIDENCE_ATTESTED,
+    EVIDENCE_CONFLICTING,
+    EVIDENCE_DRAFT,
+    EVIDENCE_EXPIRED,
+    EVIDENCE_MISSING,
+    EVIDENCE_REJECTED,
+    EVIDENCE_SUBMITTED,
+    EVIDENCE_VALIDATED,
+    EvidenceMaturityContext,
+    EvidenceMaturityResult,
+    evaluate_evidence_maturity,
+)
 from .guard import evaluate_transition
 from .nca import (
     ECC_ORIGIN,
@@ -35,8 +48,18 @@ __all__ = [
     "ConstitutionalDecision",
     "Decision",
     "DecisionStatus",
+    "EVIDENCE_ATTESTED",
+    "EVIDENCE_CONFLICTING",
+    "EVIDENCE_DRAFT",
+    "EVIDENCE_EXPIRED",
+    "EVIDENCE_MISSING",
+    "EVIDENCE_REJECTED",
+    "EVIDENCE_SUBMITTED",
+    "EVIDENCE_VALIDATED",
     "EffectiveAttribute",
     "EvidenceRank",
+    "EvidenceMaturityContext",
+    "EvidenceMaturityResult",
     "EvidenceTrace",
     "FailedStage",
     "GovernedAssessmentDecision",
@@ -57,4 +80,5 @@ __all__ = [
     "TransitionRequest",
     "evaluate_transition",
     "evaluate_nca_applicability",
+    "evaluate_evidence_maturity",
 ]
