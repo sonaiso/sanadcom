@@ -23,6 +23,7 @@ class EvidenceMaturityContext:
     conflicting: bool = False
     expired: bool = False
     artifact_ref: str | None = None
+    source: str | None = None
     owner: str | None = None
     scope: str | None = None
     control_binding: str | None = None
@@ -51,6 +52,8 @@ def _trace_missing_fields(context: EvidenceMaturityContext) -> tuple[str, ...]:
     """Return missing evidence trace fields required for operational review readiness."""
 
     missing: list[str] = []
+    if not context.source:
+        missing.append("source")
     if not context.owner:
         missing.append("owner")
     if not context.scope:
@@ -115,6 +118,17 @@ def evaluate_evidence_maturity(context: EvidenceMaturityContext) -> EvidenceMatu
             audit_notes=audit_notes,
             blocks_validation=True,
             human_review_required=False,
+        )
+
+    if context.validated_by_reviewer and missing_fields:
+        return EvidenceMaturityResult(
+            state=EVIDENCE_CONFLICTING,
+            required=True,
+            missing_fields=missing_fields,
+            reason_codes=("trace_incomplete_validation_conflict",),
+            audit_notes=(*audit_notes, "reviewer_validated_with_incomplete_trace"),
+            blocks_validation=True,
+            human_review_required=True,
         )
 
     if not context.submitted and (context.artifact_ref or context.evidence_refs):
