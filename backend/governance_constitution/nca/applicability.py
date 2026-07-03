@@ -78,6 +78,7 @@ def _condition_state(context: NCAApplicabilityContext) -> dict[str, bool]:
 
 
 def _active_mani(branch_id: str, context: NCAApplicabilityContext) -> tuple[str, ...]:
+    """Return in-scope blockers only; scope absence is handled as out_of_scope."""
     if branch_id == "CSCC":
         if context.has_critical_systems and not context.criticality_designation_approved:
             return ("criticality_not_designated",)
