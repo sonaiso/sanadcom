@@ -16,10 +16,10 @@ This document defines the scope of the NCA applicability layer added in PR #90.
   - mani/blockers
   - qadih differences
 - returns branch-opening states only:
-  - `branch_applicable`
-  - `branch_candidate`
-  - `branch_blocked`
-  - `branch_not_applicable`
+  - `branch_in_scope`
+  - `branch_out_of_scope`
+  - `branch_needs_scoping`
+  - `branch_scope_conflict`
 
 ## What this layer does not do
 
