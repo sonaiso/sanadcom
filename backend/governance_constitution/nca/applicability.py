@@ -78,19 +78,9 @@ def _condition_state(context: NCAApplicabilityContext) -> dict[str, bool]:
 
 
 def _active_mani(branch_id: str, context: NCAApplicabilityContext) -> tuple[str, ...]:
-    if branch_id == "DCC" and not context.has_data_assets:
-        return ("no_data_assets_in_scope",)
-    if branch_id == "CCC" and not context.has_cloud_services:
-        return ("no_cloud_scope",)
     if branch_id == "CSCC":
-        if not context.has_critical_systems:
-            return ("no_critical_systems_in_scope",)
-        if not context.criticality_designation_approved:
+        if context.has_critical_systems and not context.criticality_designation_approved:
             return ("criticality_not_designated",)
-    if branch_id == "OTCC" and not context.has_ot_ics_assets:
-        return ("no_ot_ics_assets_in_scope",)
-    if branch_id == "TCC" and not (context.has_remote_work or context.has_remote_access):
-        return ("no_remote_scope",)
     return ()
 
 
@@ -124,10 +114,10 @@ def _evaluate_branch_applicability(
     active_mani = _active_mani(branch_id, context)
     qadih_differences = _qadih_differences(branch_id, context)
 
-    if not in_scope and not active_mani:
+    if not in_scope:
         return NCAApplicabilityResult(
             branch_id=branch_id,
-            state="branch_not_applicable",
+            state="branch_out_of_scope",
             applicable=False,
             blocked=False,
             missing_conditions=(),
@@ -142,11 +132,11 @@ def _evaluate_branch_applicability(
 
     blocked = bool(active_mani)
     applicable = in_scope and not blocked and not missing_conditions
-    state = "branch_applicable"
+    state = "branch_in_scope"
     if blocked:
-        state = "branch_blocked"
+        state = "branch_scope_conflict"
     elif missing_conditions:
-        state = "branch_candidate"
+        state = "branch_needs_scoping"
 
     return NCAApplicabilityResult(
         branch_id=branch_id,
