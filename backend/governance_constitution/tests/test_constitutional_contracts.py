@@ -8,6 +8,7 @@ from governance_constitution.contracts import (
     Condition,
     ConstitutionalDecision,
     EvidenceTrace,
+    GovernedAssessmentDecision,
     Mani,
     OriginNode,
     QadihDifference,
@@ -282,3 +283,32 @@ def test_branch_alias_and_branch_id_match() -> None:
             rank_policy=RankPolicy(minimum_action_rank=EvidenceRank.SUPPORTED),
             residual_policy="record_all_failures",
         )
+
+
+def test_governed_assessment_delivery_payload_contains_constitutional_chain() -> None:
+    decision = _decision()
+    governed = GovernedAssessmentDecision(constitutional_decision=decision, assessment_id="A-100")
+    payload = governed.to_delivery_payload()
+
+    assert payload["compliance_candidate"] == {"assessment_id": "A-100", "status": "ALLOWED"}
+    assert payload["origin"] == "ECC"
+    assert payload["branch"] == "DCC"
+    assert payload["effective_attribute"] == "data lifecycle"
+    assert payload["sabab"] == "organizational data assets"
+    assert payload["rank"] == "SUPPORTED"
+
+    conditions = payload["conditions"]
+    assert isinstance(conditions, list)
+    assert conditions
+    assert conditions[0]["condition_id"] == "data_inventory"
+    assert conditions[0]["satisfied"] is True
+
+    evidence_traces = payload["evidence_traces"]
+    assert isinstance(evidence_traces, list)
+    assert evidence_traces
+    assert evidence_traces[0]["control_binding"] == "DCC-01"
+
+    delivery_decision = payload["delivery_decision"]
+    assert delivery_decision["status"] == "ALLOWED"
+    assert delivery_decision["action_allowed"] is True
+    assert delivery_decision["failed_stage"] is None
