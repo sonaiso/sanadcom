@@ -108,6 +108,14 @@ def test_cscc_scope_conflict_without_criticality_designation() -> None:
     assert result.state == "branch_scope_conflict"
 
 
+def test_cscc_out_of_scope_without_critical_designation() -> None:
+    result = _result_for(NCAApplicabilityContext(), "CSCC")
+    assert result.applicable is False
+    assert result.blocked is False
+    assert result.active_mani == ()
+    assert result.state == "branch_out_of_scope"
+
+
 def test_otcc_out_of_scope_without_ot_assets() -> None:
     result = _result_for(
         NCAApplicabilityContext(
