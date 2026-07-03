@@ -18,8 +18,8 @@ It only maps applicability outcomes to follow-up task candidates.
 - `branch_out_of_scope`
   - No failure state.
   - No required follow-up task.
-  - Any qadiḥ differences are retained as audit notes only.
-  - qadiḥ differences in out-of-scope do not force human review.
+  - Any qadih differences are retained as audit notes only.
+  - qadih differences in out-of-scope do not force human review.
 
 - `branch_in_scope`
   - Ready for the next implementation-focused stage.
