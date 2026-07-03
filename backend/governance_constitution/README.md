@@ -6,6 +6,7 @@ Scope of this layer:
 - structured constitutional entities (`OriginNode`, `BranchLicense`, `EvidenceTrace`, `ConstitutionalDecision`, `GovernedAssessmentDecision`)
 - governed enums and validation helpers
 - contract-level constraints and tests
+- governed delivery payload export (`GovernedAssessmentDecision.to_delivery_payload`) containing candidate, origin, branch, effective attribute, sabab, conditions, mani, qadih differences, evidence traces, rank, residuals, and delivery decision
 
 Out of scope in this package:
 - no AI decision engine
