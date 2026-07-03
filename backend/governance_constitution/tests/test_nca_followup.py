@@ -164,14 +164,14 @@ def test_followup_does_not_emit_compliance_decision_or_action_allowed() -> None:
     assert "compliant" not in serialized
     assert "certified" not in serialized
     assert "approved" not in serialized
-    assert "action_allowed" not in payload
+    assert "action_allowed" not in serialized
 
 
 def test_no_nca_certified_or_approved_wording() -> None:
     root = Path(__file__).resolve().parents[2]
     targets = [
         root / "governance_constitution" / "nca" / "followup.py",
-        root.parents[0] / "docs" / "NCA_APPLICABILITY_FOLLOWUP_TASKS.md",
+        root.parent / "docs" / "NCA_APPLICABILITY_FOLLOWUP_TASKS.md",
     ]
     forbidden = ("certified by nca", "approved by nca", "nca certified", "nca approved")
     for target in targets:
