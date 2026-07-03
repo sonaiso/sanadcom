@@ -255,6 +255,77 @@ class GovernedAssessmentDecision:
     def status(self) -> DecisionStatus:
         return self.constitutional_decision.status
 
+    def to_delivery_payload(self) -> dict[str, object]:
+        decision = self.constitutional_decision
+        return {
+            "compliance_candidate": {
+                "assessment_id": self.assessment_id,
+                "status": decision.status.value,
+            },
+            "origin": decision.origin.origin_id,
+            "branch": decision.branch,
+            "effective_attribute": decision.effective_attribute.name,
+            "sabab": decision.sabab.reason,
+            "conditions": [
+                {
+                    "condition_id": condition.condition_id,
+                    "description": condition.description,
+                    "satisfied": condition.satisfied,
+                }
+                for condition in decision.conditions_evaluated
+            ],
+            "mani": [
+                {
+                    "blocker_id": blocker.blocker_id,
+                    "description": blocker.description,
+                    "active": blocker.active,
+                }
+                for blocker in decision.mani_evaluated
+            ],
+            "qadih_differences": [
+                {
+                    "difference_id": difference.difference_id,
+                    "description": difference.description,
+                    "rank_downgrade_steps": difference.rank_downgrade_steps,
+                    "requires_human_review": difference.requires_human_review,
+                }
+                for difference in decision.qadih_differences
+            ],
+            "evidence_traces": [
+                {
+                    "source": trace.source,
+                    "scope": trace.scope,
+                    "owner": trace.owner,
+                    "freshness": trace.freshness,
+                    "control_binding": trace.control_binding,
+                    "artifact_ref": trace.artifact_ref,
+                    "evidence_ref": trace.evidence_ref,
+                    "evidence_type": trace.evidence_type,
+                    "metric_like": trace.metric_like,
+                }
+                for trace in decision.evidence_traces
+            ],
+            "rank": decision.rank.name,
+            "residuals": [
+                {
+                    "stage": residual.stage.value,
+                    "code": residual.code,
+                    "message": residual.message,
+                    "severity": residual.severity.value,
+                    "exception_recorded": residual.exception_recorded,
+                }
+                for residual in decision.residuals
+            ],
+            "delivery_decision": {
+                "status": decision.status.value,
+                "action_allowed": decision.action_allowed,
+                "failed_stage": decision.failed_stage.value if decision.failed_stage else None,
+                "handoff_required": decision.handoff.required,
+                "handoff_owner": decision.handoff.owner,
+                "handoff_rationale": decision.handoff.rationale,
+            },
+        }
+
 
 @dataclass(frozen=True)
 class TransitionRequest:
