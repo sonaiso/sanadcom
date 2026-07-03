@@ -53,7 +53,7 @@ def test_attested_without_validation() -> None:
     assert "reviewer_validation_pending" in result.reason_codes
 
 
-def test_validated_evidence_is_not_compliance() -> None:
+def test_validated_requires_complete_trace() -> None:
     result = evaluate_evidence_maturity(
         EvidenceMaturityContext(
             evidence_refs=("ev-1",),
@@ -62,10 +62,84 @@ def test_validated_evidence_is_not_compliance() -> None:
             validated_by_reviewer=True,
         )
     )
+    assert result.state != EVIDENCE_VALIDATED
+    assert result.required is True
+    assert result.blocks_validation is True
+
+
+def test_reviewer_validation_with_incomplete_trace_produces_conflict() -> None:
+    result = evaluate_evidence_maturity(
+        EvidenceMaturityContext(
+            evidence_refs=("ev-1",),
+            submitted=True,
+            attested_by_owner=True,
+            validated_by_reviewer=True,
+            source="internal_repo",
+            owner="control-owner",
+        )
+    )
+    assert result.state == EVIDENCE_CONFLICTING
+    assert result.required is True
+    assert result.blocks_validation is True
+    assert result.human_review_required is True
+    assert "trace_incomplete_validation_conflict" in result.reason_codes
+
+
+def test_reviewer_validation_with_missing_trace_is_not_validated() -> None:
+    result = evaluate_evidence_maturity(
+        EvidenceMaturityContext(
+            evidence_refs=("ev-1",),
+            submitted=True,
+            attested_by_owner=True,
+            validated_by_reviewer=True,
+            source="internal_repo",
+            owner="control-owner",
+        )
+    )
+    assert result.state != EVIDENCE_VALIDATED
+    assert result.required is True
+    assert result.blocks_validation is True
+    assert result.human_review_required is True
+
+
+def test_complete_trace_can_be_validated() -> None:
+    result = evaluate_evidence_maturity(
+        EvidenceMaturityContext(
+            evidence_refs=("ev-1",),
+            submitted=True,
+            attested_by_owner=True,
+            validated_by_reviewer=True,
+            source="internal_repo",
+            owner="control-owner",
+            scope="ecc-1",
+            control_binding="ecc.control.1",
+            freshness="2026-q3",
+        )
+    )
+    assert result.state == EVIDENCE_VALIDATED
+    assert result.required is False
+    assert result.blocks_validation is False
+
+
+def test_validated_state_does_not_emit_compliance_or_action_allowed() -> None:
+    result = evaluate_evidence_maturity(
+        EvidenceMaturityContext(
+            evidence_refs=("ev-1",),
+            submitted=True,
+            attested_by_owner=True,
+            validated_by_reviewer=True,
+            source="internal_repo",
+            owner="control-owner",
+            scope="ecc-1",
+            control_binding="ecc.control.1",
+            freshness="2026-q3",
+        )
+    )
     payload = asdict(result)
     serialized = str(payload).lower()
     assert result.state == EVIDENCE_VALIDATED
     assert "internal_validation_only_not_compliance_decision" in result.audit_notes
+    assert "action_allowed" not in serialized
     assert "compliant" not in serialized
     assert "compliance_status" not in serialized
 
@@ -101,13 +175,19 @@ def test_missing_trace_fields_are_reported() -> None:
             submitted=True,
         )
     )
-    assert set(result.missing_fields) == {"owner", "scope", "control_binding", "freshness"}
+    assert set(result.missing_fields) == {"source", "owner", "scope", "control_binding", "freshness"}
     assert set(result.audit_notes) >= {
+        "missing_trace_field:source",
         "missing_trace_field:owner",
         "missing_trace_field:scope",
         "missing_trace_field:control_binding",
         "missing_trace_field:freshness",
     }
+
+
+def test_missing_source_is_reported() -> None:
+    result = evaluate_evidence_maturity(EvidenceMaturityContext())
+    assert "source" in result.missing_fields
 
 
 def test_no_action_allowed_or_compliant_wording() -> None:
@@ -118,7 +198,7 @@ def test_no_action_allowed_or_compliant_wording() -> None:
     assert "compliant" not in serialized
 
 
-def test_no_nca_approved_or_certified_wording() -> None:
+def test_evidence_maturity_preserves_no_nca_approved_or_certified_wording() -> None:
     root = Path(__file__).resolve().parents[2]
     targets = [
         root / "governance_constitution" / "evidence_maturity.py",
