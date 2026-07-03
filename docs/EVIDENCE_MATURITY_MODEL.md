@@ -22,8 +22,27 @@ It is not a compliance status, not an NCA approval, and not an NCA certification
 - `evidence_validated` does not mean compliant.
 - `evidence_validated` does not mean certified.
 - `evidence_validated` does not mean approved.
+- `evidence_validated` is blocked when required trace fields are incomplete.
 - This layer does not produce action gates.
 - This layer does not produce compliance decisions.
+
+## Validation prerequisites
+
+`evidence_validated` is emitted only when all of the following are present:
+
+- `artifact_ref` or at least one `evidence_refs` value
+- `submitted = True`
+- `attested_by_owner = True`
+- `validated_by_reviewer = True`
+- no missing trace fields
+
+Required trace fields before validation:
+
+- `source`
+- `owner`
+- `scope`
+- `control_binding`
+- `freshness`
 
 ## Sequence intent
 
