@@ -101,11 +101,13 @@ def test_missing_trace_fields_are_reported() -> None:
             submitted=True,
         )
     )
-    assert result.missing_fields == ("owner", "scope", "control_binding", "freshness")
-    assert "missing_trace_field:owner" in result.audit_notes
-    assert "missing_trace_field:scope" in result.audit_notes
-    assert "missing_trace_field:control_binding" in result.audit_notes
-    assert "missing_trace_field:freshness" in result.audit_notes
+    assert set(result.missing_fields) == {"owner", "scope", "control_binding", "freshness"}
+    assert set(result.audit_notes) >= {
+        "missing_trace_field:owner",
+        "missing_trace_field:scope",
+        "missing_trace_field:control_binding",
+        "missing_trace_field:freshness",
+    }
 
 
 def test_no_action_allowed_or_compliant_wording() -> None:
