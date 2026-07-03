@@ -27,18 +27,18 @@ def test_dcc_applicable_when_data_scope_conditions_exist() -> None:
     )
     assert result.applicable is True
     assert result.blocked is False
-    assert result.state == "branch_applicable"
+    assert result.state == "branch_in_scope"
 
 
-def test_dcc_blocked_without_data_assets() -> None:
+def test_dcc_out_of_scope_without_data_assets() -> None:
     result = _result_for(NCAApplicabilityContext(), "DCC")
     assert result.applicable is False
-    assert result.blocked is True
-    assert "no_data_assets_in_scope" in result.active_mani
-    assert result.state == "branch_blocked"
+    assert result.blocked is False
+    assert result.active_mani == ()
+    assert result.state == "branch_out_of_scope"
 
 
-def test_dcc_deferred_without_classification() -> None:
+def test_dcc_needs_scoping_without_classification() -> None:
     result = _result_for(
         NCAApplicabilityContext(
             has_data_assets=True,
@@ -50,7 +50,7 @@ def test_dcc_deferred_without_classification() -> None:
     assert result.applicable is False
     assert result.blocked is False
     assert "data_classification_declared" in result.missing_conditions
-    assert result.state == "branch_candidate"
+    assert result.state == "branch_needs_scoping"
 
 
 def test_ccc_applicable_when_cloud_scope_and_shared_responsibility_exist() -> None:
@@ -65,18 +65,33 @@ def test_ccc_applicable_when_cloud_scope_and_shared_responsibility_exist() -> No
     )
     assert result.applicable is True
     assert result.blocked is False
-    assert result.state == "branch_applicable"
+    assert result.state == "branch_in_scope"
 
 
-def test_ccc_blocked_without_cloud_scope() -> None:
+def test_ccc_out_of_scope_without_cloud_services() -> None:
     result = _result_for(NCAApplicabilityContext(), "CCC")
     assert result.applicable is False
-    assert result.blocked is True
-    assert "no_cloud_scope" in result.active_mani
-    assert result.state == "branch_blocked"
+    assert result.blocked is False
+    assert result.active_mani == ()
+    assert result.state == "branch_out_of_scope"
 
 
-def test_cscc_blocked_without_criticality_designation() -> None:
+def test_ccc_needs_scoping_without_shared_responsibility_matrix() -> None:
+    result = _result_for(
+        NCAApplicabilityContext(
+            has_cloud_services=True,
+            cloud_scope_defined=True,
+            cloud_asset_inventory_exists=True,
+        ),
+        "CCC",
+    )
+    assert result.applicable is False
+    assert result.blocked is False
+    assert "cloud_shared_responsibility_defined" in result.missing_conditions
+    assert result.state == "branch_needs_scoping"
+
+
+def test_cscc_scope_conflict_without_criticality_designation() -> None:
     result = _result_for(
         NCAApplicabilityContext(
             has_critical_systems=True,
@@ -90,10 +105,18 @@ def test_cscc_blocked_without_criticality_designation() -> None:
     assert result.blocked is True
     assert "criticality_not_designated" in result.active_mani
     assert "system_not_designated_critical" in result.qadih_differences
-    assert result.state == "branch_blocked"
+    assert result.state == "branch_scope_conflict"
 
 
-def test_otcc_blocked_for_pure_it_scope() -> None:
+def test_cscc_out_of_scope_without_critical_designation() -> None:
+    result = _result_for(NCAApplicabilityContext(), "CSCC")
+    assert result.applicable is False
+    assert result.blocked is False
+    assert result.active_mani == ()
+    assert result.state == "branch_out_of_scope"
+
+
+def test_otcc_out_of_scope_without_ot_assets() -> None:
     result = _result_for(
         NCAApplicabilityContext(
             has_data_assets=True,
@@ -103,10 +126,10 @@ def test_otcc_blocked_for_pure_it_scope() -> None:
         "OTCC",
     )
     assert result.applicable is False
-    assert result.blocked is True
-    assert "no_ot_ics_assets_in_scope" in result.active_mani
+    assert result.blocked is False
+    assert result.active_mani == ()
     assert "asset_is_not_ot_ics_asset" in result.qadih_differences
-    assert result.state == "branch_blocked"
+    assert result.state == "branch_out_of_scope"
 
 
 def test_tcc_applicable_for_remote_work_with_policy_and_mfa() -> None:
@@ -121,7 +144,15 @@ def test_tcc_applicable_for_remote_work_with_policy_and_mfa() -> None:
     )
     assert result.applicable is True
     assert result.blocked is False
-    assert result.state == "branch_applicable"
+    assert result.state == "branch_in_scope"
+
+
+def test_tcc_out_of_scope_without_remote_work_or_access() -> None:
+    result = _result_for(NCAApplicabilityContext(), "TCC")
+    assert result.applicable is False
+    assert result.blocked is False
+    assert result.active_mani == ()
+    assert result.state == "branch_out_of_scope"
 
 
 def test_applicability_does_not_emit_compliance_decision() -> None:
@@ -140,6 +171,7 @@ def test_no_nca_certified_or_approved_wording() -> None:
         root / "governance_constitution" / "nca" / "branch_registry.py",
         root / "governance_constitution" / "nca" / "applicability.py",
         root.parents[0] / "docs" / "NCA_APPLICABILITY_ENGINE.md",
+        root.parents[0] / "docs" / "NCA_LIGHTWEIGHT_APPLICABILITY.md",
     ]
     forbidden = ("certified by nca", "approved by nca", "nca certified", "nca approved")
     for target in targets:
