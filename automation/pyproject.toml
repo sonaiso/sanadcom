@@ -8,5 +8,5 @@ dependencies = [
     "httpx>=0.28.1",
     "icecream>=2.1.4",
     "pandas>=2.3.0",
-    "prefect>=3.4.5",
+    "prefect>=3.7.8",
 ]
