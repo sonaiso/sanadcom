@@ -63,7 +63,7 @@ We’re constantly evolving with input from users and customers. Like an octopus
 
 ## Sanadcom Constitutional Governance
 
-Sanadcom uses a constitutional governance model for GRC/AI assurance. Framework requirements, metrics, evidence, RAG outputs, and AI outputs are treated as candidates until licensed by the Origin → Branch → Evidence → Rank → Residual transition gates. See AGENTS.md and docs/SANADCOM_CONSTITUTION.md.
+Sanadcom uses a constitutional knowledge model with a dependent governance layer for GRC/AI assurance. Framework requirements, metrics, evidence, RAG outputs, and AI outputs remain candidates until they pass licensed transition stages from reality/trace to evidence binding/rank/residuals and only then enter governance applicability gates. See `docs/00_KNOWLEDGE_CONSTITUTION.md`, `AGENTS.md`, and `docs/SANADCOM_CONSTITUTION.md`.
 
 ---
 
