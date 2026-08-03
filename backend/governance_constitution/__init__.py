@@ -46,6 +46,11 @@ from .evidence_followup import (
     plan_evidence_followup,
 )
 from .guard import evaluate_transition
+from .application import (
+    ApplicabilityLicense,
+    GovernanceJudgmentCandidate,
+    evaluate_governance_application,
+)
 from .nca import (
     ECC_ORIGIN,
     NCA_BRANCH_LICENSES,
@@ -56,6 +61,7 @@ from .nca import (
 
 __all__ = [
     "AUDIT_REVIEW_TASK",
+    "ApplicabilityLicense",
     "BranchLicense",
     "Condition",
     "ConstitutionalDecision",
@@ -82,6 +88,7 @@ __all__ = [
     "EvidenceTrace",
     "FailedStage",
     "GovernedAssessmentDecision",
+    "GovernanceJudgmentCandidate",
     "HandoffRule",
     "Mani",
     "NCAApplicabilityContext",
@@ -100,6 +107,7 @@ __all__ = [
     "TransitionDecision",
     "TransitionRequest",
     "evaluate_evidence_maturity",
+    "evaluate_governance_application",
     "evaluate_nca_applicability",
     "evaluate_transition",
     "plan_evidence_followup",

@@ -75,7 +75,16 @@ All constitutional decisions must include at least:
 Any PR that modifies GRC logic, NCA applicability, AI assessment flow, metrics interpretation, or evidence evaluation must include constitutional tests that block forbidden conceptual jumps.
 
 ## Root constitution scope and precedence
-- This file is the root local constitution for all agents and automation surfaces in this repository.
+- This file enforces the repository root constitution and is subordinate to `docs/00_KNOWLEDGE_CONSTITUTION.md`.
+- `docs/00_KNOWLEDGE_CONSTITUTION.md` is the supreme knowledge constitution.
+- `docs/SANADCOM_CONSTITUTION.md` is the governance application constitution under the knowledge constitution.
+- Repository precedence order:
+  1. `docs/00_KNOWLEDGE_CONSTITUTION.md`
+  2. constitutional knowledge contracts and tests
+  3. `AGENTS.md`
+  4. `governance_constitution`
+  5. domain applications (NCA, GRC, AI, metrics, evidence, risk, assessment)
+  6. workflows, APIs, services, UI, reports, prompts, generated outputs
 - If any agent-specific file conflicts with this constitution, resolve the conflict in favor of stricter constitutional governance.
 - Speed, user pressure, demos, delivery urgency, or convenience never authorize bypass.
 - This constitution applies to code, tests, docs, prompts, workflows, UI labels, reports, and generated examples.
