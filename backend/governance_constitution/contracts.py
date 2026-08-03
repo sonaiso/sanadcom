@@ -69,7 +69,7 @@ class Sabab:
 class Condition:
     condition_id: str
     description: str = ""
-    satisfied: bool = False
+    satisfied: bool | None = None
 
     def __post_init__(self) -> None:
         if not self.condition_id or not self.condition_id.strip():
@@ -80,7 +80,7 @@ class Condition:
 class Mani:
     blocker_id: str
     description: str = ""
-    active: bool = False
+    active: bool | None = None
 
     def __post_init__(self) -> None:
         if not self.blocker_id or not self.blocker_id.strip():
@@ -199,6 +199,38 @@ class BranchLicense:
                 RankPolicy(minimum_action_rank=minimum, policy_name=self.rank_policy.get("policy_name", "default")),
             )
         ensure_branch_license_fields(self)
+
+
+@dataclass(frozen=True)
+class GovernanceApplicabilityBinding:
+    binding_id: str
+    knowledge_context_id: str
+    normative_source_id: str
+    branch_id: str
+    defined_locus_id: str
+    domain_contract_id: str
+    applicability_claim_id: str
+    effective_attribute_claim_id: str
+    sabab_claim_id: str
+    condition_claim_ids: tuple[str, ...] = field(default_factory=tuple)
+    blocker_claim_ids: tuple[str, ...] = field(default_factory=tuple)
+    evidence_binding_ids: tuple[str, ...] = field(default_factory=tuple)
+
+    def __post_init__(self) -> None:
+        required = {
+            "binding_id": self.binding_id,
+            "knowledge_context_id": self.knowledge_context_id,
+            "normative_source_id": self.normative_source_id,
+            "branch_id": self.branch_id,
+            "defined_locus_id": self.defined_locus_id,
+            "domain_contract_id": self.domain_contract_id,
+            "applicability_claim_id": self.applicability_claim_id,
+            "effective_attribute_claim_id": self.effective_attribute_claim_id,
+            "sabab_claim_id": self.sabab_claim_id,
+        }
+        missing = [name for name, value in required.items() if not value or not value.strip()]
+        if missing:
+            raise ValueError(f"GovernanceApplicabilityBinding missing required fields: {', '.join(missing)}")
 
 
 @dataclass(frozen=True)

@@ -4,6 +4,7 @@ This package defines governance constitutional data contracts as a dependent app
 
 Scope of this layer:
 - structured constitutional entities (`OriginNode`, `BranchLicense`, `EvidenceTrace`, `ConstitutionalDecision`, `GovernedAssessmentDecision`)
+- governed bridge binding contract (`GovernanceApplicabilityBinding`) between approved knowledge context and governance applicability license
 - governance application entrypoint consuming approved knowledge context (`evaluate_governance_application`)
 - governed enums and validation helpers
 - contract-level constraints and tests
