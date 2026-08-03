@@ -276,6 +276,10 @@ def evaluate_governance_application(
     )
 
     rank = _to_evidence_rank(min(knowledge_context.rank, knowledge_context.rank_ceiling))
+    if any(condition.satisfied is not True for condition in evaluated_conditions):
+        rank = min(rank, EvidenceRank.HYPOTHESIS)
+    if residuals:
+        rank = min(rank, EvidenceRank.CANDIDATE)
 
     decision = ConstitutionalDecision(
         origin=applicability_license.origin,
