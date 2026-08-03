@@ -81,6 +81,37 @@ def derive_decision_status(
     rank = decision.rank
     handoff = decision.handoff
 
+    if any(condition.satisfied is None for condition in decision.conditions_evaluated):
+        residuals.append(
+            residual_factory(
+                stage=FailedStage.CONDITIONS,
+                code="unknown_condition_state",
+                message="condition state is unknown and governance judgment is deferred",
+            )
+        )
+        return DecisionStatus.DEFERRED, FailedStage.CONDITIONS, tuple(residuals), rank, handoff
+
+    if any(condition.satisfied is False for condition in decision.conditions_evaluated):
+        residuals.append(
+            residual_factory(
+                stage=FailedStage.CONDITIONS,
+                code="unsatisfied_condition",
+                message="at least one governance condition is unsatisfied",
+            )
+        )
+        return DecisionStatus.DEFERRED, FailedStage.CONDITIONS, tuple(residuals), rank, handoff
+
+    if any(mani.active is None for mani in decision.mani_evaluated):
+        handoff = replace(handoff, required=True)
+        residuals.append(
+            residual_factory(
+                stage=FailedStage.MANI,
+                code="unknown_mani_state",
+                message="mani state is unknown and requires human review",
+            )
+        )
+        return DecisionStatus.HUMAN_REVIEW_REQUIRED, FailedStage.MANI, tuple(residuals), rank, handoff
+
     if any(mani.active for mani in decision.mani_evaluated):
         if not residuals:
             residuals.append(
