@@ -1,14 +1,21 @@
 # Sanadcom Constitution
 
+## Constitutional status
+
+This document is the governance constitution application of Sanadcom.
+The supreme knowledge constitution is defined in `docs/00_KNOWLEDGE_CONSTITUTION.md`.
+`governance_constitution` implements governance/risk/compliance applicability and judgment only after an approved knowledge context is established upstream.
+
 ## Constitutional transition
 
 Origin → Licensed Branch → Effective Attribute → Sabab → Conditions → Maniʿ/Blockers → Qadih Differences → Evidence Trace → Rank → Residuals → Handoff / Delivery Decision
 
-Sanadcom issues governed decisions, not raw claims.
+Sanadcom issues governed governance decisions, not raw claims.
 
 ## Definitions
 
 - **Origin**: The governing root framework context that licenses downstream reasoning.
+- **KnowledgeContext**: Approved upstream context containing defined locus, domain contract, claim candidate, relation candidates, and evidence bindings.
 - **Branch**: A framework branch derived from an origin and usable only under applicability gates.
 - **BranchLicense**: Mandatory declaration that binds origin, branch, effective attribute, sabab, conditions, blockers/maniʿ, qadih differences, evidence requirements, rank policy, and residual policy.
 - **EffectiveAttribute**: The concrete operative attribute that makes a branch materially applicable.
@@ -31,4 +38,5 @@ Sanadcom issues governed decisions, not raw claims.
 - Evidence is a trace candidate, not proof by itself.
 - AI output is a candidate, not a decision.
 - RAG output increases available information but does not license judgment.
+- Governance constitution is a dependent application and may not fabricate locus/domain/claim/evidence bindings without trace.
 - The platform must issue governed decisions, not raw claims.
