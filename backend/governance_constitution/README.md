@@ -9,6 +9,7 @@ Scope of this layer:
 - governed enums and validation helpers
 - contract-level constraints and tests
 - governed delivery payload export (`GovernedAssessmentDecision.to_delivery_payload`) containing candidate, origin, branch, effective attribute, sabab, conditions, mani, qadih differences, evidence traces, rank, residuals, and delivery decision
+- medical constitutional profile artifacts for licensed-branch governance (`schemas/medical_licensed_branch.schema.json`, `policies/medical_licensed_branch_policy.json`, and `medical_policy.validate_medical_branch_document`)
 
 Out of scope in this package:
 - no AI decision engine

@@ -1,0 +1,35 @@
+{
+  "policy_id": "MED-LUNG-CONSTITUTION-POLICY-001",
+  "schema_ref": "backend/governance_constitution/schemas/medical_licensed_branch.schema.json",
+  "action_threshold_rank": "SUPPORTED",
+  "enforce": {
+    "no_action_with_active_mani": true,
+    "require_failed_stage_when_not_allowed": true,
+    "require_residuals_when_not_allowed": true,
+    "rank_must_not_exceed_weakest_binding": true
+  },
+  "forbidden_shortcuts": [
+    "biomarker_positive -> surgery_allowed",
+    "imaging_exists -> evidence_sufficient",
+    "guideline_mention -> patient_specific_action",
+    "llm_high_confidence -> action_license",
+    "single_metric_above_threshold -> definitive_surgical_decision"
+  ],
+  "required_trace_fields": [
+    "trace_id",
+    "source_type",
+    "scope",
+    "owner",
+    "freshness",
+    "control_binding",
+    "claim_link",
+    "relation_link"
+  ],
+  "allowed_ranks": [
+    "ZERO",
+    "CANDIDATE",
+    "HYPOTHESIS",
+    "SUPPORTED",
+    "VERIFIED"
+  ]
+}
