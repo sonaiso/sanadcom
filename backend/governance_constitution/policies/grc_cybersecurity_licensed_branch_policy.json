@@ -1,6 +1,6 @@
 {
-  "policy_id": "MED-LUNG-CONSTITUTION-POLICY-001",
-  "schema_ref": "backend/governance_constitution/schemas/medical_licensed_branch.schema.json",
+  "policy_id": "GRC-CYBER-CONSTITUTION-POLICY-001",
+  "schema_ref": "backend/governance_constitution/schemas/grc_cybersecurity_licensed_branch.schema.json",
   "action_threshold_rank": "SUPPORTED",
   "enforce": {
     "no_action_with_active_mani": true,
@@ -9,11 +9,13 @@
     "rank_must_not_exceed_weakest_binding": true
   },
   "forbidden_shortcuts": [
-    "biomarker_positive -> surgery_allowed",
-    "imaging_exists -> evidence_sufficient",
-    "guideline_mention -> patient_specific_action",
-    "llm_high_confidence -> action_license",
-    "single_metric_above_threshold -> definitive_surgical_decision"
+    "policy_exists -> control_verified",
+    "metric_above_target -> compliant",
+    "document_attached -> evidence_sufficient",
+    "rag_output -> claim_true",
+    "llm_high_confidence -> decision_allowed",
+    "ecc_control -> dcc_ccc_cscc_otcc_tcc_satisfied",
+    "assessment_score -> delivery_decision"
   ],
   "required_trace_fields": [
     "trace_id",
