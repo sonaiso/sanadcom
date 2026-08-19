@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sanadcom.local/schemas/medical-licensed-branch.schema.json",
-  "title": "Medical Licensed Branch Constitutional Document",
+  "$id": "https://sanadcom.local/schemas/grc-cybersecurity-licensed-branch.schema.json",
+  "title": "GRC Cybersecurity Licensed Branch Constitutional Document",
   "type": "object",
   "additionalProperties": false,
   "required": [

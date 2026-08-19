@@ -15,22 +15,22 @@ RANK_ORDER = {
 }
 
 _BASE_DIR = Path(__file__).resolve().parent
-_SCHEMA_PATH = _BASE_DIR / "schemas" / "medical_licensed_branch.schema.json"
-_POLICY_PATH = _BASE_DIR / "policies" / "medical_licensed_branch_policy.json"
+_SCHEMA_PATH = _BASE_DIR / "schemas" / "grc_cybersecurity_licensed_branch.schema.json"
+_POLICY_PATH = _BASE_DIR / "policies" / "grc_cybersecurity_licensed_branch_policy.json"
 
 
-def load_medical_branch_schema() -> dict[str, Any]:
+def load_grc_branch_schema() -> dict[str, Any]:
     return json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
 
 
-def load_medical_branch_policy() -> dict[str, Any]:
+def load_grc_branch_policy() -> dict[str, Any]:
     return json.loads(_POLICY_PATH.read_text(encoding="utf-8"))
 
 
-def validate_medical_branch_document(document: dict[str, Any]) -> list[str]:
+def validate_grc_branch_document(document: dict[str, Any]) -> list[str]:
     violations: list[str] = []
-    schema = load_medical_branch_schema()
-    policy = load_medical_branch_policy()
+    schema = load_grc_branch_schema()
+    policy = load_grc_branch_policy()
 
     validator = Draft202012Validator(schema)
     for error in sorted(validator.iter_errors(document), key=lambda item: list(item.path)):
