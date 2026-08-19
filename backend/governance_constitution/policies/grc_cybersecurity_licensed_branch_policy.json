@@ -1,0 +1,37 @@
+{
+  "policy_id": "GRC-CYBER-CONSTITUTION-POLICY-001",
+  "schema_ref": "backend/governance_constitution/schemas/grc_cybersecurity_licensed_branch.schema.json",
+  "action_threshold_rank": "SUPPORTED",
+  "enforce": {
+    "no_action_with_active_mani": true,
+    "require_failed_stage_when_not_allowed": true,
+    "require_residuals_when_not_allowed": true,
+    "rank_must_not_exceed_weakest_binding": true
+  },
+  "forbidden_shortcuts": [
+    "policy_exists -> control_verified",
+    "metric_above_target -> compliant",
+    "document_attached -> evidence_sufficient",
+    "rag_output -> claim_true",
+    "llm_high_confidence -> decision_allowed",
+    "ecc_control -> dcc_ccc_cscc_otcc_tcc_satisfied",
+    "assessment_score -> delivery_decision"
+  ],
+  "required_trace_fields": [
+    "trace_id",
+    "source_type",
+    "scope",
+    "owner",
+    "freshness",
+    "control_binding",
+    "claim_link",
+    "relation_link"
+  ],
+  "allowed_ranks": [
+    "ZERO",
+    "CANDIDATE",
+    "HYPOTHESIS",
+    "SUPPORTED",
+    "VERIFIED"
+  ]
+}

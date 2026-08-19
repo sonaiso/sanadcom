@@ -59,6 +59,11 @@ from .nca import (
     NCAApplicabilityResult,
     evaluate_nca_applicability,
 )
+from .grc_policy_profile import (
+    load_grc_branch_policy,
+    load_grc_branch_schema,
+    validate_grc_branch_document,
+)
 
 __all__ = [
     "AUDIT_REVIEW_TASK",
@@ -112,5 +117,8 @@ __all__ = [
     "evaluate_governance_application",
     "evaluate_nca_applicability",
     "evaluate_transition",
+    "load_grc_branch_policy",
+    "load_grc_branch_schema",
     "plan_evidence_followup",
+    "validate_grc_branch_document",
 ]
