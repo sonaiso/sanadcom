@@ -37,3 +37,19 @@ The public repository tracked live database backups:
 
 ## What this record is not
 This is a hygiene and incident record. It is not a compliance judgment about Sanadcom or any framework control; those pass through the constitutional transition chain like everything else.
+
+## Execution record (2026-11-02, owner-authorized)
+- **History purged and force-pushed.** All 75 branches and the tags were rewritten with `git filter-repo` from a fresh full
+  clone and force-pushed; `main` is now `9d6fc6e` with a tree byte-identical to the previous `main`. No branch reaches the
+  commit that added the dumps. A full pre-purge bundle and the purged bundle were kept by the operator for audit.
+- **Still reachable by SHA on GitHub** (expected until GitHub purges unreachable objects): the old commits, and the
+  `refs/pull/*/head` refs GitHub keeps for merged PRs. Ask GitHub Support to run a garbage collection of the repository.
+- **Dependabot PRs #109 and #110** were opened on the old history and must be rebased (`@dependabot rebase`) or closed and
+  recreated; they otherwise re-introduce the purged commits if merged.
+- **Every collaborator must re-clone**; stale clones that push will re-upload the old history.
+- **Credential invalidation is now a management command**, `python manage.py invalidate_credentials --yes`
+  (`backend/iam/management/commands/invalidate_credentials.py`, 4 tests): deletes all sessions and Knox tokens and
+  marks every password unusable so the next login goes through the reset flow. Run it on each live instance **after**
+  rotating `DJANGO_SECRET_KEY` and the database credentials in the deployment secret store and restarting the backend.
+  The operator of this session has no access to the live instances; this step remains with the owner.
+
