@@ -10499,6 +10499,18 @@ class ComplianceAssessmentViewSet(BaseModelViewSet):
         )
 
     @action(detail=True, methods=["get"])
+    def judgment_chain(self, request, pk):
+        """The governed judgment chain per requirement (knowledge kernel + action licence); no percentage.
+
+        See core/judgment_chain.py. This endpoint reports candidates, residuals, rank and handoff;
+        it issues no compliance decision and never reads the assessment score.
+        """
+        from core.judgment_chain import chain_for_assessment
+
+        compliance_assessment = self.get_object()
+        return Response(chain_for_assessment(compliance_assessment))
+
+    @action(detail=True, methods=["get"])
     def requirements_list(self, request, pk):
         """Returns the list of requirement assessments for the different audit modes"""
         assessable = str(
