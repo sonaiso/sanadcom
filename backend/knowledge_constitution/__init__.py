@@ -1,31 +1,50 @@
+from .action import evaluate_action_license, record_feedback
 from .contracts import (
+    ActionDecision,
+    ActionLicense,
     ApprovedKnowledgeContext,
     ClaimCandidate,
     DefinedLocus,
     DomainContract,
     EvidenceBinding,
+    FeedbackRequirement,
+    FeedbackResult,
+    FeedbackTrace,
+    HandoffDecision,
     JudgmentCandidate,
     RealityCandidate,
     RelationCandidate,
     Residual,
     TraceCandidate,
 )
-from .enums import JudgmentStatus, KnowledgeRank, KnowledgeStage
+from .enums import HandoffRoute, JudgmentStatus, KnowledgeRank, KnowledgeStage
+from .envelope import REQUIRED_ENVELOPE_KEYS, decision_envelope
 from .transitions import evaluate_knowledge_transition
 
 __all__ = [
+    "ActionDecision",
+    "ActionLicense",
     "ApprovedKnowledgeContext",
     "ClaimCandidate",
     "DefinedLocus",
     "DomainContract",
     "EvidenceBinding",
+    "FeedbackRequirement",
+    "FeedbackResult",
+    "FeedbackTrace",
+    "HandoffDecision",
+    "HandoffRoute",
     "JudgmentCandidate",
     "JudgmentStatus",
     "KnowledgeRank",
     "KnowledgeStage",
+    "REQUIRED_ENVELOPE_KEYS",
     "RealityCandidate",
     "RelationCandidate",
     "Residual",
     "TraceCandidate",
+    "decision_envelope",
+    "evaluate_action_license",
     "evaluate_knowledge_transition",
+    "record_feedback",
 ]

@@ -38,12 +38,49 @@ def evaluate_knowledge_transition(
             )
         )
 
+    if reality_candidate.unresolved_identity_residuals:
+        residuals.append(
+            Residual(
+                failed_stage=KnowledgeStage.REALITY_CANDIDATE,
+                code="unresolved_identity_residuals",
+                description="Reality candidate identity is not established; identity must be preserved before any transition.",
+            )
+        )
+
     if not trace_candidates:
         residuals.append(
             Residual(
                 failed_stage=KnowledgeStage.TRACE_CANDIDATE,
                 code="missing_trace_candidates",
                 description="No trace candidates were provided.",
+            )
+        )
+
+    for trace in trace_candidates:
+        if trace.reality_candidate_id != reality_candidate.reality_candidate_id:
+            residuals.append(
+                Residual(
+                    failed_stage=KnowledgeStage.TRACE_CANDIDATE,
+                    code="trace_reality_mismatch",
+                    description=f"Trace '{trace.trace_id}' observes another reality candidate.",
+                )
+            )
+
+    if defined_locus.reality_candidate_id != reality_candidate.reality_candidate_id:
+        residuals.append(
+            Residual(
+                failed_stage=KnowledgeStage.DEFINED_LOCUS,
+                code="locus_reality_mismatch",
+                description="Defined locus does not belong to the reality candidate.",
+            )
+        )
+
+    if defined_locus.boundary_residuals:
+        residuals.append(
+            Residual(
+                failed_stage=KnowledgeStage.DEFINED_LOCUS,
+                code="unresolved_boundary_residuals",
+                description="Locus boundaries are not established; no judgment before boundaries are established.",
             )
         )
 
@@ -65,6 +102,60 @@ def evaluate_knowledge_transition(
             )
         )
 
+    if claim_candidate.relation_type not in domain_contract.admissible_relation_types:
+        residuals.append(
+            Residual(
+                failed_stage=KnowledgeStage.CLAIM_CANDIDATE,
+                code="claim_relation_not_admissible",
+                description="Claim relation type is not admissible under the domain contract.",
+            )
+        )
+
+    trace_ids = {trace.trace_id for trace in trace_candidates}
+    anchors = {defined_locus.defined_locus_id, claim_candidate.claim_id}
+
+    if not relation_candidates:
+        residuals.append(
+            Residual(
+                failed_stage=KnowledgeStage.RELATION_CANDIDATE,
+                code="missing_relation_candidates",
+                description="No claim may be judged without a relation to the defined locus.",
+            )
+        )
+    for relation in relation_candidates:
+        if relation.domain_contract_id != domain_contract.domain_contract_id:
+            residuals.append(
+                Residual(
+                    failed_stage=KnowledgeStage.RELATION_CANDIDATE,
+                    code="relation_domain_mismatch",
+                    description=f"Relation '{relation.relation_id}' belongs to another domain contract.",
+                )
+            )
+        if relation.relation_type not in domain_contract.admissible_relation_types:
+            residuals.append(
+                Residual(
+                    failed_stage=KnowledgeStage.RELATION_CANDIDATE,
+                    code="relation_type_not_admissible",
+                    description=f"Relation '{relation.relation_id}' uses a relation type the domain contract does not admit.",
+                )
+            )
+        if relation.source_object_id not in anchors and relation.target_object_id not in anchors:
+            residuals.append(
+                Residual(
+                    failed_stage=KnowledgeStage.RELATION_CANDIDATE,
+                    code="relation_unanchored",
+                    description=f"Relation '{relation.relation_id}' touches neither the defined locus nor the claim.",
+                )
+            )
+        if any(trace_id not in trace_ids for trace_id in relation.evidence_trace_ids):
+            residuals.append(
+                Residual(
+                    failed_stage=KnowledgeStage.RELATION_CANDIDATE,
+                    code="relation_trace_missing",
+                    description=f"Relation '{relation.relation_id}' cites unknown trace ids.",
+                )
+            )
+
     if not evidence_bindings:
         residuals.append(
             Residual(
@@ -73,8 +164,6 @@ def evaluate_knowledge_transition(
                 description="No evidence bindings were provided.",
             )
         )
-
-    trace_ids = {trace.trace_id for trace in trace_candidates}
     for binding in evidence_bindings:
         if binding.claim_id != claim_candidate.claim_id:
             residuals.append(
@@ -117,6 +206,8 @@ def evaluate_knowledge_transition(
             ceiling = binding_rank_ceiling(binding)
             bound_traces = [trace_index[trace_id] for trace_id in binding.trace_ids if trace_id in trace_index]
             if bound_traces and all(trace.trace_type == "metric" for trace in bound_traces):
+                ceiling = min(ceiling, KnowledgeRank.CANDIDATE)
+            if any(not trace.provenance_ok or not trace.integrity_ok for trace in bound_traces):
                 ceiling = min(ceiling, KnowledgeRank.CANDIDATE)
             binding_ceilings.append(ceiling)
         rank_ceiling = min(binding_ceilings)
