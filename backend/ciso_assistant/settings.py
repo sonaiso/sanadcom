@@ -117,14 +117,17 @@ logger.info("SCHEMA_VERSION: %s", SCHEMA_VERSION)
 # SECURITY WARNING: keep the secret key used in production secret!
 _KNOWN_WEAK_KEYS = {"changeme", "change-me", "secret", "django-insecure"}
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", get_random_secret_key())
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
+
+# The weak-key guard must run after DEBUG is known; before this fix it referenced DEBUG
+# seven lines too early and every import of settings failed with NameError.
 if not DEBUG and SECRET_KEY.lower().strip() in _KNOWN_WEAK_KEYS:
     raise ImproperlyConfigured(
         "DJANGO_SECRET_KEY is set to a well-known insecure value. "
         "Set a strong, random secret key before deploying to production."
     )
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() in ("true", "1", "yes")
 MAIL_DEBUG = os.environ.get("MAIL_DEBUG", "False").lower() in ("true", "1", "yes")
 
 # SECURITY WARNING: Sensitive operations, such as excel file processing, can run in a sandbox.
