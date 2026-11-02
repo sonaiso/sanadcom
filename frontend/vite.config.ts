@@ -16,7 +16,11 @@ export default defineConfig({
 		sveltekit()
 	],
 	build: {
-		sourcemap: false
+		sourcemap: false,
+		// Svelte 5 runes output (`const [$$stores, $$cleanup] = setup_stores()`) cannot be
+		// down-levelled to the Vite default es2020 target by esbuild; es2022 is supported by
+		// every browser the app targets.
+		target: 'es2022'
 	},
 	test: {
 		include: ['{src}/**/*.{test,spec}.{js,ts}']
