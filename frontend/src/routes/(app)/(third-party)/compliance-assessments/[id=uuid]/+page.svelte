@@ -709,6 +709,13 @@
 										>... {m.asZIP()}</a
 									>
 									{#if !page.data.user.is_third_party}
+										<a
+											href="/compliance-assessments/{data.compliance_assessment.id}/judgment-chain"
+											class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200"
+											data-testid="judgment-chain-link">{m.jcTitle()}</a
+										>
+									{/if}
+									{#if !page.data.user.is_third_party}
 										<p class="block px-4 py-2 text-sm text-gray-800">{m.actionPlan()}</p>
 										<a
 											href="/compliance-assessments/{data.compliance_assessment
