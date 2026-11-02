@@ -1,0 +1,12 @@
+# Every path has a human owner. A pull request touching a path cannot merge without that owner's review
+# once "Require review from Code Owners" is enabled in branch protection (owner action, see
+# docs/COMPETITIVE_REMEDIATION_PLAN_AR.md §2). Agent-authored PRs are never self-approved.
+*                                   @sonaiso
+/AGENTS.md                          @sonaiso
+/docs/                              @sonaiso
+/backend/knowledge_constitution/    @sonaiso
+/backend/governance_constitution/   @sonaiso
+/backend/iam/                       @sonaiso
+/scripts/                           @sonaiso
+/.github/                           @sonaiso
+/tools/arabic_corpus/               @sonaiso
