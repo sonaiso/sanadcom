@@ -9,7 +9,9 @@ django.setup()
 from iam.models import User, Folder, UserGroup, Role, RoleAssignment
 
 # ── Configuration ──────────────────────────────────────────────────
-PASSWORD = 'Sico@2026!'  # Shared demo password so you can log in as each
+PASSWORD = os.environ.get('SANADCOM_DEMO_PASSWORD')  # Shared demo password; never hard-code it in the repository
+if not PASSWORD:
+    raise SystemExit('SANADCOM_DEMO_PASSWORD is not set; refusing to provision demo users with a hard-coded password')
 
 # Map: role codename → (email, first_name, last_name, is_third_party)
 ROLE_USERS = {

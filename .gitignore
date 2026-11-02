@@ -30,3 +30,11 @@ backup-*.sql
 *.dump
 *.tar
 *.tar.gz
+
+# نسخُ قواعد البيانات الاحتياطيّة لا تُودَع أبدًا (قد تحمل بيانات مستخدمين وجلسات ورموزًا)
+db-backup-*/
+backup-*.json
+*.sqlite3-wal
+*.sqlite3-shm
+*.db-wal
+*.db-shm
