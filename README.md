@@ -86,9 +86,13 @@ and run the starter script
 ./docker-compose.sh
 ```
 
+Secrets are not in the compose file. Before the first start, copy `.env.example` to `.env` (git-ignored) and set
+`POSTGRES_PASSWORD` and `DJANGO_SECRET_KEY`; compose refuses to start while either is unset.
+
 For a direct Docker Compose startup in this repository, use:
 
 ```sh
+cp -n .env.example .env   # then fill in both values
 docker compose up -d
 ```
 
@@ -365,7 +369,9 @@ git clone --single-branch -b main https://github.com/intuitem/ciso-assistant-com
 cd ciso-assistant-community
 ```
 
-2. Launch docker-compose script for prebuilt images:
+2. Create `.env` from `.env.example` and set `POSTGRES_PASSWORD` and `DJANGO_SECRET_KEY`.
+
+3. Launch docker-compose script for prebuilt images:
 
 ```sh
 ./docker-compose.sh
