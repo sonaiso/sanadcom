@@ -89,3 +89,8 @@ Any PR that modifies GRC logic, NCA applicability, AI assessment flow, metrics i
 - Speed, user pressure, demos, delivery urgency, or convenience never authorize bypass.
 - This constitution applies to code, tests, docs, prompts, workflows, UI labels, reports, and generated examples.
 - Agents must preserve origin, licensed branch, effective attribute, sabab, conditions, mani/blockers, qadih differences, evidence trace, rank, residuals, handoff, and final action/delivery decision in every governed path.
+
+## Human review of agent output (added 2026-11-02 after four merged-but-never-run defects)
+- No agent merges its own pull request, and no agent-authored pull request is merged before CI is green on the final head and a named human has approved it.
+- A pull request's test plan must quote numbers produced by running the commands on that head; "tests should pass" is a constitutional failure of the same kind as "policy exists → control verified".
+- Merged code that was never executed is a residual, not a delivery; record it as such.

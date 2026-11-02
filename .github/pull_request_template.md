@@ -13,3 +13,8 @@
 - [ ] Metrics are treated as evidence candidates, not compliance certificates.
 - [ ] NCA wording is aligned/mapped/evidence-ready, not certified/approved.
 - [ ] Tests were added or updated for governance-sensitive changes.
+
+## Human review and execution record (mandatory for agent-authored PRs)
+- [ ] A named human reviewed this PR (not the agent that wrote it).
+- [ ] Every test command in the test plan was actually run on this head; counts (passed/failed/skipped) are quoted, not assumed.
+- [ ] CI is green on the final head before merge.
