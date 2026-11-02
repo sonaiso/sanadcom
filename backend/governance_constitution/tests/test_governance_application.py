@@ -62,7 +62,9 @@ def _approved_context(*, relation_type: str = "supports", requested_rank: Knowle
             ),
         ),
         defined_locus=DefinedLocus("locus-1", "BUSINESS_UNIT", "asset-1", "it-dept", "2026-Q3"),
-        domain_contract=DomainContract("domain-1", "grc-v1", ("supports",), ("provenance_required",), "default"),
+        # the domain admits the relation type under test: the kernel now blocks inadmissible relations upstream
+        # (claim_relation_not_admissible), so this fixture must reach governance with an admissible relation
+        domain_contract=DomainContract("domain-1", "grc-v1", ("supports", relation_type), ("provenance_required",), "default"),
         claim_candidate=ClaimCandidate(
             "claim-1",
             "locus-1",
