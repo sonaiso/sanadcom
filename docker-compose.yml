@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_DB=ciso-assistant
       - POSTGRES_USER=ciso-assistantuser
-      - POSTGRES_PASSWORD=cisoassistant2024
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env (see .env.example)}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -29,10 +29,11 @@ services:
       - ALLOWED_HOSTS=backend,localhost
       - CISO_ASSISTANT_URL=https://localhost:8443
       - DJANGO_DEBUG=True
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env (see .env.example)}
       - AUTH_TOKEN_TTL=7200
       - POSTGRES_NAME=ciso-assistant
       - POSTGRES_USER=ciso-assistantuser
-      - POSTGRES_PASSWORD=cisoassistant2024
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env (see .env.example)}
       - DB_HOST=postgres
       - DB_PORT=5432
     volumes:
@@ -60,10 +61,11 @@ services:
       - ALLOWED_HOSTS=backend,localhost
       - CISO_ASSISTANT_URL=https://localhost:8443
       - DJANGO_DEBUG=False
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env (see .env.example)}
       - AUTH_TOKEN_TTL=7200
       - POSTGRES_NAME=ciso-assistant
       - POSTGRES_USER=ciso-assistantuser
-      - POSTGRES_PASSWORD=cisoassistant2024
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env (see .env.example)}
       - DB_HOST=postgres
       - DB_PORT=5432
     volumes:
