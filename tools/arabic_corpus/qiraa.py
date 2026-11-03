@@ -23,7 +23,8 @@ The three sources are pluggable so the aggregation is testable without them:
   --alghanem-src DIR   directory containing gate/bridge.py
   --nabt-src DIR       NABT's src/ directory
   --mashru-src DIR     Mashru checkout containing SLGE/AwamilTable.lean (its sha256 is recorded)
-Output (JSON): per row the words with their stage results, governors found, document-reader status; totals by
+The table is accepted by tashkil.check_table first (signature, seal, source binding) and the report
+carries that table's sha256 and scope. Output (JSON): per row the words with their stage results, governors found, document-reader status; totals by
 status and by reason name. `--check REPORT` recomputes and fails on any difference (QIRAA_DRIFTED).
 No percentage is computed; the S4 acceptance threshold is measured later on the signed ECC table.
 """
@@ -189,21 +190,41 @@ def governor_index(
     return index
 
 
-def tokens_of(row: str) -> tuple[list[str], int]:
-    out, stripped = [], 0
+SOLAR = set("تثدذرزسشصضطظلن")
+
+
+def tokens_of(row: str) -> tuple[list[str], int, set[int]]:
+    """Tokens without edge punctuation, how many had some, and the indices after which punctuation stood
+    (a governor pair never crosses such a boundary)."""
+    out, stripped, closed = [], 0, set()
     for tok in row.split():
         t = tok.strip(PUNCTUATION)
         if t != tok:
             stripped += 1
         if t:
             out.append(t)
-    return out, stripped
+            if tok.rstrip(PUNCTUATION) != tok:
+                closed.add(len(out) - 1)
+        elif out:
+            closed.add(
+                len(out) - 1
+            )  # a free-standing punctuation token closes the previous word
+    return out, stripped, closed
+
+
+def article_before_solar_with_shadda(token: str) -> bool:
+    """ٱَلْ + a solar letter carrying shadda: the case the bridge keeps unassimilated."""
+    cl = clusters(token)
+    if len(cl) < 3 or cl[0][0] != "ا" or cl[1][0] != "ل":
+        return False
+    base, marks = cl[2]
+    return base in SOLAR and "\u0651" in marks
 
 
 def read_row(
     row: str, bridge: BridgeFn, certify: CertFn, index: dict, doc: DocFn | None
 ) -> dict:
-    tokens, stripped = tokens_of(row)
+    tokens, stripped, closed = tokens_of(row)
     words = []
     for tok in tokens:
         status, reason, canonical = bridge(tok)
@@ -221,11 +242,7 @@ def read_row(
             entry.update(
                 certificate=c_status, certificate_reason=c_reason, numeric_code=code
             )
-            if (
-                c_reason == "UNLICENSED_SHAPE"
-                and letters_only(tok).startswith("ال")
-                and "لْ" in canonical
-            ):
+            if c_reason == "UNLICENSED_SHAPE" and article_before_solar_with_shadda(tok):
                 # the bridge keeps the article's lam with its sukun before a solar letter (lossless, no
                 # assimilation); NABT's shape law refuses the two sukuns in a row. Named, not guessed away.
                 entry["residual"] = "ARTICLE_LAM_BEFORE_SOLAR_NOT_ASSIMILATED"
@@ -245,7 +262,7 @@ def read_row(
                         "implied": implied,
                     }
                 )
-        if i + 1 < len(plain):
+        if i + 1 < len(plain) and i not in closed:
             pair = tokens[i] + " " + tokens[i + 1]
             for name, cls, implied in index.get(p + " " + plain[i + 1], []):
                 if marks_compatible(name, pair):
@@ -279,6 +296,7 @@ def read_table(
     table: list,
     table_sha256: str,
     doc: DocFn | None = None,
+    tashkil_seal: dict | None = None,
 ) -> dict:
     index = governor_index(table)
     out_rows = []
@@ -308,6 +326,7 @@ def read_table(
             governor_classes[f"{g['class']} {g['class_name']}"] += 1
     return {
         "schema": "sanadcom.qiraa.v1",
+        "tashkil": tashkil_seal or {},
         "governor_table_sha256": table_sha256,
         "governor_table_rows": len(table),
         "rows": out_rows,
@@ -325,20 +344,38 @@ def read_table(
     }
 
 
-def load_rows(table: Path) -> list[dict[str, str]]:
-    from tashkil import read_table as _read  # same directory
+def load_accepted_rows(
+    corpus_dir: Path, table: Path, signature: Path, vocalizers: Path | None
+) -> tuple[list[dict[str, str]], dict]:
+    """Rows of a table only after tashkil.check_table accepted it now (TASHKIL_NOT_ACCEPTED otherwise)."""
+    here = str(Path(__file__).resolve().parent)
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import tashkil  # same directory
 
-    _, rows, errors = _read(table)
-    if errors:
-        raise SystemExit(f"TASHKIL_TABLE_MALFORMED: {errors[0]}")
-    return rows
+    report = tashkil.check_table(
+        corpus_dir, table, signature, vocalizers or tashkil.DEFAULT_VOCALIZERS
+    )
+    if not report["accepted"]:
+        raise SystemExit(f"TASHKIL_NOT_ACCEPTED: {report['errors_by_code']}")
+    _, rows, _ = tashkil.read_table(table)
+    return rows, {
+        "table": report["table"],
+        "table_sha256": report["table_sha256"],
+        "scope": report["scope"],
+    }
 
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument(
-        "table", type=Path, help="a vocalization table that tashkil.py check accepted"
+        "table",
+        type=Path,
+        help="a vocalization table; tashkil.py check is run on it first",
     )
+    ap.add_argument("--corpus-dir", type=Path, required=True)
+    ap.add_argument("--signature", type=Path, required=True)
+    ap.add_argument("--vocalizers", type=Path, default=None)
     ap.add_argument("--alghanem-src", type=Path, required=True)
     ap.add_argument("--nabt-src", type=Path, required=True)
     ap.add_argument("--mashru-src", type=Path, required=True)
@@ -351,7 +388,9 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--check", type=Path, default=None)
     args = ap.parse_args(argv[1:])
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    rows = load_rows(args.table)
+    rows, seal = load_accepted_rows(
+        args.corpus_dir, args.table, args.signature, args.vocalizers
+    )
     table, digest = mashru_table(args.mashru_src)
     report = read_table(
         rows,
@@ -360,6 +399,7 @@ def main(argv: list[str]) -> int:
         table,
         digest,
         nabt_document_reader(args.nabt_src) if args.document_reader else None,
+        seal,
     )
     if args.check:
         stored = json.loads(args.check.read_text(encoding="utf-8"))

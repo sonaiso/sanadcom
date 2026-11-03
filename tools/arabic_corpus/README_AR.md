@@ -29,10 +29,10 @@ python tools/arabic_corpus/tashkil.py check corpora/nca corpora/nca/tashkil-ecc.
 ## S4: القراءة المحكومة (شهادات الكلمات والعوامل)
 
 ```sh
-python tools/arabic_corpus/qiraa.py corpora/nca/tashkil-ecc.tsv --alghanem-src /path/to/Alghanem --nabt-src /path/to/NABT/src --mashru-src /path/to/Mashru --document-reader --out docs/arabic-corpus/qiraa-ecc.json
+python tools/arabic_corpus/qiraa.py corpora/nca/tashkil-ecc.tsv --corpus-dir corpora/nca --signature corpora/nca/owner-tashkil-ecc.json --alghanem-src /path/to/Alghanem --nabt-src /path/to/NABT/src --mashru-src /path/to/Mashru --document-reader --out docs/arabic-corpus/qiraa-ecc.json
 python tools/arabic_corpus/qiraa.py ... --check docs/arabic-corpus/qiraa-ecc.json
 ```
 
-لكلّ كلمة: جسر Alghanem (READY أو تعليق باسمه) ← خانات A116 وشهادة شكل NABT (`GENERATED_BY_LAW` أو `UNLICENSED_SHAPE`) ← بحث في جدول العوامل المئة المختوم في Mashru (`SLGE/AwamilTable.lean`، بصمته في التقرير) بالحروف وبعلامات المدخل نفسه (إنّ غير إنْ؛ «ما» بلا علامة يبقى مرشَّحين). هذا بحثٌ لا إعراب: لا معمولَ يُعيَّن ولا تركيبَ يُدَّعى (`authority: LOOKUP_NOT_PARSE`). قارئ النصّ في NABT يُشغَّل اختياريًّا ويُسجَّل جوابه كما هو (مجاله «الجزء المنصَّب لا كلّ العربيّة»).
+القارئ يشغّل بوّابة S3 على الجدول أوّلًا (التوقيع والختم والربط بالمصدر) ويرفض ما لم تقبله (`TASHKIL_NOT_ACCEPTED`)، ويحمل التقرير بصمة الجدول ونطاقه. لكلّ كلمة: جسر Alghanem (READY أو تعليق باسمه) ← خانات A116 وشهادة شكل NABT (`GENERATED_BY_LAW` أو `UNLICENSED_SHAPE`) ← بحث في جدول العوامل المئة المختوم في Mashru (`SLGE/AwamilTable.lean`، بصمته في التقرير) بالحروف وبعلامات المدخل نفسه (إنّ غير إنْ؛ «ما» بلا علامة يبقى مرشَّحين). هذا بحثٌ لا إعراب: لا معمولَ يُعيَّن ولا تركيبَ يُدَّعى (`authority: LOOKUP_NOT_PARSE`). قارئ النصّ في NABT يُشغَّل اختياريًّا ويُسجَّل جوابه كما هو (مجاله «الجزء المنصَّب لا كلّ العربيّة»).
 
 **مفحوصٌ على عيّنة الوكيل** (لا «مقيس»: العيّنة ليست مرجعًا محجوبًا) (أربع جمل، 18 كلمة، في `tests/test_tashkil_qiraa.py`؛ ليست نصّ الهيئة): الجسر 18/18 READY؛ شهادات NABT 15 مولَّدة بالقانون و3 مرفوضة باسم `UNLICENSED_SHAPE` وكلّها «ٱَلْ» قبل حرف شمسيّ (الجسر يبقي سكون اللام بلا إدغام والقانون يرفض سكونين متتاليين: بقيّة مسمّاة `ARTICLE_LAM_BEFORE_SOLAR_NOT_ASSIMILATED`)؛ 6 مطابقات عوامل؛ قارئ النصّ يؤجّل الجمل الأربع (`UNSUPPORTED_CLAUSE`، `UNSUPPORTED_OPEN_QUESTION`، `CASE_ROLE_MISMATCH`). الفجوات المعلَنة في التقرير: واجهة الحدود بين الكلمات، السوابق المتّصلة (وَ، فَ، بِ)، تعيين المعمول، تعدّد المرشَّحين.
