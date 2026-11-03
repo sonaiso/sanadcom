@@ -40,3 +40,6 @@ jobs:
 
       - name: Run governance constitution tests
         run: PYTHONPATH=backend python -m pytest -q backend/governance_constitution/tests
+
+      - name: Run Arabic corpus tool tests (S1-S4; integration with NABT/Alghanem/Mashru is skipped here)
+        run: python -m pytest -q tools/arabic_corpus/tests

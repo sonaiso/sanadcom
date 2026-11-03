@@ -1,0 +1,7 @@
+{
+  "schema": "sanadcom.vocalizers.v1",
+  "note": "Registry of who may fill a vocalization table. kind=human rows may appear in TASHKIL_SIGNED tables; kind=agent rows only in TASHKIL_AGENT_SAMPLE_UNSIGNED tables (test samples, never a reference). The owner adds qualified human vocalizers (e.g. Silver Wolf reviewers) by id.",
+  "vocalizers": [
+    {"id": "agent-sample", "kind": "agent", "name": "الوكيل (عيّنات اختبار فقط)"}
+  ]
+}
