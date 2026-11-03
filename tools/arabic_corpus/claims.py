@@ -188,7 +188,12 @@ def segment_chain(
                 w["token"] for w in words if w.get("certificate") != "GENERATED_BY_LAW"
             ],
             "governors": [
-                {"token": g["token"], "governor": g["governor"], "class": g["class"]}
+                {
+                    "token": g["token"],
+                    "governor": g["governor"],
+                    "class": g["class"],
+                    "explanation": (g.get("explanation") or {}).get("sentence", ""),
+                }
                 for g in reading.get("governors", [])
             ],
             "fully_read": read,
