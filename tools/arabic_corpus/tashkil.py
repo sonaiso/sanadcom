@@ -12,6 +12,9 @@ chain from the sealed reality to the vocalized row:
   TASHKIL_SCOPE_UNKNOWN              scope is not TASHKIL_SIGNED / TASHKIL_AGENT_SAMPLE_UNSIGNED
   TASHKIL_SEGMENT_NOT_IN_SEALED_SOURCE  segment id / sha256 / text do not match the sealed text
   TASHKIL_CHANGES_LETTERS            vocalized row differs from the source in anything but marks and ٱ
+  TASHKIL_DROPS_SOURCE_MARKS         a mark the sealed source already carried was removed
+  TASHKIL_SEGMENT_HAS_TAB            a sealed line contains a tab and cannot be carried by the table
+  SOURCE_SEAL_DRIFTED                the extracted text no longer hashes to the manifest
   TASHKIL_VOCALIZER_UNKNOWN          vocalizer is not in the registry
   TASHKIL_AGENT_ROW_IN_SIGNED_SCOPE  an agent-kind vocalizer inside a TASHKIL_SIGNED table
   TASHKIL_ROW_MALFORMED              wrong column count
@@ -56,11 +59,41 @@ def letters_only(text: str) -> str:
     return "".join(out)
 
 
+def marks_per_letter(text: str) -> list[frozenset[str]]:
+    """The set of combining marks carried by each base character, in order (parallel to letters_only)."""
+    out: list[set[str]] = []
+    for ch in text:
+        if unicodedata.category(ch).startswith("M"):
+            if out:
+                out[-1].add(ch)
+            continue
+        out.append(set())
+    return [frozenset(m) for m in out]
+
+
+def vocalization_problem(unvocalized: str, vocalized: str) -> str:
+    """'' if the vocalizer only added marks (and ٱ) to the sealed segment; otherwise the error code.
+    Both sides are projected to letters, so an officially part-vocalized source compares letter by
+    letter, and a mark the source already carried may not be removed (TASHKIL_DROPS_SOURCE_MARKS)."""
+    if letters_only(vocalized) != letters_only(unvocalized):
+        return "TASHKIL_CHANGES_LETTERS"
+    if any(
+        not src <= new
+        for src, new in zip(marks_per_letter(unvocalized), marks_per_letter(vocalized))
+    ):
+        return "TASHKIL_DROPS_SOURCE_MARKS"
+    return ""
+
+
 def load_source_text(corpus_dir: Path, source: str) -> str:
+    """The sealed text, only if its bytes still hash to the manifest's text_sha256 (SOURCE_SEAL_DRIFTED)."""
     manifest = json.loads((corpus_dir / "manifest.json").read_text(encoding="utf-8"))
     for entry in manifest["sources"]:
         if entry["source"] == source:
-            return (corpus_dir / entry["text_file"]).read_text(encoding="utf-8")
+            raw = (corpus_dir / entry["text_file"]).read_bytes()
+            if sha256_bytes(raw) != entry.get("text_sha256"):
+                raise SystemExit(f"SOURCE_SEAL_DRIFTED: {entry['text_file']}")
+            return raw.decode("utf-8")
     raise SystemExit(f"SOURCE_NOT_IN_MANIFEST: {source}")
 
 
@@ -68,6 +101,8 @@ def segments(source: str, text: str) -> list[tuple[str, str, str]]:
     """(segment_id, sha256, line) for every non-empty line, ids by 1-based line number of the sealed text."""
     out = []
     for number, line in enumerate(text.split("\n"), start=1):
+        if "\t" in line:
+            raise SystemExit(f"TASHKIL_SEGMENT_HAS_TAB: {source}:L{number}")
         if line.strip():
             out.append(
                 (f"{source}:L{number}", sha256_bytes(line.encode("utf-8")), line)
@@ -117,7 +152,19 @@ def check_signature(
         errors.append({"code": "TASHKIL_SIGNATURE_MISSING", "detail": str(signature)})
         return {}, errors
     sig = json.loads(signature.read_text(encoding="utf-8"))
-    missing = [f for f in SIGNATURE_FIELDS if not str(sig.get(f, "")).strip()]
+    if not isinstance(sig, dict):
+        errors.append(
+            {"code": "TASHKIL_SIGNATURE_INCOMPLETE", "detail": "not an object"}
+        )
+        return {}, errors
+
+    def filled(
+        key: str,
+    ) -> bool:  # a null, a number or a blank string is not a field value
+        value = sig.get(key)
+        return isinstance(value, str) and bool(value.strip())
+
+    missing = [f for f in SIGNATURE_FIELDS if not filled(f)]
     if missing:
         errors.append(
             {"code": "TASHKIL_SIGNATURE_INCOMPLETE", "detail": ",".join(missing)}
@@ -126,11 +173,9 @@ def check_signature(
         errors.append(
             {"code": "TASHKIL_SCOPE_UNKNOWN", "detail": str(sig.get("scope"))}
         )
-    elif (
-        sig["scope"] == "TASHKIL_SIGNED" and not str(sig.get("owner_words", "")).strip()
-    ):
+    elif sig["scope"] == "TASHKIL_SIGNED" and not filled("owner_words"):
         errors.append({"code": "TASHKIL_SIGNATURE_INCOMPLETE", "detail": "owner_words"})
-    if sig.get("file") and Path(sig["file"]).name != table_name:
+    if filled("file") and Path(sig["file"]).name != table_name:
         errors.append(
             {
                 "code": "TASHKIL_SIGNATURE_INCOMPLETE",
@@ -191,14 +236,9 @@ def check_table(
         if not row["vocalized"]:
             continue
         filled += 1
-        if letters_only(row["vocalized"]) != row["unvocalized"]:
-            errors.append(
-                {
-                    "code": "TASHKIL_CHANGES_LETTERS",
-                    "row": number,
-                    "detail": row["segment_id"],
-                }
-            )
+        problem = vocalization_problem(row["unvocalized"], row["vocalized"])
+        if problem:
+            errors.append({"code": problem, "row": number, "detail": row["segment_id"]})
         kind = kinds.get(row["vocalizer"])
         if kind is None:
             errors.append(

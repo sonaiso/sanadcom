@@ -187,6 +187,57 @@ def test_mutant_segment_sha_tampered(filled):
     assert report["errors_by_code"] == {"TASHKIL_SEGMENT_NOT_IN_SEALED_SOURCE": 1}
 
 
+def test_review_fix_extracted_text_must_match_manifest_seal(filled):
+    corpus, table, sig = filled
+    (corpus / "s.extracted.txt").write_text(
+        SOURCE.replace("يجب", "ينبغي"), encoding="utf-8"
+    )  # altered extraction
+    with pytest.raises(SystemExit, match="SOURCE_SEAL_DRIFTED"):
+        tashkil.load_source_text(corpus, "s.txt")
+    report = tashkil.check_table(
+        corpus, table, sig, VOCALIZERS
+    )  # check never reads an unsealed text either
+    # one error names the drifted source, then every one of the 5 rows is unbound: 6 by hand
+    assert report["errors_by_code"] == {"TASHKIL_SEGMENT_NOT_IN_SEALED_SOURCE": 6}
+    assert "SOURCE_SEAL_DRIFTED" in report["errors"][0]["detail"]
+
+
+def test_review_fix_null_and_non_string_signature_fields(filled):
+    corpus, table, sig = filled
+    data = json.loads(sig.read_text(encoding="utf-8"))
+    data["signed_by"] = None
+    data["file"] = 42  # a non-string file name must not crash the name check
+    sig.write_text(json.dumps(data), encoding="utf-8")
+    report = tashkil.check_table(corpus, table, sig, VOCALIZERS)
+    assert report["errors_by_code"] == {"TASHKIL_SIGNATURE_INCOMPLETE": 1}
+    assert report["errors"][0]["detail"] == "signed_by,file"
+    sig.write_text("[]", encoding="utf-8")
+    assert (
+        "TASHKIL_SIGNATURE_INCOMPLETE"
+        in tashkil.check_table(corpus, table, sig, VOCALIZERS)["errors_by_code"]
+    )
+
+
+def test_review_fix_tab_inside_a_sealed_line_is_refused(tmp_path):
+    (tmp_path / "t.txt").write_text("يجب\tتحديد\n", encoding="utf-8")
+    (tmp_path / "manifest.json").write_text(
+        json.dumps(seal.seal(tmp_path), ensure_ascii=False), encoding="utf-8"
+    )
+    with pytest.raises(SystemExit, match="TASHKIL_SEGMENT_HAS_TAB: t.txt:L1"):
+        tashkil.write_skeleton(tmp_path, "t.txt", tmp_path / "x.tsv")
+
+
+def test_review_fix_letters_are_projected_on_both_sides():
+    # a source that already carries a mark (officially part-vocalized) compares letter by letter...
+    assert tashkil.vocalization_problem("إنَّ السياسة", "إِنَّ ٱَلْسِّيَاسَةَ") == ""
+    # ...and the vocalizer may add marks but not remove one the source had
+    assert (
+        tashkil.vocalization_problem("إنَّ السياسة", "إِنْ ٱَلْسِّيَاسَةَ")
+        == "TASHKIL_DROPS_SOURCE_MARKS"
+    )
+    assert tashkil.vocalization_problem("الجهة", "ٱَلْجِهَهِ") == "TASHKIL_CHANGES_LETTERS"
+
+
 # ---- S4 aggregation with fakes (no Alghanem, NABT or Mashru needed) ------------------------------
 
 
@@ -271,6 +322,55 @@ def test_governor_marks_decide_between_homographs_by_hand():
         qiraa.marks_compatible("إنْ", "إِنَّ") is False
         and qiraa.marks_compatible("ما زال", "مَا زَالَ") is True
     )
+
+
+def test_review_fix_governor_pairs_never_cross_punctuation():
+    table = [("ما زال", 1, False)]
+    rows = [
+        {"segment_id": "x", "vocalized": "قَدْ مَا. زَالَ"},
+        {"segment_id": "y", "vocalized": "مَا ، زَالَ"},
+        {"segment_id": "z", "vocalized": "مَا زَالَ."},
+    ]
+    report = qiraa.read_table(rows, fake_bridge, fake_cert, table, "x")
+    assert [len(r["governors"]) for r in report["rows"]] == [0, 0, 1]
+    assert qiraa.tokens_of("قَدْ مَا. زَالَ") == (["قَدْ", "مَا", "زَالَ"], 1, {1})
+
+
+def test_review_fix_assimilation_label_needs_a_shadda_bearing_solar_letter():
+    assert qiraa.article_before_solar_with_shadda("ٱَلْسِّيَاسَةُ") is True
+    assert qiraa.article_before_solar_with_shadda("ٱَلْجِهَةِ") is False  # moon letter
+    assert (
+        qiraa.article_before_solar_with_shadda("ٱَلْسِيَاسَةُ") is False
+    )  # solar letter without shadda
+    assert qiraa.article_before_solar_with_shadda("لْسِّيَاسَةُ") is False  # no article alif
+    # an UNLICENSED_SHAPE on a moon-letter article word gets no assimilation label
+    report = qiraa.read_table(
+        [{"segment_id": "x", "vocalized": "ٱَلْجِهَةِ"}],
+        lambda w: ("READY", "", w),
+        lambda c: ("REJECT", "UNLICENSED_SHAPE", ""),
+        [],
+        "x",
+    )
+    assert "residual" not in report["rows"][0]["words"][0]
+
+
+def test_review_fix_reading_requires_an_accepted_table(filled):
+    corpus, table, sig = filled
+    rows, seal_info = qiraa.load_accepted_rows(corpus, table, sig, VOCALIZERS)
+    assert len(rows) == 5 and seal_info == {
+        "table": table.name,
+        "table_sha256": hashlib.sha256(table.read_bytes()).hexdigest(),
+        "scope": "TASHKIL_AGENT_SAMPLE_UNSIGNED",
+    }
+    table.write_text(
+        table.read_text(encoding="utf-8").replace("يَجِبُ", "يَنْبَغِيْ"), encoding="utf-8"
+    )  # modified after signing
+    with pytest.raises(SystemExit, match="TASHKIL_NOT_ACCEPTED"):
+        qiraa.load_accepted_rows(corpus, table, sig, VOCALIZERS)
+    report = qiraa.read_table(
+        rows, fake_bridge, fake_cert, FAKE_TABLE, "x", tashkil_seal=seal_info
+    )
+    assert report["tashkil"] == seal_info
 
 
 def test_document_reader_hook_is_reported():
