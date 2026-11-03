@@ -181,6 +181,32 @@ def marks_compatible(entry: str, token: str) -> bool:
     return all(eb == tb and em <= tm for (eb, em), (tb, tm) in zip(e, t))
 
 
+def governor_cards(src: Path) -> dict[tuple[str, int], dict]:
+    """Explanation cards mirrored from Mashru's deposits (mashru_governors.py), keyed by (governor, class)."""
+    here = str(Path(__file__).resolve().parent)
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import mashru_governors
+
+    data = mashru_governors.cards(src)
+    return {
+        (c["governor"], c["class"]): dict(c, sentence=mashru_governors.explain(c))
+        for c in data["cards"]
+    }
+
+
+def _with_card(match: dict, cards: dict | None) -> dict:
+    card = (cards or {}).get((match["governor"], match["class"]))
+    if card:
+        match["explanation"] = {
+            "kinds": card["kinds"],
+            "equations": card["equations"],
+            "links": card["links"],
+            "sentence": card["sentence"],
+        }
+    return match
+
+
 def governor_index(
     table: list[tuple[str, int, bool]],
 ) -> dict[str, list[tuple[str, int, bool]]]:
@@ -222,7 +248,12 @@ def article_before_solar_with_shadda(token: str) -> bool:
 
 
 def read_row(
-    row: str, bridge: BridgeFn, certify: CertFn, index: dict, doc: DocFn | None
+    row: str,
+    bridge: BridgeFn,
+    certify: CertFn,
+    index: dict,
+    doc: DocFn | None,
+    cards: dict | None = None,
 ) -> dict:
     tokens, stripped, closed = tokens_of(row)
     words = []
@@ -253,28 +284,34 @@ def read_row(
         for name, cls, implied in index.get(p, []):
             if marks_compatible(name, tokens[i]):
                 governors.append(
-                    {
-                        "span": [i],
-                        "token": tokens[i],
-                        "governor": name,
-                        "class": cls,
-                        "class_name": GOVERNOR_CLASSES.get(cls, "?"),
-                        "implied": implied,
-                    }
+                    _with_card(
+                        {
+                            "span": [i],
+                            "token": tokens[i],
+                            "governor": name,
+                            "class": cls,
+                            "class_name": GOVERNOR_CLASSES.get(cls, "?"),
+                            "implied": implied,
+                        },
+                        cards,
+                    )
                 )
         if i + 1 < len(plain) and i not in closed:
             pair = tokens[i] + " " + tokens[i + 1]
             for name, cls, implied in index.get(p + " " + plain[i + 1], []):
                 if marks_compatible(name, pair):
                     governors.append(
-                        {
-                            "span": [i, i + 1],
-                            "token": pair,
-                            "governor": name,
-                            "class": cls,
-                            "class_name": GOVERNOR_CLASSES.get(cls, "?"),
-                            "implied": implied,
-                        }
+                        _with_card(
+                            {
+                                "span": [i, i + 1],
+                                "token": pair,
+                                "governor": name,
+                                "class": cls,
+                                "class_name": GOVERNOR_CLASSES.get(cls, "?"),
+                                "implied": implied,
+                            },
+                            cards,
+                        )
                     )
     result = {
         "words": words,
@@ -297,6 +334,7 @@ def read_table(
     table_sha256: str,
     doc: DocFn | None = None,
     tashkil_seal: dict | None = None,
+    cards: dict | None = None,
 ) -> dict:
     index = governor_index(table)
     out_rows = []
@@ -307,7 +345,7 @@ def read_table(
     for r in rows:
         if not r.get("vocalized"):
             continue
-        res = read_row(r["vocalized"], bridge, certify, index, doc)
+        res = read_row(r["vocalized"], bridge, certify, index, doc, cards)
         res["segment_id"] = r["segment_id"]
         out_rows.append(res)
         for w in res["words"]:
@@ -392,6 +430,7 @@ def main(argv: list[str]) -> int:
         args.corpus_dir, args.table, args.signature, args.vocalizers
     )
     table, digest = mashru_table(args.mashru_src)
+    cards = governor_cards(args.mashru_src)
     report = read_table(
         rows,
         alghanem_bridge(args.alghanem_src),
@@ -400,6 +439,7 @@ def main(argv: list[str]) -> int:
         digest,
         nabt_document_reader(args.nabt_src) if args.document_reader else None,
         seal,
+        cards,
     )
     if args.check:
         stored = json.loads(args.check.read_text(encoding="utf-8"))
